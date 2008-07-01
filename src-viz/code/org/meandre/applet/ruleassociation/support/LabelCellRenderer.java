@@ -1,0 +1,106 @@
+/**
+ * University of Illinois/NCSA
+ * Open Source License
+ * 
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ * All rights reserved.
+ * 
+ * Developed by: 
+ * 
+ * Automated Learning Group
+ * National Center for Supercomputing Applications
+ * http://www.seasr.org
+ * 
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal with the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions: 
+ * 
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimers. 
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimers in the 
+ *    documentation and/or other materials provided with the distribution. 
+ * 
+ *  * Neither the names of Automated Learning Group, The National Center for
+ *    Supercomputing Applications, or University of Illinois, nor the names of
+ *    its contributors may be used to endorse or promote products derived from
+ *    this Software without specific prior written permission. 
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ * CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * WITH THE SOFTWARE.
+ */ 
+
+package org.meandre.applet.ruleassociation.support;
+import java.awt.*;
+
+import javax.swing.*;
+import javax.swing.table.*;
+
+/**
+	Renders the confidence and support values, They are represented
+	by a vertical bar.
+*/
+public class LabelCellRenderer extends DefaultTableCellRenderer  {
+	private String what = null;
+	int myrow, mycolumn;
+
+	/**
+		the size passed in is the height of the labels, the rows here
+		need to be the same height.
+		@param i the height of the labels.
+	*/
+	public LabelCellRenderer () {
+		super ();
+		this.setHorizontalAlignment (JLabel.RIGHT);
+	}
+
+    /**
+		Returns the component used for drawing the cell.  This method is
+		used to configure the renderer appropriately before drawing.
+
+		@param	table		the <code>JTable</code> that is asking the
+						renderer to draw; can be <code>null</code>
+		@param	value		the value of the cell to be rendered.  It is
+					up to the specific renderer to interpret
+					and draw the value.  For example, if
+					<code>value</code>
+					is the string "true", it could be rendered as a
+					string or it could be rendered as a check
+					box that is checked.  <code>null</code> is a
+					valid value
+
+		 @param	isSelected	true if the cell is to be rendered with the
+					selection highlighted; otherwise false
+		 @param	hasFocus	if true, render cell appropriately.  For
+					example, put a special border on the cell, if
+					the cell can be edited, render in the color used
+					to indicate editing
+		 @param	row	        the row index of the cell being drawn.  When
+					drawing the header, the value of
+					<code>row</code> is -1
+		 @param	column	        the column index of the cell being drawn
+
+     */
+
+    public Component getTableCellRendererComponent(JTable table, Object value,
+					    boolean isSelected, boolean hasFocus,
+					    int row, int column)
+	{
+		this.myrow = row;
+		this.mycolumn = column;
+		this.what = (String) value;
+		return super.getTableCellRendererComponent (table, value, isSelected, hasFocus,
+			row, column);
+	}
+}
+

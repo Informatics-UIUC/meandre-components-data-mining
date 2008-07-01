@@ -1,0 +1,167 @@
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>Documentation for Meandre Datasource Components</title>
+</head>
+<body>
+
+<h1>Datasource Components for Meandre</h1><br />
+<p>Erik Johnson 6/16/2008<br /><br />
+
+These classes provide functionality for configuring, persisting, and connecting to datasource components. The components are designed in a general way and *should* work for any given vendor flavor. This implementation uses DataSource objects, the Java Naming and Directory Interface (JNDI) and XML property files to avoid hard-coding database vendor information. There are five components provided: ConnectDB, CloseDB, QueryDB, ListDBTables, and ListDBResults. The components are contained in the package org.meandre.components.datasource. The background classes are contained in org.meandre.jndi. The core functionality is provided by the Connect DB component. 
+<br /><br /></p>
+<h2>ConnectDB</h2><p>
+<br /><br />
+The Connect DB component provides a web user interface allowing users to select from previously configured datasources, configure a new datasources, and load external driver files. Once the user has selected the datasource to use, it creates a connection to that datasource and outputs. This connection can then be used by the user to query the database. 
+<br /><br />
+Here is the WebUI:
+<br /><br /></p>
+<img src="UI.png" alt="Web UI" height="1024" width="1280" /><p>
+<br /><br />
+On the left, the user can select a previously configured datasource stored in the JNDI namespace. The user can view and change properties, remove, or connect to the datasource.  
+In the middle, the user can select a database vendor and configure a new datasource by filling in the properties boxes. The JNDI location indicates where the new object will be stored in the JNDI namespace. 
+<br /><br />
+On the right, the user can specify a new vendor flavor, indicate the driver and datasource classes for that vendor, and specify a path to the vendor’s driver. The component will store this information and copy the jar file from its current location to the meandre-store published resources folder. Once this driver is loaded, datasource objects for that vendor can be configured. 
+<br /><br /></p>
+<h2>How ConnectDB works</h2><p>
+<br /><br />
+The ConnectDB functionality is provided by JNDI, datasource objects, and xml configuration files. On startup, the component looks in the meandre-store’s published resources folder (specifically published_resources/contexts/datasource) for two xml files- one containing information on vendor driver jar files and one with information on datasource configurations. The jar files containing the vendor’s driver classes are also contained in the published resources folder. The component creates datasources using the xml information and binds them into the JNDI namespace, making them available to the user. If there are no configuration files, the component will write them when execution is complete. The component also checks that the jar is available and adds the driver and datasource classes to the classpath. This is important because the Jetty Server launched by Meandre only has access to the Apache Derby database driver. All other drivers need to be loaded once by the user. Then it will be written into the published resources directory to be loaded at start up. 
+<br /><br />
+Currently the ConnectDB component uses a blank JNDI namespace, and all the components are bound together into the same context. Therefore the user simply needs to specify a logical name (such as ‘my datasource’) for the datasource object. Once support for more JNDI objects is added, it will be necessary to establish a base context and subcontexts as specified in the J2EE JNDI specification (for example datasources would be stored in the java:comp/env/jdbc context). These JNDI resources will only persist for the lifetime of the Jetty server. However, when ConnectDB closes, it writes the datasource properties to an xml file stored in the Meandre-Store published resources folder to allow persistence across multiple instances of the Meandre Server. The user can specify which xml configuration file to use using the xml location property of the connectDB object.
+<br /><br />
+The ConnectDB object attempts to provide a flexible means of connecting to any given datasource. Nothing is hard coded into the program. Since every datasource vendor’s implementation of the Datasource Interface is quite different, this must be done through reflection. When the user loads a vendor’s DataSource class and chooses to use it, the ConnectDB object searches the class for all available ‘set’ methods and prompts the user for values. Once it has those values, it instantiates a new DataSource and uses the ‘set’ methods to configure them. 
+<br /><br /></p>
+<h2>Using ConnectDB</h2><p>
+<br /><br />
+Say, for example, the user wishes to connect to a database that uses FooQL with connection pooling. </p>
+<ul>
+<li>1.	The user finds the FooQL jdbc driver jar and downloads it onto their file system.</li>
+<li>2.	They then find the name of the FooQL driver class and the datasource class that support connection pooling.</li>
+<li>3.	The user uses the WebUI to add FooQL as a vendor, specifying the classes, the location on the file system, and the jar file name.</li>
+<li>4.	The user then selects the new option “FooQL” from the drop down menu in the middle.</li>
+<li>5.	The user presses ‘use this vendor’ and is presented with a set of fields to complete.</li>
+<li>6.	The user will need to read the FooQL documentation to find the proper values for these fields.</li>
+<li>7.	Once complete, the user presses “Create Datasource”</li>
+<li>8.	The user can now select their new datasource from the drop down list on the left and connect to it.</li>
+<li>9.	When the user starts the Meandre-Server again, the program will load the FooQL driver class and the datasource configured by the user. Now to connect the user simply selects the datasource on the left and chooses ‘connect’. </li>
+</ul><br /><br />
+<h2>CloseDB</h2><p>
+<br /><br />
+This component accepts a connection to a database and closes it.
+<br /><br /></p>
+<h2>QueryDB</h2><p>
+<br /><br />
+This component accepts a component and creates a simple web UI for the user to enter and run a query. The component outputs a ResultSet with the results of that query and outputs the connection for future use.
+<br /><br /></p>
+<h2>ListDBTables</h2><p>
+<br /><br />
+This component is basically a test component. It accepts a connection to the database and runs a query to get information on all the tables in the database. These tables are then displayed in a WebUI. Finally, it outputs the connection for further use in the program. 
+<br /><br />
+<h2>ListDBResults</h2>
+<br /><br />
+This component accepts a result set from a query and displays it in a webUI fragment.
+<br /><br />
+</p>
+<h2>Configuring Datasource support for Meandre</h2><p>
+<br /><br />
+Meandre uses an embedded Jetty server that does not by default support JNDI.
+<br /><br />
+To use these components with the Jetty Server, you need to add the Jetty jars that provide JNDI functionality for the server.
+<br /><br />
+These are 
+<br /><br />
+jetty-naming-6.1.5.jar<br /> 
+jetty-plus-6.1.5.jar
+<br /><br />
+Add them to these directories:
+<br /><br />
+Meandre-Infrastructure\trunk\lib\libraries\Jetty-6.1.5<br />
+Meandre-Infrastructure\trunk\lib\jars
+<br /><br />
+Then rebuild the meandre-infastructure project and it should work.
+<br /><br />
+The jars can be downloaded here: <a href = "http://docs.codehaus.org/display/JETTY/Downloading+Jetty">http://docs.codehaus.org/display/JETTY/Downloading+Jetty</a>
+<br /><br />
+Project dependencies:<br />
+javaee.jar<br />
+jetty-naming-6.1.5.jar<br />
+jetty-plus-6.1.5.jar<br />
+meandre-annotation-1.3.jar<br />
+meandre-core-1.3.jar<br />
+<br /><br />
+</p>
+<h2>Brief overview of org.meandre.jndi Package</h2>
+<br /><br />
+<h3>DatasourceFactory.java</h3><p>
+<br /><br />
+This handles the creation of any datasource class in a generic way. It keeps track of what datasource class the user wants to use and will use reflection to create an instance of that class. It also uses reflection to find the set methods for a particular implementation of the datasource interface, so the UI can prompt the user for the information. It provides a variety of utility functions to load jar files and discover connection properties. 
+<br /><br /></p>
+<h3>ExternalJarLoader.java</h3><p>
+<br /><br />
+This allows the user to specify an external file with the datasource and driver classes necessary for connecting to the desired database. It extends the URLClassLoader. A user can add file paths to the search path, and the loader will attempt to load classes from the jar files on those paths. This is used to access the jar files stored in the published resources directory.
+<br /><br /></p>
+<h3>XMLLoader.java</h3><p>
+<br /><br />
+This class provides general functionality to populate a properties object from an xml file. It is used to load both the datasource configurations and the jar file configurations. Once loaded, these properties are used by the JNDINamespaceBuilder and the JarXMLLoader to configure datasources and jars respectively. The XMLLoader reads a particular xml format. One property, Count, specifies the number of objects represented in that xml file. Each index, from 0 to Count-1, is associated with the logical name for an object. For example, the index ‘0’ might be associated with the datasource object ‘My Datasource’. The ‘User’ property for ‘My Datasource’ would then be specified as ‘My Datasource_User’. Here is an example:
+<br /><br />
+<b>
+  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?> <br />
+  &lt;!DOCTYPE properties (View Source for full doctype...)> <br />
+&lt;properties version=&quot;1.0&quot;&gt;<br />
+  &lt;comment /&gt;<br />
+  &lt;entry key=&quot;mydb_logintimeout&quot;&gt;0&lt;/entry&gt; <br />
+  &lt;entry key=&quot;mydb_description&quot;&gt;a test db&lt;/entry&gt;<br /> 
+  &lt;entry key=&quot;mydb_databasename&quot;&gt;C:/db/test&lt;/entry&gt;<br /> 
+  &lt;entry key=&quot;mydb_datasourcename&quot;&gt;My test&lt;/entry&gt; <br />
+  &lt;entry key=&quot;mydb2_DSClass&quot;&gt;org.apache.derby.jdbc.EmbeddedDataSource40&lt;/entry&gt; <br />
+  &lt;entry key=&quot;Count&quot;&gt;2&lt;/entry&gt; <br />
+  &lt;entry key=&quot;mydb2_datasourcename&quot;&gt;my second test&lt;/entry&gt;<br />
+  &lt;entry key=&quot;mydb_createdatabase&quot;&gt;create&lt;/entry&gt;<br />
+  &lt;entry key=&quot;mydb2_logintimeout&quot;&gt;0&lt;/entry&gt;<br />
+  &lt;entry key=&quot;mydb2_databasename&quot;&gt;C:/db/test2&lt;/entry&gt; <br />
+  &lt;entry key=&quot;mydb2_attributesaspassword&quot;&gt;false&lt;/entry&gt;<br />
+  &lt;entry key=&quot;mydb2_createdatabase&quot;&gt;create&lt;/entry&gt;<br />
+  &lt;entry key=&quot;mydb_attributesaspassword&quot;&gt;false&lt;/entry&gt; <br />
+  &lt;entry key=&quot;mydb_DSClass&quot;&gt;org.apache.derby.jdbc.EmbeddedDataSource40&lt;/entry&gt; <br />
+  &lt;entry key=&quot;1&quot;&gt;mydb&lt;/entry&gt;<br />
+  &lt;entry key=&quot;0&quot;&gt;mydb2&lt;/entry&gt;<br />
+  &lt;entry key=&quot;mydb2_description&quot;&gt;another db&lt;/entry&gt; <br />
+&lt;/properties&gt;<br />
+</b>
+<br /></p>
+<h3>XMLWriter</h3><p>
+<br /><br />
+This produces XML files in a format that the XMLLoader can read. The developer can add object properties one at a time or set one properties file that contains all of the object properties (if the developer chooses the second option, they must properly index the objects on their own). The writer will format and output an xml file as above.  
+<br /><br />
+<h3>JNDINamespaceBuilder</h3> 
+This classuses an XMLLoader object to access an external xml file and populate the server JNDI namespace with the datasources it contains.
+<br /><br />
+<h3>JNDINamespaceWriter</h3> 
+This class uses an XMLWriter object to access an external xml file and write all the objects in the JNDI namespace into an external file.
+<br /><br />
+<h3>JarXMLLoader</h3> 
+This class uses both an XMLWriter and XMLLoader. It loads the jar configuration information from the default file, “JarProps.xml”. It will add the jar files to the class path to make sure these classes are available during runtime. When a user adds a jarfile, the JarXMLLoader will save the properties and copy the jar file into the published resources folder. On close, it will write a new JarProps.xml file with the new data.
+<br /><br /></p>
+<h2>Some Examples</h2><p>
+<br /><br />
+Here are two examples of flows using the ConnectDB, CloseDB, and test components. These are also saved as zigzag files, dbtest.zz and dbtest2.zz
+<br /><br /></p>
+<h3>Example1</h3><p>
+<br /><br />
+Here the connectDB component is used to generate a connection object. From there the connection object is passed into ListDBTables. From there the connection is passed to the closeDB component. When ConnectDB is executed, the user will be presented with the WebUI allowing them to select an existing datasource or configure a new one. Once a connection is created, the ListDBTables component will retrieve all the table data for that database and display it in a WebUI fragment with a done button. Once the user clicks the done button, CloseDB closes the connection and execution is complete. 
+<br /><br />
+The user can set the ConnectDB property xmlLocation to change the xml file used to configure datasources.
+<br /><br /></p>
+<img src="dbflow1.png" alt="Web UI" height="1024" width="1280" />
+<br /><br />
+
+<h3>Example 2</h3><p>
+<br /><br />
+Here ConnectDB, CloseDB, QueryDB, and ListDBResults objects are used. As before, ConnectDB generates a connection. The QueryDB object then presents a WebUI for a user to type a query and select properties for the retrieved ResultSet. ListDBResults then lists the contents of the ResultSet in a WebUI fragment with a “done” button. CloseDB closes the connection to the database.  
+<br /><br /></p>
+<img src="dbflow2.png" alt="Web UI" height="1024" width="1280" />
+
+</body>
+</html>

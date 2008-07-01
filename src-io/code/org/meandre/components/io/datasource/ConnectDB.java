@@ -1,0 +1,599 @@
+/**
+ * University of Illinois/NCSA
+ * Open Source License
+ * 
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ * All rights reserved.
+ * 
+ * Developed by: 
+ * 
+ * Automated Learning Group
+ * National Center for Supercomputing Applications
+ * http://www.seasr.org
+ * 
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal with the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions: 
+ * 
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimers. 
+ * 
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimers in the 
+ *    documentation and/or other materials provided with the distribution. 
+ * 
+ *  * Neither the names of Automated Learning Group, The National Center for
+ *    Supercomputing Applications, or University of Illinois, nor the names of
+ *    its contributors may be used to endorse or promote products derived from
+ *    this Software without specific prior written permission. 
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ * CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * WITH THE SOFTWARE.
+ */ 
+
+package org.meandre.components.io.datasource;
+
+
+//Import statements
+import java.sql.Connection;
+import java.sql.DriverPropertyInfo;
+
+import org.meandre.components.io.datasource.support.DataSourceFactory;
+import org.meandre.components.io.datasource.support.JNDILookup;
+import org.meandre.components.io.datasource.support.JNDINamespaceBuilder;
+import org.meandre.components.io.datasource.support.JNDINamespaceWriter;
+import org.meandre.components.io.datasource.support.JarXMLLoader;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+
+
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentProperty;
+import org.meandre.annotations.ComponentOutput;
+
+import org.meandre.webui.WebUIException;
+import org.meandre.webui.WebUIFragmentCallback;
+
+import javax.servlet.http.*;
+
+import java.util.concurrent.Semaphore;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.Vector;
+import java.util.Properties;
+import java.util.Enumeration;
+
+
+import javax.sql.DataSource;
+
+import java.io.IOException;
+import java.io.File;
+/**
+ * <p>Overview: Connect to Database
+ * This component provides a web UI to allow a user to do three things.
+ * First, load external jars for vendor jdbc drivers.
+ * Second, configure new datasource objects and store them into a JNDI namespace
+ * Third, load, configure, and connect to existing datasources in the JNDI namespace
+ * When the user is done, it will output a connection object to be used by other components to connect to database
+ * </p>
+ *
+ * @author  Erik Johnson
+ * @version 1.0 06/18/2008
+ */
+
+@Component(creator="Erik Johnson",
+           description="Connect to database using WebUI input",
+           name="ConnectDB",
+           tags="database")
+
+public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallback {
+
+	//Private variables
+	
+    /** The blocking semaphore for Web UI component*/
+    private Semaphore sem = new Semaphore(1, true);
+
+    /** The instance ID for Web UI component*/
+    private String sInstanceID = null;
+ 
+    //vector of known datasources
+	private Vector <String> existingDS= new Vector<String>();
+	
+	//User Selected known datasource
+	private String selectedExistingDS="";
+	
+	//Vendors with known driver and datasource class names- these have not necessarily been loaded
+	private Vector <String> knownVendors= new Vector<String>();
+	
+	//selected vendor, driver and datasource
+    private String selectedVendor="";
+    private String selectedDatasource="";
+    private String selectedDriver="";
+    private Properties selectedProperties=new Properties();
+    
+    //Driver property info to allow user configuration
+    private DriverPropertyInfo[] driverProperties;
+    
+    //Class to access JNDI namespace
+    private JNDILookup databaseNamespace= new JNDILookup();
+    
+    //object to populate JNDI namespace with data read from xmlLocation property file
+    private JNDINamespaceBuilder nB;
+    
+    //current connection to the database, object to be output upon completion of execution
+    private Connection databaseConnection;
+    
+    //flag set to true in order to display properties
+    private boolean viewProps=false;
+    
+    //Logger
+    private Logger logger;
+
+    //Jar loader to load an xml file with jar location and jar class data
+    private org.meandre.components.io.datasource.support.JarXMLLoader jarLoader;
+    
+    //default xml file location for jar location data. If it does not exist, it will be written at the end of use
+    private String jarXMLFile = "JarProps.xml";
+    
+    //Connection output
+    @ComponentOutput(
+	 		description = "Connection",
+	 		name = "Connection")
+	 final static String DATA_OUTPUT = "Connection";
+    
+    //This component property points to an xml file chosen by the user to store and load JNDI objects
+	@ComponentProperty(description="File of datasource xml file in published resources directory. If one does not exist, it will be created there on close.",
+            	name="xmlLocation",
+            	defaultValue="myxml.xml")
+            	
+               final static String DATA_PROPERTY = "xmlLocation";
+
+	
+    /** This method gets call when a request with no parameters is made to a
+     * component WebUI fragment.
+     *
+     * @param response The response object
+     * @throws WebUIException Some problem encountered during execution and something went wrong
+     */
+    public void emptyRequest(HttpServletResponse response) throws
+            WebUIException {
+        try {
+            response.getWriter().println(getViz());//get visualization in html form
+        } catch (IOException e) {
+            throw new WebUIException(e);
+        }
+    }
+
+    /** HTML Page. Page is written into string buffer
+     *
+     * @return The HTML containing the page in string form
+     */
+    private String getViz() {
+
+    	//Acess JNDI root context to look for existing datasources
+    	existingDS=databaseNamespace.listObjects("");
+    	//look in Datasource Factory for known vendors
+    	knownVendors=DataSourceFactory.getKnownVendors();
+    	String key,value;
+    	
+    	//check to see if a vendor has been selected
+    	if (selectedVendor!= "" && selectedVendor != null)
+    	{
+    		//find vendor props
+    		selectedProperties=DataSourceFactory.discoverProps(selectedVendor);
+    	}
+    	
+        StringBuffer sb = new StringBuffer();
+        sb.append("<html>\n");
+        sb.append("<body>\n");
+
+        sb.append("<table border=\"0\" width=\"100%\" cellpadding=\"10\">\n");
+        sb.append("<tr>\n");
+
+        sb.append("<td width=\"40%\" valign=\"top\">\n");
+        sb.append("<h1>Select JNDI Datasource to Load</h1>\n");
+
+        //form for selection of datasource objects in JNDI namespace
+        sb.append("<form action=\"/" +
+                sInstanceID+" method=\"get\">\n");
+        sb.append("<select name=\"persistentDS\">\n");
+        for (int i=0; i<existingDS.size(); i++)
+        	sb.append("<option value=\""+existingDS.elementAt(i)+"\">"+existingDS.elementAt(i)+"</option>\n");
+        sb.append("</select>\n");
+        sb.append("<input type=\"submit\" value=\"Load Datasource\">\n");
+        sb.append("</form>\n");
+      
+        //If the user has selected an existing datasource from the JNDI namespace...
+        if (selectedExistingDS != null && selectedExistingDS !="" )
+        {
+        	//Display info
+        	if (driverProperties == null || driverProperties.length==0)
+        	{
+        		//Properties haven't been set, display name only
+        		sb.append("<form action=\"/" +
+        				sInstanceID+" method=\"get\">\n");
+        		//display options: connect, remove, and viewProps
+        		sb.append("<input type=\"radio\" name=\"DSconnection\" value=\"viewProps\"> View Properties \n");
+        		sb.append("<input type=\"radio\" name=\"DSconnection\" value=\"Remove\"> Remove   \n");
+        		sb.append("<input type=\"radio\" name=\"DSconnection\" value=\"connect\"> Connect <br />\n");
+        		sb.append("<input type=\"submit\" value=\"Connect Datasource\">\n");
+        		sb.append("</form>\n");
+        	}
+        	else
+        	{
+        		//Properties have been set, display all information, required properties, then optional properties
+        		sb.append("<form action=\"/" +
+        				sInstanceID+" method=\"get\">\n");
+        		sb.append("<p>Required Properties:</p><br />\n");
+        		for (int i=0; i<driverProperties.length; i++)
+        		{
+        			if (driverProperties[i].required)
+        			{
+        				sb.append("<p>"+driverProperties[i].name+" ("+driverProperties[i].description+"): </p><input type=\"text\" name=\"RDB"+driverProperties[i].name+"\" value=\""+driverProperties[i].value+"\" size=\"20\">\n");
+                    	sb.append("<br />\n");
+                    	if (driverProperties[i].choices!=null)
+                    	{
+                    		for (int j=0; j<driverProperties[i].choices.length;j++)
+                    		{
+                    			//list out required properties
+                    			sb.append("<p> Choice "+j+": "+driverProperties[i].choices[j]+" </p>\n");
+                    		}
+                    		sb.append("<br />\n");
+                    	}
+                    	sb.append("<br />\n");
+        			}
+        		}
+        		sb.append("<p>Optional Properties:</p><br />\n");
+        		for (int i=0; i<driverProperties.length; i++)
+        		{
+        			if (!driverProperties[i].required)
+        			{
+        				sb.append("<p>"+driverProperties[i].name+" ("+driverProperties[i].description+"): </p><input type=\"text\" name=\"RDB"+driverProperties[i].name+"\" value=\""+driverProperties[i].value+"\" size=\"20\">\n");
+                    	sb.append("<br />\n");
+                    	if (driverProperties[i].choices!=null)
+                    	{
+                    		for (int j=0; j<driverProperties[i].choices.length;j++)
+                    		{
+                    			//list out optional properties
+                    			sb.append("<p> Choice "+j+": "+driverProperties[i].choices[j]+" </p>\n");
+                    		}
+                    		sb.append("<br />\n");
+                    	}
+        			}
+        		}
+        		sb.append("<input type=\"submit\" value=\"Reconnect\">\n");
+        		sb.append("</form>\n");
+        	}
+        }
+        sb.append("</td>\n");
+        
+        //Second coloumn for creation of new datasources
+        //present user with known vendors
+        sb.append("<td width=\"40%\" valign=\"top\">\n");
+        sb.append("<h1>Create New Datasource</h1>\n");
+        sb.append("<form action=\"/" +
+                sInstanceID+" method=\"get\">\n");
+        sb.append("<select name=\"ConnectDS\">\n");
+        for (int i=0; i<knownVendors.size(); i++)
+        	sb.append("<option value=\""+knownVendors.elementAt(i)+"\">"+knownVendors.elementAt(i)+"</option>\n");
+        sb.append("</select>\n");
+        sb.append("<input type=\"submit\" value=\"Use this Vendor\">\n");
+        sb.append("</form>\n");
+        
+        //if a vendor has already been selected
+        if (selectedVendor!=null && selectedVendor!="")
+        {
+        	//display datasource properties for selection
+        sb.append("<form action=\"/" +
+                sInstanceID+" method=\"get\">\n");
+        sb.append("<p>Configure New Datasource</p><br />\n");
+        
+        sb.append("<p>JNDI Location: </p><input type=\"text\" name=\"DBJNDILoc\" value=\"\" size=\"20\">\n");
+        sb.append("<br />\n");
+        Enumeration propNames = selectedProperties.keys();
+        while (propNames.hasMoreElements())
+        {
+        	//list out properties with necessary parameters
+        	key= (String) propNames.nextElement();
+        	value= (String) selectedProperties.getProperty(key);
+        	if (key.equalsIgnoreCase("Vendor Name"))
+        	{
+        		sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+selectedVendor+"\" size=\"20\">\n");
+            	sb.append("<br />\n");
+        	}
+        	else if(key.equalsIgnoreCase("Vendor Driver"))
+        	{
+        		sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.getCurrentDriver(selectedVendor)+"\" size=\"20\">\n");
+            	sb.append("<br />\n");
+        	}
+        	else if(key.equalsIgnoreCase("Vendor DataSource"))
+        	{
+        		sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.getCurrentDatasource(selectedVendor)+"\" size=\"20\">\n");
+            	sb.append("<br />\n");
+        	}
+        	else
+        	{
+        		sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\"\" size=\"20\">\n");
+            	sb.append("<br />\n");
+        	}
+        }
+        //check to see if datasource class and driver class are in the classpath
+        if (!DataSourceFactory.isKnownDriver(selectedDriver))
+        {
+        	sb.append("<p>WARNING!: Vendor driver cannot be loaded! Check your installation </p><br />");	
+        }
+        if (!DataSourceFactory.isKnownDataSource(selectedDatasource))
+        {
+        	sb.append("<p>WARNING!: Vendor Datasource Class cannot be loaded! Check your installation </p><br />");	
+        }
+        sb.append("<input type=\"submit\" value=\"Create Datasource\">\n");
+        sb.append("</form>\n");
+        }
+        sb.append("</td>\n");
+
+        //Final column, select new vendor and driver info to load from external jar file
+        sb.append("<td width=\"20%\" valign=\"top\">\n");
+        sb.append("<form action=\"/" +
+                sInstanceID+" method=\"get\">\n");
+        sb.append("<p>Add New Database Vendor Information</p><br />\n");
+        //allow user to specify vendor name, driver, datasource
+        sb.append("<p>Vendor Name: </p><input type=\"text\" name=\"vName\" value=\"My Vendor\" size=\"20\">\n");
+        sb.append("<br />\n");
+        sb.append("<p>Vendor Driver: </p><input type=\"text\" name=\"vDriver\" value=\"org.myJDBCpackage.myDriver\" size=\"20\">\n");
+        sb.append("<br />\n");
+        sb.append("<p>Vendor Datasource Class: </p><input type=\"text\" name=\"vDatasource\" value=\"org.myJDBCpackage.myDatasource\" size=\"20\">\n");
+        sb.append("<br />\n");
+        sb.append("<p>Driver Jar File Name: </p><input type=\"text\" name=\"vJarName\" value=\"myjar.jar\" size=\"20\">\n");
+        sb.append("<br />\n");
+        sb.append("<p>External Jar Location: (C:/pathToJar or /pathToJar): </p><input type=\"text\" name=\"vJarLoc\" value=\"\" size=\"20\">\n");
+        sb.append("<br /><p>Location to load JDBC jar containing Datasource and Driver classes if not already loaded</p><br />\n");
+        sb.append("<input type=\"submit\" value=\"Add Vendor\">\n");
+        sb.append("</form>\n");
+        sb.append("</td>\n");
+        
+        sb.append("</tr>\n");
+        sb.append("</table>\n");
+        sb.append("</body>\n");
+        sb.append("</html>\n");
+        return sb.toString();
+    }
+
+
+    /** This method gets called when a call with parameters is done to a given component
+     * webUI fragment
+     *
+     * @param target The target path
+     * @param request The request object
+     * @param response The response object
+     * @throws WebUIException A problem occurred during the call back
+     */
+    public void handle(HttpServletRequest request, HttpServletResponse response) throws
+            WebUIException {
+    	//get parameters
+    	//user has hit done button
+    	String sDone = request.getParameter("done"); //done button eliminated, user must create a connection to exit component
+    	//user has selected DS from JNDI namespace
+    	String spersistentDS = request.getParameter("persistentDS");
+    	//user has requested to connect to existing datasource
+    	String snewDS = request.getParameter("ConnectDS");
+    	//user has chosen a new vendor to add
+    	String snewDriver = request.getParameter("vDriver");
+    	String snewDatasource = request.getParameter("vDatasource");
+    	String snewName = request.getParameter("vName");
+    	String snewJarLoc = request.getParameter("vJarLoc");
+    	String snewJarName = request.getParameter("vJarName");
+    	//User has requested to connect, remove, or view properties of existing datasource
+    	String sDSconnection = request.getParameter("DSconnection");
+    	
+    	String key,value;
+    	//User has given a location to bind a new datasource object in the JNDI namespace
+    	String sJNDILoc= request.getParameter("DBJNDILoc");
+    	
+    	//User has chosen to input properties and reconnect to database existing in JNDI namespace
+    	if (viewProps)
+    	{
+    		Properties newProps= new Properties();
+    		for (int i=0; i<driverProperties.length;i++)
+    		{
+    			//get values
+    			value = request.getParameter("RDB"+driverProperties[i].name);
+    			if (value != null && !value.equalsIgnoreCase("null") && value != "")
+    			{
+    				//set new properties
+    				newProps.setProperty(driverProperties[i].name, value);
+    			}
+    		}
+    		//use reconnect method with exisitng connection, the new properties, and the datasource from the JNDI namespace
+    		databaseConnection=DataSourceFactory.reConnect(databaseConnection, newProps, (DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    		sDone="Done";
+    	}
+    	
+    	//User has selected to view properties, connect to, or remove a datasource from the JNDI namespace
+    	if (sDSconnection != null && sDSconnection != "")
+    	{
+    		if (sDSconnection.equalsIgnoreCase("viewProps"))
+    		{
+    			viewProps=true;
+    			//get connection and properties using bound datasource
+    			databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    			driverProperties= DataSourceFactory.getConnectionProperties(databaseConnection, (DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    		}
+    		//User wants to connect to existing datasource without modifying properties
+    		if (sDSconnection.equalsIgnoreCase("connect"))
+    		{
+    			databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    			sDone="Done";
+    		}
+    		//user wants to remove datasource from JNDI namespace
+    		if (sDSconnection.equalsIgnoreCase("remove"))
+    		{
+    			databaseNamespace.removeObject(selectedExistingDS);
+    		}
+    	}
+    	
+    	//USer has input properties for a new datasource connection and has given a location to bind it to
+    	if (sJNDILoc != "" && sJNDILoc != null && !sJNDILoc.equalsIgnoreCase("jdbc") && !sJNDILoc.equalsIgnoreCase("jdbc/"))
+        {
+        	Enumeration propNames = selectedProperties.keys();
+            while (propNames.hasMoreElements())
+            {
+            	key= (String) propNames.nextElement();
+            	value= request.getParameter("DB"+key);
+            	selectedProperties.setProperty(key, value);
+            }
+            //bind new datasource to JNDI namespace
+            databaseNamespace.bindObject(sJNDILoc, (Object)DataSourceFactory.createDS(selectedProperties));
+        }
+    	//user wants to load new vendor and specify an external jar file with classes
+    	if (snewDriver != null && snewDatasource !=null && snewName !=null)
+    	{
+    		
+    		if (snewJarLoc != "" && snewJarLoc != null)
+    		{
+    			//jdbcLoader.loadJarClass(snewDriver, snewJarLoc);
+    			try{
+    				jarLoader.addJar(snewName, snewDatasource, snewDriver, snewJarLoc, JarXMLLoader.getPublicResourcesDirectory(), snewJarName);
+    				//DataSourceFactory.addJarFile(snewJarLoc);
+    				//DataSourceFactory.loadJarClass(snewDriver);
+    				//DataSourceFactory.loadJarClass(snewDatasource);
+    			}
+    			catch (Exception e)
+    			{
+    				logger.log(Level.SEVERE,"There has been an error loading driver or Datasource"+e);
+    			}
+    		}
+    		//DataSourceFactory.addNewDatabaseVendor(snewName, snewDriver, snewDatasource);
+    	}
+    	//User has selected an existing datasource from the JNDI namespace to use
+    	if (spersistentDS != null && spersistentDS !="")
+    	{
+    		selectedExistingDS=spersistentDS;
+    	}
+    	//User has selected a vendor to use to create a new datasource
+    	if (snewDS != null)
+    	{
+    		selectedVendor=snewDS;
+    		selectedDriver=DataSourceFactory.getCurrentDriver(selectedVendor);
+    		selectedDatasource=DataSourceFactory.getCurrentDatasource(selectedVendor);
+    	}
+    	//user has pressed done button or created a connection- release semaphore
+    	if ( sDone!=null ) {
+			sem.release();
+		}
+    	//do nothing
+		else
+			emptyRequest(response);
+    }
+
+    /** For component initialization
+    *
+    * @param ccp The component context properties
+    */
+    
+    public void initialize(ComponentContextProperties ccp) {
+    
+    	//start up logger
+    	logger = ccp.getLogger();
+    	logger.log(Level.INFO, "Initializing Database Connect Component...");
+    	
+    	//initialize the vendor database information in the Datasource factory BEFORE attempting to access it while loading jar files
+    	DataSourceFactory.initDatabases();
+    	
+    	//Load jar file from meandre-store public resources directory located in the meandre-install-directory/published_resources
+    	//do this before attempting to create datsource classes with these files
+    	String fname = JarXMLLoader.getPublicResourcesDirectory();
+		//append a '/' to the path
+    	if ((!(fname.endsWith("/"))) && (!(fname.endsWith("\\")))) {
+			fname += File.separator;
+		}
+    	
+    	//filepath for xml file containing jar configuration and location details
+		String xmlURL = fname+jarXMLFile;
+		
+		logger.log(Level.INFO, "Loading Jars....");
+		jarLoader = new JarXMLLoader (xmlURL);
+		jarLoader.loadJars();
+		logger.log(Level.INFO, "...Jars Loaded");
+    	
+    	//initialize vendor list
+		//get user defined xml configuration file for datasource objects from property
+    	String xmlLoc = ccp.getProperty(DATA_PROPERTY);
+    	//create path- xml datasource file is in same directory as xml jar file
+    	String dsPath = fname + xmlLoc;
+    	File dsfile = new File(dsPath).getAbsoluteFile();
+    	//Use JNDINamespaceBuilder to load xml and populate namespace
+    	logger.log(Level.INFO,"Preparing to load xml file at "+xmlLoc);
+    	nB = new JNDINamespaceBuilder (dsfile.toString());
+    	logger.log(Level.INFO,"Building Namespace");
+    	nB.buildNamespace();
+       	logger.log(Level.INFO, "...Database Connect Component Initialized");
+    }
+    
+    /** When ready for execution.
+     *
+     * @param cc The component context
+     * @throws ComponentExecutionException An exception occurred during execution
+     * @throws ComponentContextException Illegal access to context
+     */
+    public void execute(ComponentContext cc) throws ComponentExecutionException,
+            ComponentContextException {
+    	//start the web UI
+
+    	
+    	logger.log(Level.INFO,"Firing the web ui component");
+		sInstanceID = cc.getExecutionInstanceID();
+		try {
+			
+			sem.acquire();
+			logger.log(Level.INFO,">>>Rendering...");
+			cc.startWebUIFragment(this);
+			logger.log(Level.INFO,">>>STARTED");
+			sem.acquire();
+			sem.release();
+			logger.log(Level.INFO,">>>Done");
+		
+		}
+		catch ( Exception e ) {
+			throw new ComponentExecutionException(e);
+		}
+		//output database connection
+		cc.pushDataComponentToOutput(DATA_OUTPUT, databaseConnection);
+		cc.stopWebUIFragment(this);
+    }
+
+    /** For component disposal
+    *
+    * @param ccp The component context properties
+    */
+
+    public void dispose(ComponentContextProperties ccp) {
+		//now that execution is complete, write datasources to persistent file
+		String xmlLoc = ccp.getProperty(DATA_PROPERTY);
+		JNDINamespaceWriter xmlWriter = new JNDINamespaceWriter();
+		
+		String fname = JarXMLLoader.getPublicResourcesDirectory();
+		if ((!(fname.endsWith("/"))) && (!(fname.endsWith("\\")))) {
+			fname += File.separator;
+		}
+		//use xml location to write out new jar file properties
+		String xmlURL = fname+jarXMLFile;
+		jarLoader.writePropsFile(xmlURL);
+		
+		//write out new properties for Datasources in JNDI namespace
+    	String dsPath = fname + xmlLoc;
+    	File dsfile = new File(dsPath).getAbsoluteFile();
+    	xmlWriter.writeNamespace(dsfile.toString());
+    }
+}

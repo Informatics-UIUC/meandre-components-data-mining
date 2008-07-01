@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Generic Build script for a Meandre Components repository. This file
+    should be kept in sync with build-skel.xml, (TODO:which currently has no
+    permanent home.) 
+
+    This build.xml provides targets useful in dealing with a repository of
+    Meandre Components. These targets do things like generating rdf descriptors
+    that Meandre needs to execute and the ability to upload the code and
+    descriptors to a running Meandre server.
+-->
+
+
+<project name="Components-Data-Mining" default="dist" basedir=".">
+
+    <!--
+    ======================
+    REPOSITORY SPECIFIC INFO
+    ======================
+    These are the only properties that should vary from repository to 
+    repository.
+    -->
+
+    <!-- used in jar file name, error messages, etc. -->
+    <property name="project.name" value="datamining"/>
+
+    <!-- put all the source files in a single place.
+        THE SOURCE DIRECTORIES NEED TO BE OVERRIDDEN IN EVERY PROJECT!-->
+    <target name="aggregate-sources"
+        description="copy all source files to a common source root"
+        depends="init">
+        <echo message="Copying source files to a commontree in build/src-copy"/>
+        <copy todir="${src.copy.dir}"
+              includeEmptyDirs="yes"
+              preservelastmodified="yes">
+              <fileset dir="src-control/code" includes="**/*"/>
+              <fileset dir="src-control/test" includes="**/*"/>
+              <fileset dir="src-datatype/code" includes="**/*"/>
+              <fileset dir="src-datatype/test" includes="**/*"/>
+              <fileset dir="src-discovery/code" includes="**/*"/>
+              <fileset dir="src-discovery/test" includes="**/*"/>
+              <fileset dir="src-io/code" includes="**/*"/>
+              <fileset dir="src-io/test" includes="**/*"/>
+              <fileset dir="src-predict/code" includes="**/*"/>
+              <fileset dir="src-predict/test" includes="**/*"/>
+              <fileset dir="src-transform/code" includes="**/*"/>
+              <fileset dir="src-transform/test" includes="**/*"/>
+              <fileset dir="src-util/code" includes="**/*"/>
+              <fileset dir="src-util/test" includes="**/*"/>
+              <fileset dir="src-viz/code" includes="**/*"/>
+              <fileset dir="src-viz/test" includes="**/*"/>
+              <!--<fileset dir="src-dir1/" includes="**/*"/>-->
+              <!--<fileset dir="src-dir2/" includes="**/*"/>-->
+        </copy>
+
+    </target>
+        
+
+
+    <!-- 
+    =================================
+    ENVIRONMENT CHECKS
+    ==================================== 
+    -->
+
+    <!-- Check whether Java 1.5 is being used -->
+    <condition property="using.java.1.5">
+            <contains string="${java.version}" substring="1.5"/>
+    </condition>
+
+    <!-- Check whether Ant 1.7 is being used. 1.7 is needed for junit4 
+    support (junit4 allows annotations to declare test cases). -->
+    <condition property="using.ant.1.7">
+        <contains string="${ant.version}" substring="1.7"/>
+    </condition>
+
+    <!-- Make sure we're running under the correct environment -->
+    <fail message="This package requires Ant 1.7." unless="using.ant.1.7"/>
+    <fail message="This package requires Java 5. Please set JAVA_HOME to point
+            to where JDK 1.5 is installed."
+          unless="using.java.1.5"/>
+
+    <!-- 
+    =================================
+    DIRECTORY STRUCTURE DEFINITION
+    ==================================== 
+    -->
+
+    <!-- Project structure -->
+    <property name="lib.dir" value="lib/"/>
+    <property name="build.dir" value="build/"/>
+    <property name="classes.dir" value="${build.dir}/classes/"/>
+    <property name="src.gen.dir" value="${build.dir}/src-gen/"/>
+    <property name="src.copy.dir" value="${build.dir}/src-copy/"/>
+    <property name="dist.dir" value="${build.dir}/dist/"/>
+    <property name="descriptors.dir" value="${build.dir}/descriptors/"/>
+    <property name="scripts.gen.dir" value="${build.dir}/scripts/"/>
+    <property name="javadoc.dir" value="${build.dir}/javadoc/"/>
+
+
+    <!-- JUnit elements -->
+    <property name="test.classes.dir" value="${build.dir}/classes-test/"/>
+    <property name="test.src.dir" value="src-test/"/>
+    <property name="test.root.dir" value="tests/"/>
+    <property name="test.logs.dir" value="${test.root.dir}/log"/>
+    <property name="test.output.dir" value="${test.root.dir}/output"/>
+
+    <!-- Generated JAR location -->
+    <property name="components.jar.file" value="${project.name}-components.jar"/>    
+    <!-- Generated upload script name -->
+    <property name="uploader.file" value="upload-${project.name}-components.sh"/>    
+
+  
+    <!--
+    =================
+    WIKI UPLOAD PROPERTIES
+    =================
+    -->  
+    <!-- Confluence settings (for update-wiki task) -->
+    <property name="confluence.server" value="https://apps.lis.uiuc.edu/wiki"/>
+    <property name="confluence.space" value="seasrD"/>
+    <property name="confluence.title" value="Available Components"/>
+
+
+    <!--
+    =================
+    CLASSPATHS
+    =================
+    -->
+
+    <!-- Compilation classpath -->
+    <path id="classpath.build">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+
+    <!-- Runtime class path -->
+    <path id="classpath.runtime">
+        <path refid="classpath.build"/>
+        <pathelement path="${java.class.path}"/>
+        <fileset dir="${dist.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>    
+
+
+    <!--
+    =================
+    BUILD TARGETS
+    =================
+    -->
+
+    <!--
+        Creates required folders
+    -->
+    <target name="init" description="-> creates required folders">
+
+        <tstamp/>
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${descriptors.dir}"/>
+        <mkdir dir="${src.gen.dir}"/>
+        <mkdir dir="${src.copy.dir}"/>
+        <mkdir dir="${javadoc.dir}"/>
+        <mkdir dir="${scripts.gen.dir}"/>
+        <mkdir dir="${test.root.dir}"/>
+        <mkdir dir="${test.classes.dir}"/>
+        <mkdir dir="${test.logs.dir}"/>
+        <mkdir dir="${test.output.dir}"/>
+    </target>    
+
+    <!--
+        Performs cleanup
+    -->
+    <target name="clean" description="-> removes build artifacts">
+        <delete dir="${build.dir}"/>
+        <delete dir="${test.root.dir}"/>
+        <delete dir="./log"/>
+    </target>
+
+    <!--
+      Compiles all Meandre components
+    -->
+    <target name="compile"
+        depends="aggregate-sources"
+        description="-> compiles all components">
+        <!-- compile -->
+        <echo message="Compiling build/src-copy"/>
+        <javac srcdir="${src.copy.dir}"
+               source="1.5"
+               debug="on"
+               debuglevel="lines,vars,source"
+               destdir="${classes.dir}">
+            <classpath refid="classpath.build"/>
+        </javac>
+
+        <!-- include other files that should be available to runtime classpath-->
+        <echo message="Copying non-source artifacts to classes dir"/>
+        <copy todir="${classes.dir}"
+              includeEmptyDirs="no">
+            <fileset dir="${src.copy.dir}">
+                <include name="**/*.properties"/>
+                <include name="**/*.xml"/>
+                <include name="**/*.vm"/>
+                <include name="**/*.list"/>
+            </fileset>
+        </copy>
+    </target>
+
+   <!--
+        Packages all components into one jar file
+    -->
+    <target name="dist"
+            depends="compile"
+            description="-> creates components jar file">
+        <jar destfile="${dist.dir}/${components.jar.file}"
+             basedir="${classes.dir}"/>
+    </target>
+
+    <!--
+    =================
+    JUNIT TESTS TARGETS
+    =================
+    -->
+
+    <!--
+        Compile src-tests
+    -->
+    <target name="compile-tests"
+            depends="dist"
+            description="-> compiles the unit tests">
+        <javac srcdir="${test.src.dir}/"
+               debug="on"
+               debuglevel="lines,vars,source"
+               destdir="${test.classes.dir}">
+            <classpath>
+                <path refid="classpath.build"/>
+                <pathelement location="${classes.dir}"/>
+            </classpath>
+        </javac>
+    </target>
+
+
+
+    <!--
+        run the JUnit tests
+    -->
+    <target name="run-tests"
+            depends="compile-tests"
+            description=
+                    "runs the unit tests and generates xml logs and html reports">
+        <junit printsummary="yes"
+               forkmode="once"
+               errorProperty="test.failed"
+               failureProperty="test.failed"
+               fork="yes"
+               showoutput="yes">
+            <jvmarg value="-Duser.language=en"/>
+            <classpath>
+                <path refid="classpath.build"/>
+                <pathelement location="${classes.dir}"/>
+                <pathelement location="${test.classes.dir}"/>
+            </classpath>
+            <formatter type="xml"/>
+            <formatter type="brief" usefile="false"/>
+            <batchtest todir="${test.logs.dir}/xml">
+                <fileset dir="${test.src.dir}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <junitreport todir="${test.logs.dir}/xml">
+            <fileset dir="${test.logs.dir}/xml">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${test.root.dir}"/>
+        </junitreport>
+        <echo message="Report generated at: 
+            file://${test.root.dir}/junit-noframes.html"/>
+    </target>
+
+
+
+    <!--
+    =================
+    MEANDRE RELATED TARGETS
+    =================
+    -->
+
+
+    <!--
+        Creates descriptor for a single user-specified component
+    -->
+    <target name="create-descriptor"
+            depends="dist"
+            description="-> creates descriptor for acomponent.  Example: >ant create-descriptor -DcomponentClass=org.seasr.meandre.components.io.PushString">
+        <java classname="org.meandre.tools.components.CreateComponentDescriptor"
+              fork="yes"
+              maxmemory="1024m">
+            <classpath refid="classpath.runtime"/>
+            <jvmarg value="-showversion"/>
+            <arg value="${componentClass}"/>
+            <arg value="${componentsDescriptorsDir}"/>
+        </java>
+    </target>    
+
+
+    <!--
+        Creates descriptors for all components in any src directory
+    -->
+    <target name="create-all-descriptors"
+            depends="dist"
+            description="-> creates descriptors for all components under src-*">
+        <java classname="org.meandre.tools.components.CreateAllComponentDescriptor"
+              fork="yes"
+              maxmemory="1024m">
+            <classpath refid="classpath.runtime"/>
+            <jvmarg value="-showversion"/>
+            <arg value="${src.copy.dir}"/>
+            <arg value="${descriptors.dir}"/>
+        </java>
+    </target>    
+
+    <!--
+        Finds dependencies (based on the classpath) for the specified component
+        and creates its corresponding package-info.java file
+    -->
+    <target name="create-package-info"
+            depends="dist"
+            description="-> finds dependencies for the specified component and creates its corresponding package-info file.  Example: >ant create-package-info -Dcomponent=build/classes/org/seasr/meandre/components/io/PushString.class">
+        <java classname="org.meandre.tools.components.FindComponentDep"
+              fork="yes"
+              maxmemory="1024m">
+            <classpath refid="classpath.runtime"/>
+            <jvmarg value="-showversion"/>
+            <arg value="${component}"/>
+            <arg value="${lib.dir}"/>
+        </java>
+    </target>
+
+    <!--
+        Finds dependencies (based on the classpath) for all SEASR components
+        and creates the corresponding package-info.java files
+    -->
+    <target name="create-all-package-info"
+            depends="dist"
+            description="-> finds dependencies for all Meandre components and creates the corresponding package-info files">
+        <java classname="org.meandre.tools.components.FindAllComponentDep"
+              fork="yes"
+              maxmemory="1024m">
+            <classpath refid="classpath.runtime"/>
+            <jvmarg value="-showversion"/>
+            <arg value="${src.copy.dir}"/>
+            <arg value="${classes.dir}"/>
+            <arg value="${src.gen.dir}"/>
+            <arg value="${lib.dir}"/>
+        </java>
+    </target>
+
+    <!--
+        Compiles package-info.java files in src-gen/
+    -->
+    <target name="compile-package-infos"
+            depends="create-all-package-info"
+            description="-> compiles package-info.java files in build/src-gen/">
+        <javac srcdir="${src.gen.dir}"
+               debug="on"
+               source="1.5"
+               debuglevel="lines,vars,source"
+               destdir="${classes.dir}">
+            <classpath refid="classpath.build"/>
+        </javac>
+        <!-- we want these to be in the generated jar file so they can
+            be in the classpath by default, so force the distribution
+            to be redone
+        -->
+        <antcall target="dist"/>
+    </target>
+
+    <!--
+        Creates a UNIX shell script (scripts/upload.sh) that uploads all 
+        components, then moves it to scripts-gen/.
+    -->
+    <target name="create-upload-script"
+            depends="dist, compile-package-infos, create-all-descriptors"
+            description = "-> creates a scripts/upload.sh shell script that uploads all components">
+        <java classname="org.meandre.tools.components.InstallAllComponents" 
+            fork="yes" 
+            maxmemory="1024m">
+            <classpath refid="classpath.runtime"/>
+            <jvmarg value="-showversion"/>
+            <arg value="${lib.dir}"/>
+            <arg value="${src.copy.dir}"/>
+            <arg value="${descriptors.dir}"/>
+            <arg value="${dist.dir}/${components.jar.file}"/>
+            <arg value="${scripts.gen.dir}"/>
+            <arg value="${uploader.file}"/>
+        </java>
+    </target>
+
+    <!--
+        Runs generated upload script
+    -->
+    <target name="upload-components"
+            depends="create-upload-script"
+            description="-> runs upload.sh script to upload the components to a Meandre-Infrastructure server running on localhost:1714>">
+        <exec executable="sh">
+            <arg value="${scripts.gen.dir}/${uploader.file}"/>
+        </exec>
+    </target>
+
+    <!--
+        Attempts to perform all tasks necessary to upload to a running server, 
+        including generating all package-infos, descriptors, and upload scripts.
+    -->
+    <target name="upload-from-scratch"
+            depends="dist, create-all-descriptors, 
+                    create-all-package-info, upload-components"
+            description="-> runs everything necessary after a 'clean' to get the components uploaded to a Meandre server on localhost.">
+    </target>
+
+    <!--
+        Creates/updates the wiki component documentation
+    -->
+    <target name="update-wiki"
+            depends="create-all-descriptors"
+            description="-> updates the wiki documentation for components.  Example: >ant update-wiki -Dusername=wiki_username -Dpassword=wiki_password">
+        <java classname="org.meandre.tools.components.WikiCreateComponentPages"
+              fork="yes"
+              maxmemory="1024m">
+            <classpath refid="classpath.runtime"/>
+            <jvmarg value="-showversion"/>
+            <arg value="-s"/>
+            <arg value="${confluence.server}"/>
+            <arg value="-d"/>
+            <arg value="${componentsDescriptorsDir}"/>
+            <arg value="--title"/>
+            <arg value="${confluence.title}"/>
+            <arg value="--space"/>
+            <arg value="${confluence.space}"/>
+            <arg value="-u"/>
+            <arg value="${username}"/>
+            <arg value="-p"/>
+            <arg value="${password}"/>
+        </java>
+    </target>
+</project>
