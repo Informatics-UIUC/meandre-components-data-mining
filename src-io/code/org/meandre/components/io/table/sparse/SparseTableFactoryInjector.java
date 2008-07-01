@@ -109,7 +109,7 @@ public class SparseTableFactoryInjector implements ExecutableComponent {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.getMessage());
-			System.out.println("ERROR: TextFileToDoc.doit()");
+			System.out.println("ERROR: TextFileToDoc.execute()");
 			throw new ComponentExecutionException(ex);
 		}
 	}

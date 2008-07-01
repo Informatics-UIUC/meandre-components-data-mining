@@ -117,7 +117,7 @@ public class XMLToGraphFromURL implements ExecutableComponent {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.getMessage());
-			System.out.println("ERROR: XMLToGraphFromURL.doit()");
+			System.out.println("ERROR: XMLToGraphFromURL.execute()");
 			throw new ComponentExecutionException(ex);
 		}
 	}

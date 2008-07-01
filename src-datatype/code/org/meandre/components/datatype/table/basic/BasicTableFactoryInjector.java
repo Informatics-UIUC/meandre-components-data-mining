@@ -102,7 +102,7 @@ public class BasicTableFactoryInjector implements ExecutableComponent {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println(ex.getMessage());
-			System.out.println("ERROR: BasicTableFactoryInjector.doit()");
+			System.out.println("ERROR: BasicTableFactoryInjector.execute()");
 			throw new ComponentExecutionException(ex);
 		}
 	}
