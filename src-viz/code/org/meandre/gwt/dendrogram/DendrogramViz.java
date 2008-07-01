@@ -102,6 +102,23 @@ import org.meandre.webui.*;
  * </p>
  * 
  * <p>
+ * Properties: <br>
+ * The "core_port" property should match up with the port that you used to connect
+ * to the server.<br>
+ * The "use_local_host" means that you intend to run the server and browser client
+ * on the same machine.  This is set to false by default.  If you do run both on the 
+ * same machine then it is important to set this property to true.  The reason is that
+ * when Java queries to OS for the local machines IP it often gets internal LAN IP's
+ * that often are not reachable as url's in your browser, and therefore an error will result.  
+ * By choosing to set this property to true you force the client app to use "127.0.0.1" 
+ * for your local address.<br>
+ * The sparse_detail_limit property defaults to 10.  For sparse tables it is not practical
+ * to display the entire table subset that make up a given cluster because the table may
+ * have thousands of columns.  This value tells the application how many column values to
+ * display in descending order by support.
+ * </p>
+ * 
+ * <p>
  * Copyright: Copyright (c) 2008
  * </p>
  * 
@@ -114,7 +131,23 @@ import org.meandre.webui.*;
  */
 @Component(creator = "Duane Searsmith", 
 		
-		description = "Dendrogram visualization of D2K cluster models.", 
+		description = "<p>Dendrogram visualization of SEASR cluster models.</p>"
+			+ "<p>"
+			+ "Properties: <br>" 
+			+ "The 'core_port' property should match up with the port that you used to connect " 
+			+ "to the server.<br>" 
+			+ "The 'use_local_host' means that you intend to run the server and browser client "
+			+ "on the same machine.  This is set to false by default.  If you do run both on the " 
+			+ "same machine then it is important to set this property to true.  The reason is that "
+			+ "when Java queries to OS for the local machines IP it often gets internal LAN IP's "
+			+ "that often are not reachable as url's in your browser, and therefore an error will result. "
+			+ "By choosing to set this property to true you force the client app to use '127.0.0.1' "
+			+ "for your local address.<br>"
+			+ "The sparse_detail_limit property defaults to 10.  For sparse tables it is not practical "
+			+ "to display the entire table subset that make up a given cluster because the table may "
+			+ "have thousands of columns.  This value tells the application how many column values to "
+			+ "display in descending order by support."
+			+ "</p>", 
 		
 		name = "DendrogramViz", tags = "visualization dendrogram cluster", dependency = { "DendrogramViz_001.jar" })
 public class DendrogramViz implements ExecutableComponent,
@@ -124,6 +157,8 @@ public class DendrogramViz implements ExecutableComponent,
 	// Data Members
 	// ==============
 
+	// props
+	
 	@ComponentProperty(defaultValue = "1714", description = "The core repository port.", name = "core_port")
 	final static String DATA_PROPERTY_CORE_PORT = "core_port";
 
@@ -133,6 +168,8 @@ public class DendrogramViz implements ExecutableComponent,
 	@ComponentProperty(defaultValue = "10", description = "Detail limit on sparse table summaries.", name = "sparse_detail_limit")
 	final static String DATA_PROPERTY_SPARSE_DETAIL_LIMIT = "sparse_detail_limit";
 
+	// io
+	
 	@ComponentInput(description = "D2K Cluster Model", name = "d2k_cluster_Model")
 	final static String DATA_INPUT_CLUSTER_MODEL = "d2k_cluster_Model";
 
