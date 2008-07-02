@@ -114,11 +114,16 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
     private ArrayList<String> selectedOutputs;
 
     private String executionInstanceId;
+    
+    //url of the webui, to redirect to when done
+    private String webUIUrl;
 
     public void dispose(ComponentContextProperties context) { }
 
     public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
         executionInstanceId = context.getExecutionInstanceID();
+        webUIUrl = context.getWebUIUrl(true).toString();
+        
         selectedInputs = new ArrayList<String>();
         selectedOutputs = new ArrayList<String>();
 
@@ -217,13 +222,25 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
+        } else { //assuming 'done' has been pressed, releasing webui
+            
             selectedInputs.clear();
             selectedOutputs.clear();
 
             selectedInputs.addAll(Arrays.asList(inputs));
             selectedOutputs.addAll(Arrays.asList(outputs));
-
+            
+             //redirect the browser back to the webui's main url so any 
+            //subsequent visualizations will appear automatically
+            try{
+                PrintWriter writer = response.getWriter();
+                writer.println("<html><head><title>Choose Attributes</title>");
+                writer.println("<meta http-equiv=\"REFRESH\" content=\"0;url=\"" + 
+                        webUIUrl + "></HEAD>");
+                writer.println("<body>Choose Attributes Releasing Display</body></html>");
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
             semaphore.release();
         }
     }
