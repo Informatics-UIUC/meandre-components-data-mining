@@ -110,7 +110,7 @@ import org.meandre.annotations.ComponentProperty;
 
         name = "Input URL or Path",
         tags = "io, input",
-        dependency = {"dsmgmt-1.0dev.jar", "security-1.0dev.jar", "util-1.0dev.jar", "sam-webdavlib.jar"}
+        dependency = {"dsmgmt-1.0dev.jar", "security-1.0dev.jar", "util-1.0dev.jar", "sam-webdavlib.jar", "jaxb-api.jar"}
 )
 public class InputFileUrl implements ExecutableComponent {
 
