@@ -40,7 +40,7 @@
 *
 */
 
-package org.meandre.js;
+package org.meandre.javascript;
 
 import java.util.concurrent.Semaphore;
 
@@ -114,10 +114,10 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
    private String sInstanceID = null;
    
    /**
-    * Store the current indices.
+    * Store the row indices of every page.
     */
    private int[] currentRow, nextRow;
-
+   
    /**
     * Store the current page index.
     */
@@ -200,7 +200,10 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
            sb.append("if(xmlHttp.readyState == 4)\n");
            sb.append("{\n");
            sb.append("if(xmlHttp.status  == 200)\n"); 
+           
            sb.append("document.getElementById(\"myTable\").innerHTML=xmlHttp.responseText;\n");
+           sb.append("$(\"table\").tablesorter();\n");
+           
            sb.append("}\n");
            sb.append("}\n"); 
            sb.append("var selectedIndex = document.getElementById(\"input\").selectedIndex;\n");
@@ -253,6 +256,8 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
                sb.append("<option>" + i + "</option>\n");
            sb.append("</select>\n");
            sb.append("</div>\n");
+           
+           
        
            sb.append("<div align=\"center\">\n");
            sb.append("<table align=center><font size=2><a id=\"url\" href=\"/" +
