@@ -2,7 +2,7 @@
  * University of Illinois/NCSA
  * Open Source License
  *
- * Copyright © 2008, NCSA.  All rights reserved.
+ * Copyright (c) 2008, NCSA.  All rights reserved.
  * 
  * Developed by:
  * The Automated Learning Group
