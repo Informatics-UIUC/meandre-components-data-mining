@@ -3,7 +3,7 @@
 * University of Illinois/NCSA
 * Open Source License
 *
-* Copyright (c) 2008, NCSA.  All rights reserved.
+* Copyright © 2008, NCSA.  All rights reserved.
 *
 * Developed by:
 * The Automated Learning Group
@@ -57,6 +57,7 @@ import org.meandre.webui.WebUIFragmentCallback;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentProperty;
 
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -85,14 +86,24 @@ import org.meandre.components.datatype.table.Table;
 */
 
 @Component(creator="Lily Dong",
-          description="Visualize table using jQuery.",
-          name="tableViewer",
-          tags="table, visualization")
+           description="Visualize table using jQuery.",
+           name="tableViewer",
+           tags="table, visualization")
 
 public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
    @ComponentInput(description="Read org.meandre.components.datatype.table.Table as input.",
                    name= "table")
    final static String DATA_INPUT = "table";
+   
+   @ComponentProperty(defaultValue="200",
+                      description="This property sets the number of rows per page to display.",
+                      name="nrRows")
+   final static String DATA_PROPERTY_1 = "nrRows";
+   
+   @ComponentProperty(defaultValue="8",
+                      description="This property sets the number of columns per page to display.",
+                      name="nrColumns")
+   final static String DATA_PROPERTY_2 = "nrColumns";
    
    /**
     * Store the number of rows per page.
@@ -102,7 +113,7 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
    /**
     * Store the number of columns per page.
     */
-   private int nrColumns = 10;
+   private int nrColumns = 8;
 
    /** The blocking semaphore */
    private Semaphore sem = new Semaphore(1,true);
@@ -119,14 +130,29 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
    private int[] currentRow, nextRow;
    
    /**
+    * Store the column indices of every bar.
+    */
+   private int[] currentColumn, nextColumn;
+   
+   /**
     * Store the current page index.
     */
    private int thePage;
    
    /**
+    * Store the current bar index.
+    */
+   private int theBar;
+   
+   /**
     * Store the number of pages.
     */
    private int nrPages;
+   
+   /**
+    * Store the number of bars.
+    */
+   private int nrBars;
    
    /**
     * isFirst being true means that the page is loaded for the first time. 
@@ -209,6 +235,8 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
            sb.append("var selectedIndex = document.getElementById(\"input\").selectedIndex;\n");
            sb.append("var url = \"/\" + \"" + sInstanceID + "\"\n");
            sb.append("url = url + \"?page=\" + selectedIndex;\n");
+           sb.append("selectedIndex = document.getElementById(\"input2\").selectedIndex;\n");
+           sb.append("url = url + \"&bar=\" + selectedIndex;\n");
            sb.append("xmlHttp.open(\"GET\", url,true);\n"); 
            sb.append("xmlHttp.send(null);\n");
            sb.append("}\n"); 
@@ -228,9 +256,8 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
        
        sb.append("<thead>\n");
        sb.append("<tr>\n");
-       int nrColumns = table.getNumColumns();
        sb.append("<th>").append("_N_").append("</th>\n");
-       for(int column=0; column<nrColumns; column++) {
+       for(int column=currentColumn[theBar]; column<=nextColumn[theBar]; column++) {
            String theName = table.getColumnLabel(column);
            sb.append("<th>").append(theName).append("</th>\n");
        }
@@ -241,7 +268,7 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
        for(int row=currentRow[thePage]; row<=nextRow[thePage]; row++) {
            sb.append("<tr>\n");
            sb.append("<td>").append(Integer.toString(row)).append("</td>\n");
-           for(int column=0; column<nrColumns; column++)
+           for(int column=currentColumn[theBar]; column<=nextColumn[theBar]; column++)
               sb.append("<td>").append(table.getString(row, column)).append("</td>\n");
            sb.append("</tr>");
        }   
@@ -250,14 +277,29 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
        
        if(isFirst) {
            sb.append("<div>\n");
+           sb.append("<table cellpadding=\"4\" cellspacing=\"4\">\n");
+           sb.append("<tr>\n");
+           sb.append("<th>Rows:</th>\n");
+           sb.append("<th>\n");
            sb.append("<select id=\"input\" onChange=\"submitForm()\">\n");
-           sb.append("<option selected=\"yes\">0</option>\n");
+           sb.append("<option selected=\"yes\">" + currentRow[0] + "-" +
+                   nextRow[0] + "</option>\n");
            for(int i=1; i<nrPages; i++)
-               sb.append("<option>" + i + "</option>\n");
+               sb.append("<option>" + currentRow[i] + "-" + nextRow[i] + "</option>\n");
            sb.append("</select>\n");
+           sb.append("</th>\n");
+           sb.append("<th>Columns:</th>\n");
+           sb.append("<th>\n");
+           sb.append("<select id=\"input2\" onChange=\"submitForm()\">\n");
+           sb.append("<option selected=\"yes\">" + currentColumn[0] + "-" +
+                   nextColumn[0] + "</option>\n");
+           for(int i=1; i<nrBars; i++)
+               sb.append("<option>" + currentColumn[i] + "-" + nextColumn[i] + "</option>\n");
+           sb.append("</select>\n");
+           sb.append("</th>\n");
+           sb.append("</tr>\n");
+           sb.append("</table>\n");
            sb.append("</div>\n");
-           
-           
        
            sb.append("<div align=\"center\">\n");
            sb.append("<table align=center><font size=2><a id=\"url\" href=\"/" +
@@ -287,8 +329,10 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
        
        if (request.getParameter("done") != null) {
            sem.release();
-       } else if(request.getParameter("page") != null) {
+       } else if(request.getParameter("page") != null ||
+                 request.getParameter("bar") != null) {
            thePage = Integer.valueOf(request.getParameter("page"));
+           theBar = Integer.valueOf(request.getParameter("bar"));
            emptyRequest(response);
        } else
            emptyRequest(response);
@@ -309,13 +353,25 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
    public void execute(ComponentContext cc) throws ComponentExecutionException,
            ComponentContextException {
        try {
+           try {
+               nrRows = Integer.valueOf(cc.getProperty(DATA_PROPERTY_1));
+               nrColumns = Integer.valueOf(cc.getProperty(DATA_PROPERTY_2));
+           } catch(Exception e) {
+               throw new ComponentExecutionException(e);
+           }
+           
+           if(nrRows <= 0 || nrColumns <=0)
+               throw new ComponentExecutionException();
+           
            table  = (Table) cc.getDataComponentFromInput(DATA_INPUT);
            
-           int totalRows = table.getNumRows();
+           int totalRows = table.getNumRows(),
+               totalColumns = table.getNumColumns();
            
            thePage = 0;
+           theBar = 0;
            
-           if(totalRows <= nrRows) {//only one page
+           if(totalRows <= nrRows) { //only one page
                nrPages = 1; 
                currentRow = new int[nrPages];
                nextRow = new int[nrPages];
@@ -338,6 +394,32 @@ public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
                if(!isDivisible) {
                    currentRow[nrPages-1] = (nrPages-1)*nrRows;
                    nextRow[nrPages-1] = totalRows-1;
+               }
+           }
+           
+           if(totalColumns <= nrBars) { //only one bar
+               nrBars = 1;
+               currentColumn = new int[nrBars];
+               nextColumn = new int[nrBars];
+               currentColumn[nrBars-1] = 0;
+               nextColumn[nrBars-1] = totalColumns-1;
+           } else { //multiple bars
+               boolean isDivisible = true;
+               nrBars = totalColumns/nrColumns;
+               if(nrBars*nrColumns != totalColumns) {
+                   ++nrBars;
+                   isDivisible = false;
+               }
+               currentColumn = new int[nrBars];
+               nextColumn = new int[nrBars];
+               int index = (isDivisible)? nrBars: nrBars-1;
+               for(int i=0; i<index; i++) {
+                   currentColumn[i] = i*nrColumns;
+                   nextColumn[i] = (i+1)*nrColumns-1;
+               }
+               if(!isDivisible) {
+                   currentColumn[nrBars-1] = (nrBars-1)*nrColumns;
+                   nextColumn[nrBars-1] = totalColumns-1;
                }
            }
            
