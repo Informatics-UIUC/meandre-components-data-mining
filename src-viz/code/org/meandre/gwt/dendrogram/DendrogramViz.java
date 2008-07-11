@@ -77,7 +77,6 @@ import org.meandre.components.discovery.cluster.support.*;
 import org.json.JSONObject;
 
 import org.meandre.components.datatype.table.sparse.SparseTable;
-import org.meandre.components.util.Unzipper;
 
 import org.meandre.annotations.*;
 
@@ -86,6 +85,7 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentContextException;
+import org.meandre.components.util.Unzipper;
 import org.meandre.webui.*;
 
 //import org.meandre.tools.components.*;
