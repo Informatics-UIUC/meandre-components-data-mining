@@ -67,7 +67,7 @@ import org.meandre.tools.webdav.*;
 
 /**
  * <p>
- * Overview: This module reads file names from a directory and outputs then one
+ * Overview: This component reads file names from a directory and outputs then one
  * by one.
  * </p>
  * <p>
@@ -87,7 +87,7 @@ import org.meandre.tools.webdav.*;
  */
 
 @Component(creator = "Duane Searsmith", description = "<p>Overview: <br>"
-		+ "This module reads file names from a directory and outputs then one by one.</p>"
+		+ "This component reads file names from a directory and outputs then one by one.</p>"
 		+ "<p>Detailed Description: <br>"
 		+ "Takes a file name of a directory as input and outputs the file names of "
 		+ "files within that directory.  Note that only file names will be output.  If  "
