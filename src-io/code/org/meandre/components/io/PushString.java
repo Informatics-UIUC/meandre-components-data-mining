@@ -71,10 +71,10 @@ import org.meandre.core.ComponentContextProperties;
 public class PushString implements ExecutableComponent {
 
 	@ComponentProperty(description = "Input string", name = "string", defaultValue = "hello world")
-	final static String DATA_PROPERTY_STRING = "string";
+	public final static String DATA_PROPERTY_STRING = "string";
 
 	@ComponentOutput(description = "Output string", name = "output_string")
-	final static String DATA_OUTPUT_OUTPUT_STRING = "output_string";
+	public final static String DATA_OUTPUT_OUTPUT_STRING = "output_string";
 
 	public void initialize(ComponentContextProperties ccp) {
 	}
