@@ -109,7 +109,7 @@ public class MeandreJarFileReaderUtil {
 			filename = "/" + filename;
 		}
 
-		String tmpdir = ctx.getExecutionInstanceID();
+		String tmpdir = ctx.getPublicResourcesDirectory();
 		File pub = new File(tmpdir);
 		String pubdir = pub.getCanonicalPath();
 		File resFile = new File(pubdir+filename);
