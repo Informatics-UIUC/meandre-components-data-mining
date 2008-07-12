@@ -57,8 +57,8 @@ import java.util.logging.*;
 // Other Imports
 //===============
 
-//import org.meandre.tools.components.*;
-//import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
+import org.meandre.tools.components.*;
+import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
 
 import org.meandre.core.*;
 import org.meandre.annotations.*;
@@ -159,30 +159,30 @@ public class ReadFileNames implements ExecutableComponent {
 	 */	
 	static public void main(String[] args) {
 
-//		// get a flow builder instance
-//		FlowBuilderAPI flowBuilder = new FlowBuilderAPI();
-//		// get a flow object
-//		WorkingFlow wflow = flowBuilder.newWorkingFlow("test");
-//		// add a component
-//		String pushString = wflow
-//				.addComponent("org.seasr.meandre.components.io.PushString");
-//		// set a component property
-//		wflow.setComponentInstanceProp(pushString, "string",
-//				"http://norma.ncsa.uiuc.edu/public-dav/capitanu");
-//		// add another component
-//		String reader = wflow
-//				.addComponent("org.seasr.meandre.components.t2k.io.file.ReadFileNames");
-//		wflow.setComponentInstanceProp(reader, DATA_PROPERTY_FILTER, ".*\\.xml");
-//        wflow.setComponentInstanceProp(reader, DATA_PROPERTY_WEBDAV, "true");
-//		// make a connection between two components
-//		wflow.connectComponents(pushString, "output_string", reader,
-//				DATA_INPUT_DIRNAME);
-//
-//		// execute the flow specifying that we want a web UI displayed
-//		flowBuilder.execute(wflow, false);
-//
-//		// For some reason the process does not end without a forced exit.
-//		System.exit(0);
+		// get a flow builder instance
+		FlowBuilderAPI flowBuilder = new FlowBuilderAPI();
+		// get a flow object
+		WorkingFlow wflow = flowBuilder.newWorkingFlow("test");
+		// add a component
+		String pushString = wflow
+				.addComponent("org.meandre.components.io.PushString");
+		// set a component property
+		wflow.setComponentInstanceProp(pushString, "string",
+				"http://norma.ncsa.uiuc.edu/public-dav/capitanu");
+		// add another component
+		String reader = wflow
+				.addComponent("org.meandre.components.io.file.input.ReadFileNames");
+		wflow.setComponentInstanceProp(reader, DATA_PROPERTY_FILTER, ".*\\.xml");
+        wflow.setComponentInstanceProp(reader, DATA_PROPERTY_WEBDAV, "true");
+		// make a connection between two components
+		wflow.connectComponents(pushString, "output_string", reader,
+				DATA_INPUT_DIRNAME);
+
+		// execute the flow specifying that we want a web UI displayed
+		flowBuilder.execute(wflow, false);
+
+		// For some reason the process does not end without a forced exit.
+		System.exit(0);
 
 	}
 
