@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.applet;
 
@@ -48,6 +48,7 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentNature;
 import org.meandre.annotations.ComponentNatures;
+import org.meandre.annotations.Component.Mode;
 
 import java.util.concurrent.Semaphore;
 import java.io.IOException;
@@ -103,12 +104,13 @@ import org.meandre.core.ComponentContextException;
            "Scalability: This module makes one pass over the data to " +
            "count the number of correct and incorrect predictions.",
            name="PredictionTableReport",
-           tags="prediction, visualization")
-           
+           tags="prediction, visualization",
+           mode=Mode.webui)
+
 @ComponentNatures( natures={
-        @ComponentNature(type="applet", 
+        @ComponentNature(type="applet",
         extClass=org.meandre.applet.support.PredApplet.class
-)})             
+)})
 
 public class PredictionTableReport  implements ExecutableComponent, WebUIFragmentCallback {
     @ComponentInput(description="Read org.meandre.components.datatype.table.PredictionTable " +
@@ -150,7 +152,7 @@ public class PredictionTableReport  implements ExecutableComponent, WebUIFragmen
         sb.append("<p ALIGN=center >\n");
         sb.append("<APPLET\n");
         sb.append(
-                "ARCHIVE=\"org.meandre.applet.support.predapplet.jar\" WIDTH=\"800\"HEIGHT=\"600\"\n");        
+                "ARCHIVE=\"org.meandre.applet.support.predapplet.jar\" WIDTH=\"800\"HEIGHT=\"600\"\n");
         sb.append("CODEBASE=\"public/resources/contexts/java\"\n");
         sb.append(
                 "CODE=\"org.meandre.applet.support.PredApplet.class\">\n");

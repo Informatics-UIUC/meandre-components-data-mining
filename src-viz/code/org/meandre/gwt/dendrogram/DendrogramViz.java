@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.gwt.dendrogram;
 
@@ -79,6 +79,7 @@ import org.json.JSONObject;
 import org.meandre.components.datatype.table.sparse.SparseTable;
 
 import org.meandre.annotations.*;
+import org.meandre.annotations.Component.Mode;
 
 import org.meandre.core.ExecutableComponent;
 import org.meandre.core.ComponentExecutionException;
@@ -92,52 +93,52 @@ import org.meandre.webui.*;
 //import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
 
 /**
- * 
+ *
  * <p>
  * Title: Dendrogram Visualization
  * </p>
- * 
+ *
  * <p>
  * Description: A dendrogram visualization of cluster models.
  * </p>
- * 
+ *
  * <p>
  * Properties: <br>
  * The "core_port" property should match up with the port that you used to connect
  * to the server.<br>
  * The "use_local_host" means that you intend to run the server and browser client
- * on the same machine.  This is set to false by default.  If you do run both on the 
+ * on the same machine.  This is set to false by default.  If you do run both on the
  * same machine then it is important to set this property to true.  The reason is that
  * when Java queries to OS for the local machines IP it often gets internal LAN IP's
- * that often are not reachable as url's in your browser, and therefore an error will result.  
- * By choosing to set this property to true you force the client app to use "127.0.0.1" 
+ * that often are not reachable as url's in your browser, and therefore an error will result.
+ * By choosing to set this property to true you force the client app to use "127.0.0.1"
  * for your local address.<br>
  * The sparse_detail_limit property defaults to 10.  For sparse tables it is not practical
  * to display the entire table subset that make up a given cluster because the table may
  * have thousands of columns.  This value tells the application how many column values to
  * display in descending order by support.
  * </p>
- * 
+ *
  * <p>
  * Copyright: Copyright (c) 2008
  * </p>
- * 
+ *
  * <p>
  * Company: Automated Learning Group, NCSA
  * </p>
- * 
+ *
  * @author D. Searsmith
  * @version 1.0
  */
-@Component(creator = "Duane Searsmith", 
-		
+@Component(creator = "Duane Searsmith",
+
 		description = "<p>Dendrogram visualization of SEASR cluster models.</p>"
 			+ "<p>"
-			+ "Properties: <br>" 
-			+ "The 'core_port' property should match up with the port that you used to connect " 
-			+ "to the server.<br>" 
+			+ "Properties: <br>"
+			+ "The 'core_port' property should match up with the port that you used to connect "
+			+ "to the server.<br>"
 			+ "The 'use_local_host' means that you intend to run the server and browser client "
-			+ "on the same machine.  This is set to false by default.  If you do run both on the " 
+			+ "on the same machine.  This is set to false by default.  If you do run both on the "
 			+ "same machine then it is important to set this property to true.  The reason is that "
 			+ "when Java queries to OS for the local machines IP it often gets internal LAN IP's "
 			+ "that often are not reachable as url's in your browser, and therefore an error will result. "
@@ -147,9 +148,9 @@ import org.meandre.webui.*;
 			+ "to display the entire table subset that make up a given cluster because the table may "
 			+ "have thousands of columns.  This value tells the application how many column values to "
 			+ "display in descending order by support."
-			+ "</p>", 
-		
-		name = "DendrogramViz", tags = "visualization dendrogram cluster", dependency = { "DendrogramViz_001.jar" })
+			+ "</p>",
+
+		name = "DendrogramViz", tags = "visualization, dendrogram, cluster", mode = Mode.webui, dependency = { "DendrogramViz_001.jar" })
 public class DendrogramViz implements ExecutableComponent,
 		WebUIFragmentCallback {
 
@@ -158,7 +159,7 @@ public class DendrogramViz implements ExecutableComponent,
 	// ==============
 
 	// props
-	
+
 	@ComponentProperty(defaultValue = "1714", description = "The core repository port.", name = "core_port")
 	final static String DATA_PROPERTY_CORE_PORT = "core_port";
 
@@ -169,7 +170,7 @@ public class DendrogramViz implements ExecutableComponent,
 	final static String DATA_PROPERTY_SPARSE_DETAIL_LIMIT = "sparse_detail_limit";
 
 	// io
-	
+
 	@ComponentInput(description = "D2K Cluster Model", name = "d2k_cluster_Model")
 	final static String DATA_INPUT_CLUSTER_MODEL = "d2k_cluster_Model";
 
@@ -371,7 +372,7 @@ public class DendrogramViz implements ExecutableComponent,
 
 	/**
 	 * When ready for execution.
-	 * 
+	 *
 	 * @param ctx
 	 *            The component context.
 	 * @throws ComponentExecutionException
@@ -439,7 +440,7 @@ public class DendrogramViz implements ExecutableComponent,
 	/**
 	 * This method gets call when a request with no parameters is made to a
 	 * component webui fragment.
-	 * 
+	 *
 	 * @param response
 	 *            The response object
 	 * @throws WebUIException
@@ -457,7 +458,7 @@ public class DendrogramViz implements ExecutableComponent,
 	/**
 	 * This method gets called when a call with parameters is made to a given
 	 * component webUI fragment
-	 * 
+	 *
 	 * @param target
 	 *            The target path
 	 * @param request
@@ -573,7 +574,7 @@ public class DendrogramViz implements ExecutableComponent,
 
 	/**
 	 * A simple message.
-	 * 
+	 *
 	 * @return The html containing the page
 	 */
 	private String getViz() {
@@ -786,7 +787,7 @@ public class DendrogramViz implements ExecutableComponent,
 		table.addNext("Frequency/Norm");
 		System.out.print("Frequency/Norm" + "\t");
 		System.out.println();
-		
+
 		nr = 0;
 		Iterator<Object[]> itty = ts.iterator();
 		Iterator<Object[]> cent = cts.iterator();

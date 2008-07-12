@@ -17,26 +17,28 @@ import org.meandre.annotations.ComponentOutput;
 /**
  * @author Xavier
  * modified by Loretta
- * 
+ *
  */
-	@Component(creator = "Xavier Llora", 
-		description = "service call for input to webUI fragment", 
-		name = "ServiceHead", 
-		tags = "input webUI", 
+import org.meandre.annotations.Component.Mode;
+	@Component(creator = "Xavier Llora",
+		description = "service call for input to webUI fragment",
+		name = "ServiceHead",
+		tags = "input webUI",
+		mode = Mode.webui,
 		firingPolicy = Component.FiringPolicy.all)
 
 	public class ServiceHead implements ExecutableComponent, WebUIFragmentCallback {
 
 	public final static String OUTPUT_0_StringValue = "stringValue";
-	@ComponentOutput(description = "String value of the selection", 
+	@ComponentOutput(description = "String value of the selection",
 			name = OUTPUT_0_StringValue)
 
 			public final static String OUTPUT_1_Response = "response";
-	@ComponentOutput(description = "The response to be sent to the Service Tail.", 
+	@ComponentOutput(description = "The response to be sent to the Service Tail.",
 			name = OUTPUT_1_Response)
 
 			public final static String OUTPUT_2_Semaphore = "semaphore";
-	@ComponentOutput(description = "The semaphore to signal response done.", 
+	@ComponentOutput(description = "The semaphore to signal response done.",
 			name = OUTPUT_2_Semaphore)
 
 	private String sInstanceID;
@@ -45,7 +47,7 @@ import org.meandre.annotations.ComponentOutput;
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.meandre.core.ExecutableComponent#dispose(org.meandre.core.ComponentContextProperties)
 	 */
 	public void dispose(ComponentContextProperties ccp) {
@@ -55,7 +57,7 @@ import org.meandre.annotations.ComponentOutput;
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
 	 */
 	public void execute(ComponentContext cc)
@@ -97,7 +99,7 @@ import org.meandre.annotations.ComponentOutput;
 */
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.meandre.core.ExecutableComponent#initialize(org.meandre.core.ComponentContextProperties)
 	 */
 	public void initialize(ComponentContextProperties ccp) {
@@ -107,7 +109,7 @@ import org.meandre.annotations.ComponentOutput;
 	/**
 	 * This method gets call when a request with no parameters is made to a
 	 * component webui fragment.
-	 * 
+	 *
 	 * @param response
 	 *            The response object
 	 * @throws WebUIException
@@ -121,7 +123,7 @@ import org.meandre.annotations.ComponentOutput;
 	/**
 	 * This method gets called when a call with parameters is done to a given
 	 * component webUI fragment
-	 * 
+	 *
 	 * @param request
 	 *            The request object
 	 * @param response

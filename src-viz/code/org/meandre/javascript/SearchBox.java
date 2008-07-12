@@ -58,6 +58,7 @@ import org.meandre.webui.WebUIFragmentCallback;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.Component.Mode;
 
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -88,13 +89,14 @@ import org.meandre.components.datatype.table.Table;
 @Component(creator="Lily Dong",
            description="Present a search box for user to input query.",
            name="SearchBox",
-           tags="search, visualization")
+           tags="search, visualization",
+           mode=Mode.webui)
 
 public class SearchBox implements ExecutableComponent, WebUIFragmentCallback {
     @ComponentOutput(description="Output the query passed from the serach box.",
                      name="message")
     public final static String DATA_OUTPUT = "message";
-    
+
     /*
      * Store the message imported by user.
      */
@@ -128,7 +130,7 @@ public class SearchBox implements ExecutableComponent, WebUIFragmentCallback {
     */
    private String getViz() {
        StringBuffer sb = new StringBuffer();
-       
+
        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
        sb.append("<head>\n");
@@ -146,8 +148,8 @@ public class SearchBox implements ExecutableComponent, WebUIFragmentCallback {
        sb.append("font-family: Verdana, sans-serif;\n");
        sb.append("font-size: 0.9em;\n");
        sb.append("padding: 5px;\n");
-       sb.append("border: 1px solid #666;\n");          
-       sb.append("}\n");          
+       sb.append("border: 1px solid #666;\n");
+       sb.append("}\n");
        sb.append("</style>\n");
        sb.append("</head>\n");
 
@@ -157,7 +159,7 @@ public class SearchBox implements ExecutableComponent, WebUIFragmentCallback {
        sb.append("<form name=\"input\" method=\"get\" action=\"/" + sInstanceID + "\">\n");
        sb.append("<input type=\"text\" name=\"user\" value=\"\" size=\"80\"/>\n");
        sb.append("<input type=\"submit\" class=\"searchsubmit\" value=\"Search\" />\n");
-       sb.append("</form>\n"); 
+       sb.append("</form>\n");
        sb.append("</div>\n");
        sb.append("</body>\n");
        sb.append("</html>\n");
@@ -202,7 +204,7 @@ public class SearchBox implements ExecutableComponent, WebUIFragmentCallback {
            cc.startWebUIFragment(this);
            sem.acquire();
            cc.stopWebUIFragment(this);
-       
+
            cc.pushDataComponentToOutput(DATA_OUTPUT, query);
        } catch (Exception e) {
            throw new ComponentExecutionException(e);

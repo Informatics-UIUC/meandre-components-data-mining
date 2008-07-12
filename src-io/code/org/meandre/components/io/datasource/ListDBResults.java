@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.io.datasource;
 
@@ -55,6 +55,8 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.Component.Mode;
+
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -67,7 +69,8 @@ import javax.servlet.http.*;
 @Component(creator="Erik Johnson",
         description="List Database Resultsets using WebUI",
         name="ListDBResults",
-        tags="database, table")
+        tags="database, table",
+        mode=Mode.webui)
 
 /** This components lists the contents of a resultset
  *
@@ -76,19 +79,19 @@ import javax.servlet.http.*;
 public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback {
 
 	private ResultSet results;
-	
+
 	private Semaphore sem = new Semaphore(1, true);
 
 	    /** The instance ID */
 	private String sInstanceID = null;
 
 	private Logger logger;
-		
+
 	@ComponentInput(
 		 description = "Results to display",
 		 name = "Results")
 	final static String DATA_INPUT = "Results";
-	
+
 	 /** This method gets call when a request with no parameters is made to a
      * component WebUI fragment.
      *
@@ -112,7 +115,7 @@ public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback
     	StringBuffer sb = new StringBuffer();
     	sb.append("<html>\n");
         sb.append("<body>\n");
-        
+
         //display results of a query of all tables
     	try{
     	//get everything from every existing table
@@ -151,7 +154,7 @@ public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback
                 sInstanceID + "?done=true\">DONE</a></font></table>\n");
         sb.append("</body>\n");
         sb.append("</html>\n");
-    	
+
         return sb.toString();
     }
 
@@ -172,7 +175,7 @@ public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback
 		else
 			emptyRequest(response);
     }
-	
+
      /** This method is invoked when the Meandre Flow is being prepared for
       * getting run.
       *
@@ -194,12 +197,12 @@ public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback
      throws ComponentExecutionException, ComponentContextException {
 
     		results = (ResultSet) cc.getDataComponentFromInput(DATA_INPUT);
- 
+
     	 	//start web ui
     		logger.log(Level.INFO,"Firing the web ui component");
     		sInstanceID = cc.getExecutionInstanceID();
     		try {
-    			
+
     			sem.acquire();
     			logger.log(Level.INFO,">>>Rendering...");
     			cc.startWebUIFragment(this);
@@ -207,13 +210,13 @@ public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback
     			sem.acquire();
     			sem.release();
     			logger.log(Level.INFO,">>>Done");
-    		
+
     		}
     		catch ( Exception e ) {
     			throw new ComponentExecutionException(e);
     		}
     		//pass connection back out to be used again or closed by another component
-    		cc.stopWebUIFragment(this);   	 	
+    		cc.stopWebUIFragment(this);
      }
 
      /** This method is called when the Menadre Flow execution is completed.
@@ -224,4 +227,3 @@ public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback
 
      }
 }
-								

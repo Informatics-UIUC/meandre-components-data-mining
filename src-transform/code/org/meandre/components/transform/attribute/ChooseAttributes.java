@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.transform.attribute;
 
@@ -66,6 +66,7 @@ import org.meandre.webui.WebUIFragmentCallback;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.Component.Mode;
 
 
 /**
@@ -93,7 +94,8 @@ import org.meandre.annotations.ComponentOutput;
         "This module does not modify the data in the table. It only sets the input and output features.",
 
         name = "Choose Attributes",
-        tags = "transform"
+        tags = "transform",
+        mode = Mode.webui
 )
 public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallback {
 
@@ -114,7 +116,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
     private ArrayList<String> selectedOutputs;
 
     private String executionInstanceId;
-    
+
     //url of the webui, to redirect to when done
     private String webUIUrl;
 
@@ -123,7 +125,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
     public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
         executionInstanceId = context.getExecutionInstanceID();
         webUIUrl = context.getWebUIUrl(true).toString();
-        
+
         selectedInputs = new ArrayList<String>();
         selectedOutputs = new ArrayList<String>();
 
@@ -142,7 +144,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
             attributeLabels[i] = columnLabel;
             indexMap.put(columnLabel, i);
         }
-        
+
         if (table instanceof ExampleTable) {
             ExampleTable et = (ExampleTable)table;
             int[] inputFeatures = et.getInputFeatures();
@@ -158,7 +160,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
                     selectedOutputs.add(et.getColumnLabel(outputFeatures[i]));
             }
         }
-        
+
         try {
             semaphore.acquire();
             context.startWebUIFragment(this);
@@ -173,7 +175,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
         if (selectedInputs.size() == 0 || selectedOutputs.size() == 0)
             throw new ComponentExecutionException(executionInstanceId +
                     ": No inputs or outputs were selected - cannot continue.");
-        
+
         ExampleTable exampleTable = table.toExampleTable();
 
         // Set the input features
@@ -181,7 +183,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
         for (int i = 0; i < selectedInputs.size(); i++)
             inputFeatures[i] = indexMap.get(selectedInputs.get(i));
         exampleTable.setInputFeatures(inputFeatures);
-        
+
         // Set the output features
         int[] outputFeatures = new int[selectedOutputs.size()];
         for (int i = 0; i < selectedOutputs.size(); i++)
@@ -223,19 +225,19 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
                 e.printStackTrace();
             }
         } else { //assuming 'done' has been pressed, releasing webui
-            
+
             selectedInputs.clear();
             selectedOutputs.clear();
 
             selectedInputs.addAll(Arrays.asList(inputs));
             selectedOutputs.addAll(Arrays.asList(outputs));
-            
-             //redirect the browser back to the webui's main url so any 
+
+             //redirect the browser back to the webui's main url so any
             //subsequent visualizations will appear automatically
             try{
                 PrintWriter writer = response.getWriter();
                 writer.println("<html><head><title>Choose Attributes</title>");
-                writer.println("<meta http-equiv=\"REFRESH\" content=\"0;url=\"" + 
+                writer.println("<meta http-equiv=\"REFRESH\" content=\"0;url=\"" +
                         webUIUrl + "></HEAD>");
                 writer.println("<body>Choose Attributes Releasing Display</body></html>");
             }catch (IOException e) {
