@@ -66,6 +66,7 @@ import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.Component.Mode;
 
 import org.meandre.components.prediction.decisiontree.support.ViewableDTModel;
+import org.meandre.components.prediction.decisiontree.c45.support.DecisionTreeModel;
 
 /**
  * <p>Title: Communication Module</p>
@@ -110,7 +111,7 @@ import org.meandre.components.prediction.decisiontree.support.ViewableDTModel;
 
 public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragmentCallback {
     @ComponentInput(description="Read a decision tree model implementing " +
-                    "org.meandre.applet.prediction.decisiontree.ViewableDTModel interface.",
+                    "org.meandre.components.prediction.decisiontree.support.ViewableDTModel interface.",
                     name= "vdtModel")
     final static String DATA_INPUT = "vdtModel";
 
@@ -128,6 +129,7 @@ public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragm
     private boolean verbose = true;
 
     private ViewableDTModel model;
+    private DecisionTreeModel tmpModel;
 
     /** This method gets call when a request with no parameters is made to a
      * component WebUI fragment.

@@ -46,6 +46,7 @@ package org.meandre.applet.prediction.decisiontree.support;
 import javax.swing.JApplet;
 
 import org.meandre.components.prediction.decisiontree.support.ViewableDTModel;
+import org.meandre.components.prediction.decisiontree.c45.support.DecisionTreeModel;
 
 import java.net.URL;
 import java.net.URLConnection;
