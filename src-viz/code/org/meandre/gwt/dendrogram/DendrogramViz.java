@@ -161,18 +161,18 @@ public class DendrogramViz implements ExecutableComponent,
 	// props
 
 	@ComponentProperty(defaultValue = "1714", description = "The core repository port.", name = "core_port")
-	final static String DATA_PROPERTY_CORE_PORT = "core_port";
+	public final static String DATA_PROPERTY_CORE_PORT = "core_port";
 
 	@ComponentProperty(defaultValue = "false", description = "Connect to local host.", name = "use_local_host")
-	final static String DATA_PROPERTY_USE_LOCAL_HOST = "use_local_host";
+	public final static String DATA_PROPERTY_USE_LOCAL_HOST = "use_local_host";
 
 	@ComponentProperty(defaultValue = "10", description = "Detail limit on sparse table summaries.", name = "sparse_detail_limit")
-	final static String DATA_PROPERTY_SPARSE_DETAIL_LIMIT = "sparse_detail_limit";
+	public final static String DATA_PROPERTY_SPARSE_DETAIL_LIMIT = "sparse_detail_limit";
 
 	// io
 
 	@ComponentInput(description = "D2K Cluster Model", name = "d2k_cluster_Model")
-	final static String DATA_INPUT_CLUSTER_MODEL = "d2k_cluster_Model";
+	public final static String DATA_INPUT_CLUSTER_MODEL = "d2k_cluster_Model";
 
 	/** The collection for semaphore */
 	private static Vector<Semaphore> sems = new Vector<Semaphore>();
