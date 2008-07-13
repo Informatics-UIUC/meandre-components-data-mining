@@ -70,10 +70,10 @@ import org.meandre.annotations.*;
              "ncsa.d2k.modules.core.datatype.table.basic package. This is " +
              "a standard Table suitable for most applications.</p>", 
              
-             name = "TextFileToDoc", tags = "table factory")
+             name = "BasicTableFactoryInjector", tags = "table factory")
 public class BasicTableFactoryInjector implements ExecutableComponent {
 
-	private static Logger _logger = Logger.getLogger("TextFileToDoc");
+	private static Logger _logger = Logger.getLogger("BasicTableFactoryInjector");
 
 	@ComponentOutput(description = "Table factory instance.", name = "table_factory")
 	public final static String DATA_OUTPUT_TABLE_FACTORY = "table_factory";
