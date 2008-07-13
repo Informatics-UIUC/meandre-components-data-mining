@@ -134,7 +134,7 @@ public class HACModelBuilder implements ExecutableComponent {
      */
     protected boolean _mvCheck = true;
 
-    @ComponentProperty(defaultValue="N",
+    @ComponentProperty(defaultValue="false",
                        description="Verbose output?",
                        name="verbose")
     public final static String DATA_PROPERTY_VERBOSE = "verbose";
@@ -339,9 +339,9 @@ public class HACModelBuilder implements ExecutableComponent {
                     ". Value is set to: " + this.getCheckMissingValues());
         }
         param = context.getProperty(HACModelBuilder.DATA_PROPERTY_VERBOSE);
-        if (param.toLowerCase().equals("n")){
+        if (param.toLowerCase().equals("false")){
             this.setVerbose(false);
-        } else if (param.toLowerCase().equals("y")){
+        } else if (param.toLowerCase().equals("true")){
             this.setVerbose(true);
         } else {
             System.out.println("HACModelBuilder invalid value for parameter: "
