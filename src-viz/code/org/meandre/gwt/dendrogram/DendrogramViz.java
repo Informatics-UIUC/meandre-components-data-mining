@@ -160,8 +160,8 @@ public class DendrogramViz implements ExecutableComponent,
 
 	// props
 
-	@ComponentProperty(defaultValue = "1714", description = "The core repository port.", name = "core_port")
-	public final static String DATA_PROPERTY_CORE_PORT = "core_port";
+//	@ComponentProperty(defaultValue = "1714", description = "The core repository port.", name = "core_port")
+//	public final static String DATA_PROPERTY_CORE_PORT = "core_port";
 
 	@ComponentProperty(defaultValue = "false", description = "Connect to local host.", name = "use_local_host")
 	public final static String DATA_PROPERTY_USE_LOCAL_HOST = "use_local_host";
@@ -288,10 +288,10 @@ public class DendrogramViz implements ExecutableComponent,
 		return Integer.parseInt(s);
 	}
 
-	public int getCorePort(ComponentContextProperties ccp) {
-		String s = ccp.getProperty(DATA_PROPERTY_CORE_PORT);
-		return Integer.parseInt(s);
-	}
+//	public int getCorePort(ComponentContextProperties ccp) {
+//		String s = ccp.getProperty(DATA_PROPERTY_CORE_PORT);
+//		return Integer.parseInt(s);
+//	}
 
 	// ===========================
 	// Interface Implementation: ExecutableComponent
@@ -589,8 +589,9 @@ public class DendrogramViz implements ExecutableComponent,
 			} else {
 				s1 = _ctx.getWebUIUrl(true).getHost();
 			}
-			port = _ctx.getProperty(DendrogramViz.DATA_PROPERTY_CORE_PORT);
+//			port = _ctx.getProperty(DendrogramViz.DATA_PROPERTY_CORE_PORT);
 			fragPort = _ctx.getWebUIUrl(true).getPort();
+			port = ""+fragPort;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -622,7 +623,7 @@ public class DendrogramViz implements ExecutableComponent,
 		div.add(h2);
 		div.add(h3);
 
-		String s2 = "<html><head>" + "<title>Dendrogram Visualization</title>"
+		String s2 = "<div>" /* + "<title>Dendrogram Visualization</title>"*/
 				+ "<link rel='stylesheet' href='http://"
 				+ s1
 				+ ":"
@@ -657,9 +658,9 @@ public class DendrogramViz implements ExecutableComponent,
 				+ port
 				+ "/public/resources/"
 				+ _jarName
-				+ "/script/scriptaculous.js' type='text/javascript'></script></head><body>"
+				+ "/script/scriptaculous.js' type='text/javascript'></script>"/*</head><body>*/
 				+ "<div style='position:relative;' id='g'></div> "
-				+ div.toString() + "</body></html>";
+				+ div.toString() + "</div>";
 		return s2;
 	}
 
@@ -925,5 +926,6 @@ public class DendrogramViz implements ExecutableComponent,
 			return false;
 		}
 	} // end class cRank_Comparator
+
 
 }
