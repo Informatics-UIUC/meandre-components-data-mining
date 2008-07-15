@@ -87,9 +87,9 @@ import org.meandre.components.datatype.table.Table;
 */
 
 @Component(creator="Lily Dong",
-           description="Visualize table using jQuery.",
-           name="tableViewer",
-           tags="table, visualization",
+           description="View table using jQuery.",
+           name="Table Viewer",
+           tags="table, viewer",
            mode=Mode.webui)
 
 public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
