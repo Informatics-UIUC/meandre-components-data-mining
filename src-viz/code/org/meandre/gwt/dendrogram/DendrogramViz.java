@@ -104,8 +104,6 @@ import org.meandre.webui.*;
  *
  * <p>
  * Properties: <br>
- * The "core_port" property should match up with the port that you used to connect
- * to the server.<br>
  * The "use_local_host" means that you intend to run the server and browser client
  * on the same machine.  This is set to false by default.  If you do run both on the
  * same machine then it is important to set this property to true.  The reason is that
@@ -135,8 +133,6 @@ import org.meandre.webui.*;
 		description = "<p>Dendrogram visualization of SEASR cluster models.</p>"
 			+ "<p>"
 			+ "Properties: <br>"
-			+ "The 'core_port' property should match up with the port that you used to connect "
-			+ "to the server.<br>"
 			+ "The 'use_local_host' means that you intend to run the server and browser client "
 			+ "on the same machine.  This is set to false by default.  If you do run both on the "
 			+ "same machine then it is important to set this property to true.  The reason is that "
