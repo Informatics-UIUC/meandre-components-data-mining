@@ -158,6 +158,8 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
                        name="verbose")
     final static String DATA_PROPERTY = "verbose";
 
+    private static final long serialVersionUID = 2687955466074691940L;
+
     /** The blocking semaphore */
     private Semaphore sem = new Semaphore(1, true);
 
@@ -205,25 +207,25 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
      */
     private String getViz() {
         StringBuffer sb = new StringBuffer();
-        sb.append("<html>\n");
-        sb.append("<body>\n");
-        sb.append("<p ALIGN=center >\n");
-        sb.append("<APPLET\n");
-        sb.append("ARCHIVE=\"org.meandre.applet.ruleassociation.support.webrulevisapplet.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar\" WIDTH=\"800\"HEIGHT=\"600\"\n");
+        sb.append("<html> ");
+        sb.append("<body> ");
+        sb.append("<p ALIGN='center'> ");
+        sb.append("<APPLET ");
+        sb.append("ARCHIVE='org.meandre.applet.ruleassociation.support.webrulevisapplet.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
 
-        sb.append("CODEBASE=\"public/resources/contexts/java\"\n");
-        sb.append("CODE=\"org.meandre.applet.ruleassociation.support.WebRuleVisApplet.class\">\n");
-        sb.append("<PARAM name=\"servletURL\" value=\"").append(sInstanceID).
-                append("\">\n");
-        sb.append("</APPLET>\n");
-        sb.append("</p>\n");
-        sb.append("<br /><br />\n");
-        sb.append("<div align=\"center\">\n");
-        sb.append("<table align=center><font size=2><a id=\"url\" href=\"/" +
-                  sInstanceID + "?done=true\">DONE</a></font></table>\n");
-        sb.append("</div>\n");
-        sb.append("</body>\n");
-        sb.append("</html>\n");
+        sb.append("CODEBASE='public/resources/contexts/java/' ");
+        sb.append("CODE='org.meandre.applet.ruleassociation.support.WebRuleVisApplet.class'> ");
+        sb.append("<PARAM name='servletURL' value='").append(sInstanceID).
+                append("'> ");
+        sb.append("</APPLET> ");
+        sb.append("</p> ");
+        sb.append("<br/><br/> ");
+        sb.append("<div align='center'> ");
+        sb.append("<table align='center'><font size='2'> <a id='url' href='/" +
+                  sInstanceID + "?done=true'>DONE</a></font></table> ");
+        sb.append("</div> ");
+        sb.append("</body> ");
+        sb.append("</html> ");
         return sb.toString();
     }
 
