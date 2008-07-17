@@ -237,8 +237,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
             try{
                 PrintWriter writer = response.getWriter();
                 writer.println("<html><head><title>Choose Attributes</title>");
-                writer.println("<meta http-equiv=\"REFRESH\" content=\"0;url=\"" +
-                        webUIUrl + "></HEAD>");
+                writer.println("<meta http-equiv='REFRESH' content='0;url=/'></HEAD>");
                 writer.println("<body>Choose Attributes Releasing Display</body></html>");
             }catch (IOException e) {
                 e.printStackTrace();

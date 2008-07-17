@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.util.concurrent.Semaphore;
 
 import org.meandre.components.discovery.ruleassociation.support.RuleTable;
@@ -158,13 +159,12 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
                        name="verbose")
     final static String DATA_PROPERTY = "verbose";
 
-    private static final long serialVersionUID = 2687955466074691940L;
-
     /** The blocking semaphore */
     private Semaphore sem = new Semaphore(1, true);
 
     /** The instance ID */
     private String sInstanceID = null;
+    private String webUIUrl = null;
 
     private boolean verbose = true;
 
@@ -211,17 +211,16 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
         sb.append("<body> ");
         sb.append("<p ALIGN='center'> ");
         sb.append("<APPLET ");
-        sb.append("ARCHIVE='org.meandre.applet.ruleassociation.support.webrulevisapplet.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
+        sb.append("ARCHIVE='org.meandre.applet.ruleassociation.WebRuleVis-webrulevis.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
 
-        sb.append("CODEBASE='public/resources/contexts/java/' ");
+        sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
         sb.append("CODE='org.meandre.applet.ruleassociation.support.WebRuleVisApplet.class'> ");
-        sb.append("<PARAM name='servletURL' value='").append(sInstanceID).
-                append("'> ");
+        sb.append("<PARAM name='servletURL' value='" + webUIUrl).append(sInstanceID).append("'> ");
         sb.append("</APPLET> ");
         sb.append("</p> ");
         sb.append("<br/><br/> ");
         sb.append("<div align='center'> ");
-        sb.append("<table align='center'><font size='2'> <a id='url' href='/" +
+        sb.append("<table align='center'><font size='2'> <a id='url' href='" + webUIUrl +
                   sInstanceID + "?done=true'>DONE</a></font></table> ");
         sb.append("</div> ");
         sb.append("</body> ");
@@ -273,6 +272,8 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
         document = (Document)theOb;
 
         sInstanceID = cc.getExecutionInstanceID();
+        webUIUrl = cc.getWebUIUrl(true).toString();
+        if (!webUIUrl.endsWith("/")) webUIUrl += "/";
 
         try {
             sem.acquire();

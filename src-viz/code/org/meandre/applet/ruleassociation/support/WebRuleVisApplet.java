@@ -94,12 +94,11 @@ public class WebRuleVisApplet extends JApplet implements RulePMMLTags {
      * Executed each time the applet is loaded or reloaded.
      */
     public void init() {
-        String location = "/" + getParameter("servletURL") + "?applet=true";
+        String location = getParameter("servletURL") + "?applet=true";
 
         try {
             URL testServlet = new URL(location);
             URLConnection servletConnection = testServlet.openConnection();
-            servletConnection.setDoInput(true);
             //servletConnection.setRequestProperty("Content-Type","application/octet-stream");
             InputStream inputStreamFromServlet = servletConnection.getInputStream();
             ObjectInputStream ois = new ObjectInputStream(inputStreamFromServlet);
