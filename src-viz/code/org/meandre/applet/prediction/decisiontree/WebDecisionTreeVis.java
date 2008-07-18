@@ -125,6 +125,7 @@ public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragm
 
     /** The instance ID */
     private String sInstanceID = null;
+    private String webUIUrl = null;
 
     private boolean verbose = true;
 
@@ -154,20 +155,19 @@ public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragm
         StringBuffer sb = new StringBuffer();
         sb.append("<html>\n");
         sb.append("<body>\n");
-        sb.append("<p ALIGN=center >\n");
-        sb.append("<APPLET\n");
-        sb.append("ARCHIVE=\"org.meandre.applet.prediction.decisiontree.support.webdecisiontreevisapplet.jar, icons.jar\" WIDTH=\"800\"HEIGHT=\"600\"\n");
+        sb.append("<p ALIGN='center'>\n");
+        sb.append("<APPLET ");
+        sb.append("ARCHIVE='org.meandre.applet.prediction.decisiontree.WebDecisionTreeVis-webdecisiontreevis.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
 
-        sb.append("CODEBASE=\"public/resources/contexts/java\"\n");
-        sb.append("CODE=\"org.meandre.applet.prediction.decisiontree.support.WebDecisionTreeVisApplet.class\">\n");
-        sb.append("<PARAM name=\"servletURL\" value=\"").append(sInstanceID).
-                append("\">\n");
+        sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
+        sb.append("CODE='org.meandre.applet.prediction.decisiontree.support.WebDecisionTreeVisApplet.class'> ");
+        sb.append("<PARAM name='servletURL' value='" + webUIUrl).append(sInstanceID).append("'> ");
         sb.append("</APPLET>\n");
         sb.append("</p>\n");
         sb.append("<br /><br />\n");
-        sb.append("<div align=\"center\">\n");
-        sb.append("<table align=center><font size=2><a id=\"url\" href=\"/" +
-                  sInstanceID + "?done=true\">DONE</a></font></table>\n");
+        sb.append("<div align='center'>\n");
+        sb.append("<table align='center'><font size='2'> <a id='url' href='" + webUIUrl +
+                sInstanceID + "?done=true'>DONE</a></font></table> ");
         sb.append("</div>\n");
         sb.append("</body>\n");
         sb.append("</html>\n");
@@ -216,6 +216,8 @@ public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragm
         model = (ViewableDTModel)theOb;
 
         sInstanceID = cc.getExecutionInstanceID();
+        webUIUrl = cc.getWebUIUrl(true).toString();
+        if (!webUIUrl.endsWith("/")) webUIUrl += "/";
 
         try {
             sem.acquire();
