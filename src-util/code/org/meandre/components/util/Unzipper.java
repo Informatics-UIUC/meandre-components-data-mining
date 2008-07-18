@@ -50,6 +50,8 @@ import java.io.*;
 import java.util.zip.*;
 import java.util.logging.*;
 
+import org.meandre.core.ComponentContext;
+
 // ===============
 // Other Imports
 // ===============
@@ -74,6 +76,32 @@ public class Unzipper {
 	// Static Methods
 	// ================
 
+	/**
+	 * Given a path to the published_resources and a resource name, check to see if a zip file
+	 * of that name already exists at the "root" of published_resource.  If yes, then we assume
+	 * this file has already been unpacked and its resources are ready for accessing.  If not,
+	 * we pass it as a resource to be found in a jar file and written to that location using
+	 * MeandreJarFileReaderUtil.findAndInstallFileResource(...).  Then we call the unzip method 
+	 * on the zip file we just pulled out of a jar so that its resources will be unpacked and 
+	 * ready for use.
+	 */
+	public static void CheckIfZipFileExistsIfNotInstallFromJarThenUnzipIt(String path, String resName, String installPath, ComponentContext ctx)
+		throws IOException {
+		String zipFileName = resName + ".zip";
+		String zipFilePath = path + zipFileName;
+		
+		File zipFile = new File(zipFilePath);
+
+		// if not, get the zip file as a resource and write it to file
+		if (!zipFile.exists()) {
+			MeandreJarFileReaderUtil.findAndInstallFileResource(zipFileName, zipFileName, ctx);
+			//Now unzip the file
+			File destDir = new File(path + resName);
+			destDir.mkdir();
+			unzip(zipFile, installPath);
+		}
+	}
+	
 	/**
 	 * Given an archive file, unzip its contents to the path denoted by the
 	 * destination parameter.

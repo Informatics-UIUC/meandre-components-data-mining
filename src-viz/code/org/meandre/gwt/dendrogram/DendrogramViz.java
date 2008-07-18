@@ -42,9 +42,9 @@
 
 package org.meandre.gwt.dendrogram;
 
-//==============
+// ==============
 // Java Imports
-//==============
+// ==============
 
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
@@ -54,18 +54,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Set;
 import java.util.TreeSet;
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileOutputStream;
 import java.util.Vector;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Comparator;
 
-//===============
+// ===============
 // Other Imports
-//===============
+// ===============
 
 import gnu.formj.html.Label;
 import gnu.formj.html.A;
@@ -89,64 +86,63 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.components.util.Unzipper;
 import org.meandre.webui.*;
 
-//import org.meandre.tools.components.*;
-//import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
+// import org.meandre.tools.components.*;
+// import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
 
 /**
- *
+ * 
  * <p>
  * Title: Dendrogram Visualization
  * </p>
- *
+ * 
  * <p>
  * Description: A dendrogram visualization of cluster models.
  * </p>
- *
+ * 
  * <p>
  * Properties: <br>
- * The "use_local_host" means that you intend to run the server and browser client
- * on the same machine.  This is set to false by default.  If you do run both on the
- * same machine then it is important to set this property to true.  The reason is that
- * when Java queries to OS for the local machines IP it often gets internal LAN IP's
- * that often are not reachable as url's in your browser, and therefore an error will result.
- * By choosing to set this property to true you force the client app to use "127.0.0.1"
- * for your local address.<br>
- * The sparse_detail_limit property defaults to 10.  For sparse tables it is not practical
- * to display the entire table subset that make up a given cluster because the table may
- * have thousands of columns.  This value tells the application how many column values to
- * display in descending order by support.
+ * The "use_local_host" means that you intend to run the server and browser
+ * client on the same machine. This is set to false by default. If you do run
+ * both on the same machine then it is important to set this property to true.
+ * The reason is that when Java queries to OS for the local machines IP it often
+ * gets internal LAN IP's that often are not reachable as url's in your browser,
+ * and therefore an error will result. By choosing to set this property to true
+ * you force the client app to use "127.0.0.1" for your local address.<br>
+ * The sparse_detail_limit property defaults to 10. For sparse tables it is not
+ * practical to display the entire table subset that make up a given cluster
+ * because the table may have thousands of columns. This value tells the
+ * application how many column values to display in descending order by support.
  * </p>
- *
+ * 
  * <p>
  * Copyright: Copyright (c) 2008
  * </p>
- *
+ * 
  * <p>
  * Company: Automated Learning Group, NCSA
  * </p>
- *
+ * 
  * @author D. Searsmith
  * @version 1.0
  */
 @Component(creator = "Duane Searsmith",
 
-		description = "<p>Dendrogram visualization of SEASR cluster models.</p>"
-			+ "<p>"
-			+ "Properties: <br>"
-			+ "The 'use_local_host' means that you intend to run the server and browser client "
-			+ "on the same machine.  This is set to false by default.  If you do run both on the "
-			+ "same machine then it is important to set this property to true.  The reason is that "
-			+ "when Java queries to OS for the local machines IP it often gets internal LAN IP's "
-			+ "that often are not reachable as url's in your browser, and therefore an error will result. "
-			+ "By choosing to set this property to true you force the client app to use '127.0.0.1' "
-			+ "for your local address.<br>"
-			+ "The sparse_detail_limit property defaults to 10.  For sparse tables it is not practical "
-			+ "to display the entire table subset that make up a given cluster because the table may "
-			+ "have thousands of columns.  This value tells the application how many column values to "
-			+ "display in descending order by support."
-			+ "</p>",
+description = "<p>Dendrogram visualization of SEASR cluster models.</p>"
+		+ "<p>"
+		+ "Properties: <br>"
+		+ "The 'use_local_host' means that you intend to run the server and browser client "
+		+ "on the same machine.  This is set to false by default.  If you do run both on the "
+		+ "same machine then it is important to set this property to true.  The reason is that "
+		+ "when Java queries to OS for the local machines IP it often gets internal LAN IP's "
+		+ "that often are not reachable as url's in your browser, and therefore an error will result. "
+		+ "By choosing to set this property to true you force the client app to use '127.0.0.1' "
+		+ "for your local address.<br>"
+		+ "The sparse_detail_limit property defaults to 10.  For sparse tables it is not practical "
+		+ "to display the entire table subset that make up a given cluster because the table may "
+		+ "have thousands of columns.  This value tells the application how many column values to "
+		+ "display in descending order by support." + "</p>",
 
-		name = "DendrogramViz", tags = "visualization, dendrogram, cluster", mode = Mode.webui, dependency = { "DendrogramViz_001.jar" })
+name = "DendrogramViz", tags = "visualization, dendrogram, cluster", mode = Mode.webui, dependency = { "DendrogramViz_001.jar" })
 public class DendrogramViz implements ExecutableComponent,
 		WebUIFragmentCallback {
 
@@ -156,8 +152,9 @@ public class DendrogramViz implements ExecutableComponent,
 
 	// props
 
-//	@ComponentProperty(defaultValue = "1714", description = "The core repository port.", name = "core_port")
-//	public final static String DATA_PROPERTY_CORE_PORT = "core_port";
+	// @ComponentProperty(defaultValue = "1714", description = "The core
+	// repository port.", name = "core_port")
+	// public final static String DATA_PROPERTY_CORE_PORT = "core_port";
 
 	@ComponentProperty(defaultValue = "false", description = "Connect to local host.", name = "use_local_host")
 	public final static String DATA_PROPERTY_USE_LOCAL_HOST = "use_local_host";
@@ -186,7 +183,7 @@ public class DendrogramViz implements ExecutableComponent,
 
 	private Map<Integer, DendrogramViz.ClusterNode> _clustMap = new HashMap<Integer, DendrogramViz.ClusterNode>();
 
-	private final String _jarName = "DendrogramViz_001";
+	private final String _resName = "DendrogramViz_001";
 
 	private Map<Integer, Object[]> _centroidMap = null;
 
@@ -204,69 +201,69 @@ public class DendrogramViz implements ExecutableComponent,
 	// ================
 
 	static public void main(String args[]) {
-//		// get a flow builder instance
-//		FlowBuilderAPI flowBuilder = new FlowBuilderAPI();
-//		// get a flow object
-//		WorkingFlow wflow = flowBuilder.newWorkingFlow("test");
-//		// add a component
-//		String pushString = wflow
-//				.addComponent("org.seasr.meandre.components.io.PushString");
-//		// set a component property
-//		wflow.setComponentInstanceProp(pushString, "string",
-//				"file:///c:/ALG_Projects/alg/wekadata/examples/iris2.arff");
-//		// add another component
-//		String loadInstances = wflow
-//				.addComponent("org.seasr.meandre.components.weka.WekaLoadInstances");
-//		// set a component property
-//		wflow.setComponentInstanceProp(loadInstances, "printInstances", "Y");
-//		// make a connection between two components
-//		wflow.connectComponents(pushString, "output_string", loadInstances,
-//				"inputURL");
-//
-//		// add a third component
-//		String instotab = wflow
-//				.addComponent("org.seasr.meandre.components.io.d2k.InstancesToTable");
-//		// make another connection between two components
-//		wflow.connectComponents(loadInstances,
-//				WekaLoadInstances.DATA_OUTPUT_INSTANCES, instotab,
-//				InstancesToTable.DATA_INPUT);
-//
-//		// add a 4th component
-//		String clusterer = wflow
-//				.addComponent("org.seasr.meandre.components.mining.d2k.unsupervised.cluster.hac.HACModelBuilder");
-//		// make another connection between two components
-//		wflow.connectComponents(instotab, InstancesToTable.DATA_OUTPUT,
-//				clusterer, HACModelBuilder.DATA_INPUT_D2K_TABLE);
-//
-//		wflow.setComponentInstanceProp(clusterer,
-//				HACModelBuilder.DATA_PROPERTY_VERBOSE, "Y");
-//		wflow.setComponentInstanceProp(clusterer,
-//				HACModelBuilder.DATA_PROPERTY_NUM_CLUSTERS, "10");
-//		wflow.setComponentInstanceProp(clusterer,
-//				HACModelBuilder.DATA_PROPERTY_THRESHOLD, ".25");
-//		wflow.setComponentInstanceProp(clusterer,
-//				HACModelBuilder.DATA_PROPERTY_DISTANCE_METRIC, ""
-//						+ HACWork.s_Euclidean_DISTANCE);
-//		wflow.setComponentInstanceProp(clusterer,
-//				HACModelBuilder.DATA_PROPERTY_CLUSTER_METHOD, ""
-//						+ HACWork.s_UPGMA_CLUSTER);
-//
-//		// add a 5th component
-//		String dendro = wflow
-//				.addComponent("org.seasr.meandre.components.viz.d2k.D2K_DendrogramViz");
-//		// make another connection between two components
-//		wflow.connectComponents(clusterer,
-//				HACModelBuilder.DATA_OUTPUT_CLUSTER_MODEL, dendro,
-//				DendrogramViz.DATA_INPUT_CLUSTER_MODEL);
-//
-//		wflow.setComponentInstanceProp(dendro,
-//				DendrogramViz.DATA_PROPERTY_CORE_PORT, "1715");
-//
-//		// execute the flow specifying that we want a web UI displayed
-//		flowBuilder.execute(wflow, true);
-//
-//		// For some reason the process does not end without a forced exit.
-//		System.exit(0);
+		// // get a flow builder instance
+		// FlowBuilderAPI flowBuilder = new FlowBuilderAPI();
+		// // get a flow object
+		// WorkingFlow wflow = flowBuilder.newWorkingFlow("test");
+		// // add a component
+		// String pushString = wflow
+		// .addComponent("org.seasr.meandre.components.io.PushString");
+		// // set a component property
+		// wflow.setComponentInstanceProp(pushString, "string",
+		// "file:///c:/ALG_Projects/alg/wekadata/examples/iris2.arff");
+		// // add another component
+		// String loadInstances = wflow
+		// .addComponent("org.seasr.meandre.components.weka.WekaLoadInstances");
+		// // set a component property
+		// wflow.setComponentInstanceProp(loadInstances, "printInstances", "Y");
+		// // make a connection between two components
+		// wflow.connectComponents(pushString, "output_string", loadInstances,
+		// "inputURL");
+		//
+		// // add a third component
+		// String instotab = wflow
+		// .addComponent("org.seasr.meandre.components.io.d2k.InstancesToTable");
+		// // make another connection between two components
+		// wflow.connectComponents(loadInstances,
+		// WekaLoadInstances.DATA_OUTPUT_INSTANCES, instotab,
+		// InstancesToTable.DATA_INPUT);
+		//
+		// // add a 4th component
+		// String clusterer = wflow
+		// .addComponent("org.seasr.meandre.components.mining.d2k.unsupervised.cluster.hac.HACModelBuilder");
+		// // make another connection between two components
+		// wflow.connectComponents(instotab, InstancesToTable.DATA_OUTPUT,
+		// clusterer, HACModelBuilder.DATA_INPUT_D2K_TABLE);
+		//
+		// wflow.setComponentInstanceProp(clusterer,
+		// HACModelBuilder.DATA_PROPERTY_VERBOSE, "Y");
+		// wflow.setComponentInstanceProp(clusterer,
+		// HACModelBuilder.DATA_PROPERTY_NUM_CLUSTERS, "10");
+		// wflow.setComponentInstanceProp(clusterer,
+		// HACModelBuilder.DATA_PROPERTY_THRESHOLD, ".25");
+		// wflow.setComponentInstanceProp(clusterer,
+		// HACModelBuilder.DATA_PROPERTY_DISTANCE_METRIC, ""
+		// + HACWork.s_Euclidean_DISTANCE);
+		// wflow.setComponentInstanceProp(clusterer,
+		// HACModelBuilder.DATA_PROPERTY_CLUSTER_METHOD, ""
+		// + HACWork.s_UPGMA_CLUSTER);
+		//
+		// // add a 5th component
+		// String dendro = wflow
+		// .addComponent("org.seasr.meandre.components.viz.d2k.D2K_DendrogramViz");
+		// // make another connection between two components
+		// wflow.connectComponents(clusterer,
+		// HACModelBuilder.DATA_OUTPUT_CLUSTER_MODEL, dendro,
+		// DendrogramViz.DATA_INPUT_CLUSTER_MODEL);
+		//
+		// wflow.setComponentInstanceProp(dendro,
+		// DendrogramViz.DATA_PROPERTY_CORE_PORT, "1715");
+		//
+		// // execute the flow specifying that we want a web UI displayed
+		// flowBuilder.execute(wflow, true);
+		//
+		// // For some reason the process does not end without a forced exit.
+		// System.exit(0);
 
 	}
 
@@ -284,11 +281,6 @@ public class DendrogramViz implements ExecutableComponent,
 		return Integer.parseInt(s);
 	}
 
-//	public int getCorePort(ComponentContextProperties ccp) {
-//		String s = ccp.getProperty(DATA_PROPERTY_CORE_PORT);
-//		return Integer.parseInt(s);
-//	}
-
 	// ===========================
 	// Interface Implementation: ExecutableComponent
 	// ===========================
@@ -300,75 +292,23 @@ public class DendrogramViz implements ExecutableComponent,
 
 		_logger.fine("initialize() called");
 
-		// check if jar is in public file area
-
-		String fname = ((ComponentContext)ccp).getPublicResourcesDirectory();
+		String fname = ((ComponentContext) ccp).getPublicResourcesDirectory();
 		if ((!(fname.endsWith("/"))) && (!(fname.endsWith("\\")))) {
 			fname += "/";
 		}
-		File jarFile = new File(fname + _jarName + ".zip");
 
-		// if not, get the jar as a resource and write it to file
-		if (!jarFile.exists()) {
-			FileOutputStream fos = null;
-			InputStream in = null;
-			try {
-				jarFile.createNewFile();
-				in = getComponentResourceAsStream(_jarName + ".zip");
-				if (in == null) {
-					return;
-				}
-				fos = new FileOutputStream(jarFile);
-				byte[] bytes = new byte[4096];
-				int n = -1;
-				while ((n = in.read(bytes)) != -1) {
-					fos.write(bytes, 0, n);
-				}
-				fos.flush();
-				// put the zip file contents in a sub dir of public resources
-				// root named _jarName
-				File destDir = new File(fname + _jarName);
-				destDir.mkdir();
-				Unzipper.unzip(jarFile, destDir.getCanonicalPath());
-			} catch (Exception e) {
-				throw new RuntimeException(
-						"ERROR: writing resource jar to file.", e);
-			} finally {
-				try {
-					if (fos != null) {
-						fos.flush();
-						fos.close();
-					}
-					if (in != null) {
-						in.close();
-					}
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
+		try {
+			Unzipper.CheckIfZipFileExistsIfNotInstallFromJarThenUnzipIt(fname,
+					_resName, fname + _resName, (ComponentContext) ccp);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	private InputStream getComponentResourceAsStream(String res) {
-		System.out.println(res);
-
-		InputStream resURL = this.getClass().getClassLoader()
-				.getResourceAsStream(res);
-		if (resURL == null) {
-			resURL = ClassLoader.getSystemClassLoader()
-					.getResourceAsStream(res);
-
-			if (resURL == null) {
-				System.out.println("Resource unable to be found: " + res);
-			}
-		}
-
-		return resURL;
-	}
 
 	/**
 	 * When ready for execution.
-	 *
+	 * 
 	 * @param ctx
 	 *            The component context.
 	 * @throws ComponentExecutionException
@@ -436,7 +376,7 @@ public class DendrogramViz implements ExecutableComponent,
 	/**
 	 * This method gets call when a request with no parameters is made to a
 	 * component webui fragment.
-	 *
+	 * 
 	 * @param response
 	 *            The response object
 	 * @throws WebUIException
@@ -454,7 +394,7 @@ public class DendrogramViz implements ExecutableComponent,
 	/**
 	 * This method gets called when a call with parameters is made to a given
 	 * component webUI fragment
-	 *
+	 * 
 	 * @param target
 	 *            The target path
 	 * @param request
@@ -570,7 +510,7 @@ public class DendrogramViz implements ExecutableComponent,
 
 	/**
 	 * A simple message.
-	 *
+	 * 
 	 * @return The html containing the page
 	 */
 	private String getViz() {
@@ -585,9 +525,9 @@ public class DendrogramViz implements ExecutableComponent,
 			} else {
 				s1 = _ctx.getWebUIUrl(true).getHost();
 			}
-//			port = _ctx.getProperty(DendrogramViz.DATA_PROPERTY_CORE_PORT);
+			// port = _ctx.getProperty(DendrogramViz.DATA_PROPERTY_CORE_PORT);
 			fragPort = _ctx.getWebUIUrl(true).getPort();
-			port = ""+fragPort;
+			port = "" + fragPort;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -619,42 +559,34 @@ public class DendrogramViz implements ExecutableComponent,
 		div.add(h2);
 		div.add(h3);
 
-		String s2 = "<div>" /* + "<title>Dendrogram Visualization</title>"*/
+		String s2 = "<div>" /* + "<title>Dendrogram Visualization</title>" */
 				+ "<link rel='stylesheet' href='http://"
 				+ s1
 				+ ":"
 				+ port
 				+ "/public/resources/"
-				+ _jarName
+				+ _resName
 				+ "/Main.css'>"
 				+ "<script src='http://"
 				+ s1
 				+ ":"
 				+ port
 				+ "/public/resources/"
-				+ _jarName
+				+ _resName
 				+ "/script/wz_jsgraphics.js' type='text/javascript'></script> "
 				+ "<script language='javascript' src='http://"
 				+ s1
 				+ ":"
 				+ port
 				+ "/public/resources/"
-				+ _jarName
+				+ _resName
 				+ "/org.seasr.meandre.components.dendrogram.Main-xs.nocache.js'></script> "
-				+ "<script src='http://"
-				+ s1
-				+ ":"
-				+ port
-				+ "/public/resources/"
-				+ _jarName
+				+ "<script src='http://" + s1 + ":" + port
+				+ "/public/resources/" + _resName
 				+ "/script/prototype.js' type='text/javascript'></script> "
-				+ "<script src='http://"
-				+ s1
-				+ ":"
-				+ port
-				+ "/public/resources/"
-				+ _jarName
-				+ "/script/scriptaculous.js' type='text/javascript'></script>"/*</head><body>*/
+				+ "<script src='http://" + s1 + ":" + port
+				+ "/public/resources/" + _resName
+				+ "/script/scriptaculous.js' type='text/javascript'></script>"/* </head><body> */
 				+ "<div style='position:relative;' id='g'></div> "
 				+ div.toString() + "</div>";
 		return s2;
@@ -922,6 +854,5 @@ public class DendrogramViz implements ExecutableComponent,
 			return false;
 		}
 	} // end class cRank_Comparator
-
 
 }
