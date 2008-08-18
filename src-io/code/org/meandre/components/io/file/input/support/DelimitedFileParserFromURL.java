@@ -43,11 +43,11 @@
 package org.meandre.components.io.file.input.support;
 
 import org.meandre.components.datatype.table.*;
-import org.meandre.components.io.support.proxy.DataObjectProxy;
 
 import java.io.*;
 import java.util.*;
 
+import org.meandre.tools.webdav.WebdavClient;
 
 /**
  * Reads data from a delimited file. The delimiter is found automatically, or
@@ -113,8 +113,12 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
    /** the file reader. */
    protected LineNumberReader lineReader;
 
-   /** The DataObj to read. */
-   protected DataObjectProxy mDataObj;
+   /** The theClient to read. */
+   //protected DataObjectProxy mDataObj;
+   protected WebdavClient client;
+   
+   /** the resource location. */
+   protected String url;
 
    /** the number of columns in the file. */
    protected int numColumns;
@@ -133,59 +137,73 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
     * Create a new DelimitedFileReader with no types row, no labels row, no in
     * out row, no nominal scalar row.
     *
-    * @param  dataobj the file to read
+    * @param  theClient the file to read
+    * @param  theURL    the resource location
     *
     * @throws Exception Description of exception Exception.
     */
-   public DelimitedFileParserFromURL(DataObjectProxy dataobj) throws Exception {
-      this(dataobj, -1, -1, -1, -1);
+   public DelimitedFileParserFromURL(WebdavClient theClient, 
+                                     String theURL) throws Exception {
+      this(theClient, theURL, -1, -1, -1, -1);
    }
 
    /**
     * Create a new DelimitedFileReader with the specified labels row.
     *
-    * @param  dataobj    the file to read
+    * @param  theClient  the file to read
+    * @param  theURL     the resource location
     * @param  _labelsRow the index of the labels row
     *
     * @throws Exception Description of exception Exception.
     */
-   public DelimitedFileParserFromURL(DataObjectProxy dataobj, int _labelsRow)
-      throws Exception { this(dataobj, _labelsRow, -1, -1, -1); }
+   public DelimitedFileParserFromURL(WebdavClient theClient, 
+                                     String theURL, 
+                                     int _labelsRow) throws Exception { 
+       this(theClient, theURL, _labelsRow, -1, -1, -1); 
+   }
 
    /**
     * Create a new DelimitedFileReader with the specified labels and types rows.
     *
-    * @param  dataobj    the file to read
+    * @param  theClient  the file to read
+    * @param  theURL     the resource location
     * @param  _labelsRow the index of the labels row
     * @param  _typesRow  the index of the types row
     *
     * @throws Exception Description of exception Exception.
     */
-   public DelimitedFileParserFromURL(DataObjectProxy dataobj, int _labelsRow,
+   public DelimitedFileParserFromURL(WebdavClient theClient, 
+                                     String theURL,
+                                     int _labelsRow, 
                                      int _typesRow) throws Exception {
-      this(dataobj, _labelsRow, _typesRow, -1, -1);
+       this(theClient, theURL, _labelsRow, _typesRow, -1, -1);
    }
 
    /**
     * Creates a new DelimitedFileParser object.
     *
-    * @param  dataobj    Description of parameter dataobj.
+    * @param  theClient  Description of parameter theClient.
+    * @param  theURL     Description of parameter theURL.
     * @param  _labelsRow Description of parameter _labelsRow.
     * @param  _typesRow  Description of parameter _typesRow.
     * @param  delim      Description of parameter delim.
     *
     * @throws Exception Description of exception Exception.
     */
-   public DelimitedFileParserFromURL(DataObjectProxy dataobj, int _labelsRow,
-                                     int _typesRow, char delim)
-      throws Exception { this(dataobj, _labelsRow, _typesRow, -1, -1, delim); }
+   public DelimitedFileParserFromURL(WebdavClient theClient, 
+                                     String theURL,
+                                     int _labelsRow,
+                                     int _typesRow, 
+                                     char delim) throws Exception { 
+       this(theClient, theURL, _labelsRow, _typesRow, -1, -1, delim); }
 
 
    /**
     * Create a new DelimitedFileReader with the specified labels, types, inout,
     * and nominal/scalar rows.
     *
-    * @param  dataobj       the file to read
+    * @param  theClient     the file to read
+    * @param  theURL        the resource location
     * @param  _labelsRow    the index of the labels row
     * @param  _typesRow     the index of the types row
     * @param  _inOutRow     the index of the in-out row
@@ -193,10 +211,14 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
     *
     * @throws Exception Description of exception Exception.
     */
-   public DelimitedFileParserFromURL(DataObjectProxy dataobj, int _labelsRow,
-                                     int _typesRow, int _inOutRow,
+   public DelimitedFileParserFromURL(WebdavClient theClient,
+                                     String theURL,
+                                     int _labelsRow,
+                                     int _typesRow, 
+                                     int _inOutRow,
                                      int _nomScalarRow) throws Exception {
-      mDataObj = dataobj;
+      client = theClient;
+      url = theURL;
       typesRow = _typesRow;
       labelsRow = _labelsRow;
       inOutRow = _inOutRow;
@@ -208,7 +230,8 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
       scanFile();
 
       lineReader =
-         new LineNumberReader(new InputStreamReader(dataobj.getInputStream()));
+         new LineNumberReader(new InputStreamReader(client.getResourceAsStream(url)));
+                 //dataobj.getInputStream()));
 
 
       // now read in the types, scalar, in out rows, labels
@@ -254,7 +277,8 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
     * Create a new DelimitedFileReader with the specified labels, types, inout,
     * and nominal/scalar rows.
     *
-    * @param  dataobj       the file to read
+    * @param  theClient     the file to read
+    * @param  theURL        the resource location
     * @param  _labelsRow    the index of the labels row
     * @param  _typesRow     the index of the types row
     * @param  _inOutRow     the index of the in-out row
@@ -263,11 +287,15 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
     *
     * @throws Exception Description of exception Exception.
     */
-   public DelimitedFileParserFromURL(DataObjectProxy dataobj, int _labelsRow,
-                                     int _typesRow, int _inOutRow,
-                                     int _nomScalarRow, char delim)
-      throws Exception {
-      mDataObj = dataobj;
+   public DelimitedFileParserFromURL(WebdavClient theClient, 
+                                     String theURL,
+                                     int _labelsRow,
+                                     int _typesRow, 
+                                     int _inOutRow,
+                                     int _nomScalarRow, 
+                                     char delim) throws Exception {
+      client = theClient;
+      url = theURL;
       typesRow = _typesRow;
       labelsRow = _labelsRow;
       inOutRow = _inOutRow;
@@ -277,7 +305,7 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
       this.scanRowsCols();
 
       lineReader =
-         new LineNumberReader(new InputStreamReader(dataobj.getInputStream()));
+         new LineNumberReader(new InputStreamReader(client.getResourceAsStream(url)));
 
       // now read in the types, scalar, in out rows, labels
       if (typesRow > -1) {
@@ -473,7 +501,7 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
       ArrayList lines = new ArrayList();
 
       BufferedReader reader =
-         new BufferedReader(new InputStreamReader(mDataObj.getInputStream()));
+         new BufferedReader(new InputStreamReader(client.getResourceAsStream(url)));
 
       // read the file in one row at a time
       int currentRow = 0;
@@ -547,7 +575,7 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
       if (lines.size() < 2) {
          throw new Exception("The input file must have at least 2 rows for" +
                              " the delimiter to be identified automatically. \n" +
-                             mDataObj.getURL().getFile() +
+                             url +
                              " has only " +
                              lines.size() +
                              " row(s). ");
@@ -726,7 +754,7 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
       int nc = 0;
 
       BufferedReader reader =
-         new BufferedReader(new InputStreamReader(mDataObj.getInputStream()));
+         new BufferedReader(new InputStreamReader(client.getResourceAsStream(url)));
       String line;
 
       // read the file in one row at a time
@@ -761,8 +789,7 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
 
          if (lineNum < lineReader.getLineNumber()) {
             lineReader =
-               new LineNumberReader(new InputStreamReader(mDataObj
-                                                             .getInputStream()));
+               new LineNumberReader(new InputStreamReader(client.getResourceAsStream(url)));
          }
 
          int ctr = 0;
@@ -807,8 +834,7 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
 
          if (rowNum < lineReader.getLineNumber()) {
             lineReader =
-               new LineNumberReader(new InputStreamReader(mDataObj
-                                                             .getInputStream()));
+               new LineNumberReader(new InputStreamReader(client.getResourceAsStream(url)));
          }
 
          int current = lineReader.getLineNumber();
@@ -1018,11 +1044,22 @@ public class DelimitedFileParserFromURL implements FlatFileParser {
     */
    public void setDelimiter(char d) { delimiter = d; }
 
-   public void finalize() {
-	   if (mDataObj != null) {
-		   mDataObj.close();
-		   mDataObj = null;
-	   }
+   public void finalize() {}
+   
+   /**
+    * 
+    * @return text read from WebDAV.
+    */
+   public String toText() {
+       StringBuffer sb = new StringBuffer();
+       String line = null;
+       try {
+           while((line = lineReader.readLine()) != null)
+               sb.append(line).append("\n");
+       }catch(IOException e) {
+           e.printStackTrace();
+       }
+       return sb.toString();
    }
 
 } // end class DelimitedFileParser

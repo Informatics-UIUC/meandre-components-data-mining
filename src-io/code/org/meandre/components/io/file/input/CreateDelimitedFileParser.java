@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.meandre.components.io.file.input.support.DelimitedFileParserFromURL;
-import org.meandre.components.io.support.proxy.DataObjectProxy;
 
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
@@ -58,20 +57,23 @@ import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 
+import org.meandre.tools.webdav.WebdavClient;
+
 
 /**
  * Create a DelimitedFileReader for a file
  
  * @author mcgrath (original)
  * @author Boris Capitanu
+ * @author Lily Dong
  *
  * BC: Imported from d2k (ncsa.d2k.modules.core.io.file.input.CreateDelimitedParserFromURL)
  */
 
 @Component(
-        creator = "Boris Capitanu",
-        description = "<p>This module creates a parser for the specified data object " +
-        "proxy. The file is expected to have a consistent delimiter character.</p>" +
+        creator = "Boris Capitanu and Lily Dong",
+        description = "This module creates a parser for the specified WevdavClient. " +
+        "The file is expected to have a consistent delimiter character.</p>" +
         
         "<p>Detailed Description: <br/>" +
         "This module creates a parser that can be used to read data from a file that uses a single delimiter " +
@@ -79,27 +81,28 @@ import org.meandre.annotations.ComponentProperty;
         "input in the properties editor.  If the delimiter is to be found automatically, the file must " +
         "contain at least 2 rows. The file can contain a row of labels, and a row of data " +
         "types.  These are also specified via the properties editor." +
-        
-        "</p><p>Properties are used to specify the delimiter, the labels row number, " +
+        "Properties are used to specify the delimiter, the labels row number, " +
         "and the types row number. The row numbers are indexed from zero." +
-        
-        "</p><p>Typically the <i>File Parser</i> output port of this " +
-        "module is connected to the <i>File Parser</i> input port of " +
+        "Typically the File Parser output port of this " +
+        "module is connected to the File Parser input port of " +
         "a module whose name begins with 'Parse File', for example, " +
-        "<i>Parse File To Table</i> or  <i>Parse File To Paging Table</i>." +
-
-        "<p>Data Type Restrictions: " +
+        "Parse File To Table or  Parse File To Paging Table." +
+        "Data Type Restrictions: " +
         "The input to this module must be a delimited file. If the file is " +
         "large a java OutOfMemory error might occur. <p>Data Handling: " +
         "The module does not destroy or modify the input data.",
-
         name = "Create Delimited File Parser",
         tags = "file parser"
 )
 public class CreateDelimitedFileParser implements ExecutableComponent {
 
-    @ComponentInput(description = "Data Object pointing to a resource", name = "dataObjectProxy")
-    final static String DATA_INPUT_DATAOBJECTPROXY = "dataObjectProxy";
+    @ComponentInput(description = "WevdavClient pointing to a resource", 
+                    name = "webdavClient")
+    final static String DATA_INPUT_CLIENT= "webdavClient";
+    
+    @ComponentInput(description = "URL pointing to a resource location.",
+                    name = "url")
+    final static String DATA_INPUT_URL = "url";
 
     @ComponentOutput(description = "A Delimited File Parser for the specified file", name = "parser")
     final static String DATA_OUTPUT_PARSER = "parser";
@@ -249,7 +252,10 @@ public class CreateDelimitedFileParser implements ExecutableComponent {
 	public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
 		_logger.entering(this.getClass().getName(), "execute");
 		
-	    DataObjectProxy dataobj = (DataObjectProxy) context.getDataComponentFromInput(DATA_INPUT_DATAOBJECTPROXY);
+	    //DataObjectProxy dataobj = (DataObjectProxy) context.getDataComponentFromInput(DATA_INPUT_DATAOBJECTPROXY);
+	    
+		String url = (String)context.getDataComponentFromInput(DATA_INPUT_URL);
+		WebdavClient client = (WebdavClient)context.getDataComponentFromInput(DATA_INPUT_CLIENT);
 	    DelimitedFileParserFromURL df = null;
 	
 	    int lbl = -1;
@@ -266,8 +272,9 @@ public class CreateDelimitedFileParser implements ExecutableComponent {
 	
 	    if (!getHasSpecDelim()) {
 	        try {
-	            df = new DelimitedFileParserFromURL(dataobj, lbl, typ);
+	            df = new DelimitedFileParserFromURL(/*dataobj*/client, url, lbl, typ);
 	        } catch (Exception e) {
+	            e.printStackTrace();
 	            throw new ComponentExecutionException(e);
 	        }
 	    } else {
@@ -280,13 +287,15 @@ public class CreateDelimitedFileParser implements ExecutableComponent {
 	        }
 	
 	        try {
-	            df = new DelimitedFileParserFromURL(dataobj, lbl, typ, del[0]);
+	            df = new DelimitedFileParserFromURL(/*dataobj*/client, url, lbl, typ, del[0]);
 	        } catch (Exception e) {
 	            throw new ComponentExecutionException(e);
 	        }
 	    }
 	
 	    context.pushDataComponentToOutput(DATA_OUTPUT_PARSER, df);
+	    
+	    //System.out.println(df.toText());
 	}
 
 	public void dispose(ComponentContextProperties context) {

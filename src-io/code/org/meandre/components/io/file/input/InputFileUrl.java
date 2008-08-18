@@ -47,10 +47,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.meandre.components.io.support.proxy.DataObjectProxy;
-import org.meandre.components.io.support.proxy.DataObjectProxyException;
-import org.meandre.components.io.support.proxy.DataObjectProxyFactory;
-
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
@@ -60,15 +56,23 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 
+import org.meandre.tools.webdav.WebdavClient;
+
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.Credentials;
+
+import java.io.*;
+
 /**
  * InputFileURL allows the user to input the url to a local or remote resource.
  * The url can be set in the properties editor.
  *
- * <p>This module creates a Data Object Proxy for the specified file or URL. The
- * <i>DataObjectProxy</i> is pushed to the output.</p>
+ * <p>This module creates a WevdavClient for the specified file or URL. The
+ * <i>WevdavClient</i> is pushed to the output.</p>
  *
  * @author  unascribed (original)
  * @author Boris Capitanu
+ * @author Lily Dong
  * 
  * BC: Imported from d2k (ncsa.d2k.modules.core.io.file.input.Input1FileURL)
  *
@@ -77,11 +81,10 @@ import org.meandre.annotations.ComponentProperty;
  */
 
 @Component(
-        creator = "Boris Capitanu",
-        description = "<p>This module is used to enter the url to a local or remote resource. " +
-        "</p><p>Detailed Description: " +
-        "<p>Collect a URL or local path, and create a <i>DataObjectProxy</i>" +
-        " to access it. The proxy is output.</p>" +
+        creator = "Boris Capitanu and Lily Dong",
+        description = "This module is used to enter the url to a local or remote resource. " +
+        "Detailed Description: " +
+        "Collect a URL or local path, and create a WebdavClient to access it. " +
         "The module provides a properties editor that can be used to " +
         "enter a url to a local or remote resource.  If the url points " +
         "to a local file, the user can enter the name directly into " +
@@ -90,47 +93,47 @@ import org.meandre.annotations.ComponentProperty;
         "has to type in the host url, which include protocol, path and port " +
         "in the text area for host url, and the relative path of " +
         "the resource to the server in the text area for file name." +
-        "</p><p>" +
         "This module does not perform any checks to verify that " +
         "the url exists and is accessible with the username and password " +
         "given by the user. A check is performed to " +
         "make sure that a file name has been entered and an exception is " +
         "thrown if the editor text area is blank. " +
-        "</p><p>" +
-
-        "The DataObjectProxy is made available on the " +
-        "<i>DataObjectProxy</i> output " +
-
+        "The WebdavClient is made available on the WebdavClient output " +
         "port.  For local url, a path may or may not be included " +
-        "in the file name " +
-        "string.  The final form shown in the properties editor " +
-        "text box is sent to the <i>DataObjectProxy</i> output port. " +
-        "Typically when the Browser is used, the absolute path is " +
-        "included.",
-
+        "in the file name string.",
         name = "Input URL or Path",
-        tags = "io, input",
-        dependency = {"dsmgmt-1.0dev.jar", "security-1.0dev.jar", "util-1.0dev.jar", "sam-webdavlib.jar", "jaxb-api.jar"}
-)
+        tags = "io, input")
+       
 public class InputFileUrl implements ExecutableComponent {
 
-    @ComponentOutput(description = "A data object proxy pointing to a resource", name = "dataObjectProxy")
-    final static String DATA_OUTPUT_DATAOBJECTPROXY = "dataObjectProxy";
+    @ComponentOutput(description = "WebdavClient pointing to a resource.", 
+                     name = "webdavClient")
+    final static String DATA_OUTPUT_CLIENT = "webdavClient";
+    
+    @ComponentOutput(description = "URL pointing to a resource location.",
+                     name = "url")
+    final static String DATA_OUTPUT_URL = "url";
 
-    @ComponentProperty(description = "The input file URL", name = "file_url", defaultValue = " ")
+    @ComponentProperty(description = "The input file URL", 
+                       name = "file_url", 
+                       defaultValue = " ")
     final static String DATA_PROPERTY_FILE_URL = "file_url";
 
-    @ComponentProperty(description = "The user login name to access the object, if needed " +
-    		"(use 'null' to indicate no authentication is to be performed)",
-            name = "username", defaultValue = "null")
+    @ComponentProperty(description = "The user login name to access the object. " +
+                                     "if needed, use null to indicate no authentication " +
+                                     "is to be performed.",
+                       name = "username", 
+                       defaultValue = "null")
     final static String DATA_PROPERTY_USERNAME = "username";
 
     @ComponentProperty(description = "The password to access the object, if needed",
-            name = "password", defaultValue = "null")
+                       name = "password", 
+                       defaultValue = "null")
     final static String DATA_PROPERTY_PASSWORD = "password";
 
     //~ Instance fields *********************************************************
-
+    private WebdavClient client;
+    
     private URL fileUrl;
 
     /** The password property. */
@@ -193,24 +196,50 @@ public class InputFileUrl implements ExecutableComponent {
 	    	_logger.log(Level.SEVERE, "Initialize error: ", e);
 	    	throw new RuntimeException(e);
 	    }
+	    
+	    client = null;
 	}
 
     /*
      * (non-Javadoc)
      * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
      */
-	public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
+	public void execute(ComponentContext context) 
+	    throws ComponentExecutionException, ComponentContextException {
 	
-	    DataObjectProxy dataobj;
+	    /*DataObjectProxy dataobj;
 	    try {
 	        dataobj = DataObjectProxyFactory.getDataObjectProxy(fileUrl, username, password);
 	    } catch (DataObjectProxyException e) {
 	    	_logger.log(Level.SEVERE, "Execution exception: ", e);
 	        throw new ComponentExecutionException(e);
-	    }
-	
-	    context.pushDataComponentToOutput(DATA_OUTPUT_DATAOBJECTPROXY, dataobj);
-	}
+	    }	
+	    context.pushDataComponentToOutput(DATA_OUTPUT_DATAOBJECTPROXY, dataobj);*/
+	    
+	    Credentials credentials = null;
+        if(username.length() != 0 && password.length() != 0)
+            credentials = new UsernamePasswordCredentials(username, password);
+        
+        try {
+            client = new WebdavClient(context.getProperty(DATA_PROPERTY_FILE_URL),
+                                      credentials);
+        }catch (MalformedURLException e) {
+            e.printStackTrace();
+            _logger.log(Level.SEVERE, "Execution exception: ", e);
+            throw new ComponentExecutionException(e);
+        } 
+        
+        context.pushDataComponentToOutput(
+                DATA_OUTPUT_URL, context.getProperty(DATA_PROPERTY_FILE_URL));     
+        context.pushDataComponentToOutput(DATA_OUTPUT_CLIENT, client); 
+        
+        /*File file = new File("/birdy_project/iris.arff");
+        try {
+            client.put("http://norma.ncsa.uiuc.edu/alg-dav/iris.arff", file, "text/plain");
+        }catch(IOException e) {
+            e.printStackTrace();
+        }*/
+	} 
 
 	/*
 	 * (non-Javadoc)
