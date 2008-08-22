@@ -102,7 +102,8 @@ import java.io.*;
         "port.  For local url, a path may or may not be included " +
         "in the file name string.",
         name = "Input URL or Path",
-        tags = "io, input")
+        tags = "io, input",
+        dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar"})
        
 public class InputFileUrl implements ExecutableComponent {
 
