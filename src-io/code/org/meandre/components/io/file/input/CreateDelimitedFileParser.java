@@ -96,7 +96,7 @@ import org.meandre.tools.webdav.WebdavClient;
 )
 public class CreateDelimitedFileParser implements ExecutableComponent {
 
-    @ComponentInput(description = "WevdavClient pointing to a resource", 
+    @ComponentInput(description = "WebdavClient pointing to a resource", 
                     name = "webdavClient")
     final static String DATA_INPUT_CLIENT= "webdavClient";
     
