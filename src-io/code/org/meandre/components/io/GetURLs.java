@@ -53,20 +53,21 @@ import java.util.logging.Logger;
 // Other Imports
 //===============
 
-import org.meandre.components.io.support.proxy.DataObjectProxy;
 import org.meandre.core.*;
 import org.meandre.annotations.*;
 
+import org.meandre.tools.webdav.WebdavClient;
+import org.meandre.tools.webdav.IResourceInfo;
+
 /**
  * TODO: testing
- * @author D. Searsmith (conversion to SEASR 6/08)
+ * @author D. Searsmith and Lily Dong(conversion to SEASR 6/08)
  */
-@Component(creator = "Duane Searsmith", 
+@Component(creator = "Duane Searsmith and Lily Dong", 
 		
 		description = "<p>Overview:<br>"
 		+ "This module reads URLs residing underneith the URL that is pointed to " 
-		+ "by the input Data Object Proxy.</p>"
-		
+		+ "by the input WebDAV client.</p>"		
 		, name = "GetURLs", tags = "io url")
 public class GetURLs implements ExecutableComponent {
 	// ==============
@@ -94,9 +95,13 @@ public class GetURLs implements ExecutableComponent {
 	public final static String DATA_PROPERTY_SEARCH_DEPTH = "search_depth";
 
 	// io
+	@ComponentInput(description = "WevdavClient pointing to a resource", 
+                    name = "webdavClient")
+    final static String DATA_INPUT_CLIENT= "webdavClient";
 
-	@ComponentInput(description = "DataProxy", name = "data_proxy")
-	public final static String DATA_INPUT_DATA_PROXY = "data_proxy";
+	@ComponentInput(description = "URL pointing to a resource location.",
+                    name = "url")
+    final static String DATA_INPUT_URL = "url";
 
 	@ComponentOutput(description = "URL", name = "url")
 	public final static String DATA_OUTPUT_URL = "url";
@@ -133,7 +138,7 @@ public class GetURLs implements ExecutableComponent {
 		String s = ccp.getProperty(DATA_PROPERTY_SEARCH_DEPTH);
 		int d = Integer.parseInt(s.toLowerCase());
 		if (d != 0 && d != 1) {
-			d = DataObjectProxy.DEPTH_INFINITY;
+			d = 2147483647; //DataObjectProxy.DEPTH_INFINITY;
 		}
 		return d;
 	}
@@ -145,7 +150,7 @@ public class GetURLs implements ExecutableComponent {
 	 */
 	public String getModuleInfo() {
 		String s = "<p>Overview: ";
-		s += "This module reads URLs residing underneith the URL that is pointed to by the input Data Object Proxy.";
+		s += "This module reads URLs residing underneith the URL that is pointed to by the input WebDAV client.";
 		s += "</p>";
 		return s;
 	}
@@ -185,13 +190,43 @@ public class GetURLs implements ExecutableComponent {
 			throws ComponentExecutionException, ComponentContextException {
 		_logger.fine("execute() called");
 
-		Vector urlsVector = null;
+		Vector urlsVector = new Vector(); //null;
 
 		try {
 			_urlsPushedCount = 0;
-			DataObjectProxy dop = (DataObjectProxy) ctx
+			
+			String url = (String)ctx.getDataComponentFromInput(DATA_INPUT_URL);
+		    WebdavClient client = (WebdavClient)ctx.getDataComponentFromInput(DATA_INPUT_CLIENT);
+			
+		    if(!url.endsWith("/")) //make sure url ending with /
+		        url += "/";
+		    String str1 = url.substring(0, url.length()-1); //str1 equals the url without the last /
+		    str1 = str1.substring(str1.lastIndexOf("/")+1); 
+		    IResourceInfo[] info = client.listContents(url);
+			for(int i=0; i<info.length; i++) {
+			    String path = info[i].getPath();
+			    if(!path.startsWith("http://")) {//ensure that the path is relative
+			        if(path.startsWith("/")) //make sure the path beginning without /
+			            path = path.substring(1);
+			        int index = path.indexOf(str1); //look for the first /
+			        String str2 = null;
+			        if(index != -1) 
+			            str2 = path.substring(index + str1.length());
+			        if(str2 != null && str2.startsWith("/"))
+			            str2 = str2.substring(1);
+			        if(str2 != null) {//overlap exists
+			            path = url + str2;
+			        } else { //no overlap
+			            path = url + path;
+			        }
+			    }
+			    urlsVector.add(path);
+			}
+		    
+			/*DataObjectProxy dop = (DataObjectProxy) ctx
 					.getDataComponentFromInput(DATA_INPUT_DATA_PROXY);
-			urlsVector = dop.getChildrenURLs(getSearchDepth(ctx), true);
+			urlsVector = dop.getChildrenURLs(getSearchDepth(ctx), true);*/
+			
 			if (getVerbose(ctx)) {
 				System.out.println("GetURLs: the returned urls --\n"
 						+ urlsVector.toString());
