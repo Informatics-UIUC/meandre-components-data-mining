@@ -71,6 +71,7 @@ import java.io.ObjectInputStream;
 public class WebDecisionTreeVisApplet extends JApplet {
     ViewableDTModel model;
     DecisionTreeUserView dtuv;
+    DecisionTreeModel dummy;
 
     /**
      * Executed each time the applet is loaded or reloaded.

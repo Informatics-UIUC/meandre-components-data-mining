@@ -157,7 +157,7 @@ public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragm
         sb.append("<body>\n");
         sb.append("<p ALIGN='center'>\n");
         sb.append("<APPLET ");
-        sb.append("ARCHIVE='org.meandre.applet.prediction.decisiontree.WebDecisionTreeVis-webdecisiontreevis.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
+        sb.append("ARCHIVE='org.meandre.applet.prediction.decisiontree.support.webdecisiontreevisapplet.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
 
         sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
         sb.append("CODE='org.meandre.applet.prediction.decisiontree.support.WebDecisionTreeVisApplet.class'> ");

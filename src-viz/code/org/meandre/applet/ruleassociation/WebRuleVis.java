@@ -211,7 +211,7 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
         sb.append("<body> ");
         sb.append("<p ALIGN='center'> ");
         sb.append("<APPLET ");
-        sb.append("ARCHIVE='org.meandre.applet.ruleassociation.WebRuleVis-webrulevis.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
+        sb.append("ARCHIVE='org.meandre.applet.ruleassociation.support.webrulevisapplet.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
 
         sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
         sb.append("CODE='org.meandre.applet.ruleassociation.support.WebRuleVisApplet.class'> ");
