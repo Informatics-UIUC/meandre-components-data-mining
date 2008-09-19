@@ -43,6 +43,9 @@
 package org.meandre.components.io.datasource;
 
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+
 import java.sql.ResultSet;
 import java.util.concurrent.Semaphore;
 
@@ -54,6 +57,7 @@ import java.sql.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentProperty;
@@ -64,6 +68,11 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
+
+@Component(creator="Erik Johnson",
+        description="Enter a Query for the Database",
+        name="QueryDB",
+        tags="database")
 
 /** This component allows a user to enter and run an SQL query that produces a result set. The query can be entered as a property string or typed by the user at runtime.
  *
@@ -110,9 +119,9 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
 	final static String DATA_OUTPUT2 = "ConnectionOut";
        
     //This component property points to an xml file chosen by the user to store and load JNDI objects
-	@ComponentProperty(description="The query to execute",
+	@ComponentProperty(description="Full path to a text file with an sql query (i.e. C:/myquery.sql). This file will be parsed for an sql query. Lines beginning with // will be ignored as comments. The first semicolon will be treated as the end of the file; this component does not support multiple simultaneous queries. If the value \"none\" is specified, a webUI will be started to allow the user to enter a query manually.",
             	name="Query",
-            	defaultValue="")
+            	defaultValue="none")
     final static String DATA_PROPERTY = "Query";
     
     /** This method gets call when a request with no parameters is made to a
@@ -163,7 +172,10 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
         sb.append("<p> Input your query: </p><input type=\"text\" name=\"Query\" value=\"\" size=\"20\">\n");
         sb.append("<input type=\"submit\" value=\"Execute Query\">\n");
         sb.append("</form>\n");
-   
+        
+        //sb.append("<table align=center><font size=2><a id=\"url\" href=\"/" +
+        //        sInstanceID + "?done=true\">DONE</a></font></table>\n");
+        
         sb.append("</td>\n");     
         sb.append("</tr>\n");
         sb.append("</table>\n");
@@ -234,9 +246,9 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
      	//get input connection
      	conn = (Connection)cc.getDataComponentFromInput(DATA_INPUT);
      	//if the property was blank, start a webUI component to get properties
-     	if (sqlQuery == null || sqlQuery == "")
+     	if (sqlQuery ==null || sqlQuery.equalsIgnoreCase("none"))
      	{
-     		logger.log(Level.INFO,"Component Query property blank");
+     		logger.log(Level.INFO,"Component Query property = none");
      		logger.log(Level.INFO,"Firing the web ui component");
     		sInstanceID = cc.getExecutionInstanceID();
     		try {
@@ -254,9 +266,59 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
     			throw new ComponentExecutionException(e);
     		}
      	}
+     	else {
+     		try{
+     			BufferedReader inputQuery
+     				= new BufferedReader(new FileReader(sqlQuery));
+     			String lineIn = "";
+     			boolean go = true;
+     			sqlQuery = "";
+     			while (go)
+     			{
+     				try{
+     					lineIn = inputQuery.readLine();
+     					lineIn.trim();
+     				}
+     				catch (IOException e){
+     					//we have reached the end of file or can't read it- end
+     					logger.log(Level.WARNING, "Exception reading query: "+e);
+     					go = false;
+     				}
+     				if (lineIn == null)
+     				{
+     					go = false;
+     				}
+     				//if whole line is a comment, ignore it
+     				else if (!lineIn.startsWith("//"))
+     				{
+     					//if line contains a comment, ignore everything after comment
+     					if (lineIn.indexOf("//") != -1)
+     					{
+     						sqlQuery += " "+lineIn.substring(0,lineIn.indexOf("//"));
+     					}
+     					//if line contains end of query (;), include everything up to it
+     					else if (lineIn.indexOf(";") != -1)
+     					{
+     						sqlQuery += " "+lineIn.substring(0,lineIn.indexOf(";")+1);
+     					}
+     					else
+     					{
+     						sqlQuery += " "+lineIn;
+     					}
+     				}
+     			}
+     			logger.log(Level.INFO, "Parsed Query is : "+sqlQuery);
+     		}
+     		catch (Exception e)
+     		{
+     			logger.log(Level.INFO, "Could not open sql file at: "+sqlQuery);
+     		}
+     	}
      	try{
      		stmt = conn.createStatement(type, concurrency);
+     		logger.log(Level.INFO, "Beginning Query "+sqlQuery);
      		results = stmt.executeQuery(sqlQuery);
+     		logger.log(Level.INFO, "Query Complete");
      	}
      	catch (Exception e)
      	{

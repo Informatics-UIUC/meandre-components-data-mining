@@ -83,7 +83,7 @@ public class ExternalJarLoader extends URLClassLoader
     //================
     // Public Methods
     //================
-    /** This method adds a file path to the class loader
+    /** This method adds a file path to the class loader. This should be a well formated URL or an exception will be thrown
     *
     * @param path String path to add to class loader
     * @throws MalformedURLException
@@ -92,7 +92,7 @@ public class ExternalJarLoader extends URLClassLoader
     {
     	
         //String urlPath = "jar:file:" + path + "!/";
-    	this.addURL (new File(path).getAbsoluteFile().toURL());
+    	this.addURL (new URL (path));
     }
 
     /** This method adds a file path to the class loader

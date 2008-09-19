@@ -50,6 +50,9 @@ import java.io.File;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import java.net.URL;
+import java.net.URLConnection;
+
 /*
  * <p>Title: JNDIXMLWriter</p>
  * <p>
@@ -181,10 +184,20 @@ public class XMLWriter {
 		allProps.setProperty("Count", dbInt.toString());
 				
 		try {
+			//java.io.OutputStream os;
+			//logger.log(Level.INFO,"Writing to :"+ xmlFile);
+			//os =new java.io.FileOutputStream(new File (xmlFile));				
+			//URL outURL = new URL (xmlFile);
+			//URLConnection urlConn = outURL.openConnection();
+			//urlConn.setDoOutput(true);
+			//os = urlConn.getOutputStream();
+			//allProps.storeToXML(os, ""); //write no comments
+			//os.close();
+			//os = null;
 			java.io.OutputStream os;
 			logger.log(Level.INFO,"Writing to :"+ xmlFile);
 			os =new java.io.FileOutputStream(new File (xmlFile));				
-			allProps.storeToXML(os, ""); //write no comments
+			allProps.storeToXML(os, "");
 			os.close();
 			os = null;	
 		} catch (Exception e){
@@ -205,6 +218,16 @@ public class XMLWriter {
 		allProps.setProperty("Count", dbInt.toString());
 				
 		try {
+			//java.io.OutputStream os;
+			//logger.log(Level.INFO,"Writing to :"+ xmlFile);
+			//os =new java.io.FileOutputStream(new File (xmlFile));				
+			//URL outURL = new URL (xmlFile);
+			//URLConnection urlConn = outURL.openConnection();
+			//urlConn.setDoOutput(true);
+			//os = urlConn.getOutputStream();
+			//allProps.storeToXML(os, ""); //write no comments
+			//os.close();
+			//os = null;	
 			java.io.OutputStream os;
 			logger.log(Level.INFO,"Writing to :"+ xmlFile);
 			os =new java.io.FileOutputStream(new File (xmlFile));				

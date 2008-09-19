@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- *
- * Copyright (c) 2008, Board of Trustees-University of Illinois.
+ * 
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.  
  * All rights reserved.
- *
- * Developed by:
- *
+ * 
+ * Developed by: 
+ * 
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- *
- *
+ * 
+ *  
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
+ * furnished to do so, subject to the following conditions: 
+ * 
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers.
- *
+ *    this list of conditions and the following disclaimers. 
+ * 
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the
- *    documentation and/or other materials provided with the distribution.
- *
+ *    this list of conditions and the following disclaimers in the 
+ *    documentation and/or other materials provided with the distribution. 
+ * 
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission.
- *
+ *    this Software without specific prior written permission. 
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */
+ */ 
 
 package org.meandre.components.io.datasource;
 
@@ -46,6 +46,7 @@ package org.meandre.components.io.datasource;
 //Import statements
 import java.sql.Connection;
 import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
 
 import org.meandre.components.io.datasource.support.DataSourceFactory;
 import org.meandre.components.io.datasource.support.JNDILookup;
@@ -62,7 +63,6 @@ import org.meandre.core.ExecutableComponent;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.Component.Mode;
 
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
@@ -78,6 +78,7 @@ import java.util.Enumeration;
 
 
 import javax.sql.DataSource;
+import javax.sql.ConnectionPoolDataSource;
 
 import java.io.IOException;
 import java.io.File;
@@ -103,66 +104,69 @@ import java.io.File;
 public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallback {
 
 	//Private variables
-
+	
     /** The blocking semaphore for Web UI component*/
     private Semaphore sem = new Semaphore(1, true);
 
     /** The instance ID for Web UI component*/
     private String sInstanceID = null;
-
+ 
     //vector of known datasources
 	private Vector <String> existingDS= new Vector<String>();
-
+	
 	//User Selected known datasource
 	private String selectedExistingDS="";
-
+	
 	//Vendors with known driver and datasource class names- these have not necessarily been loaded
 	private Vector <String> knownVendors= new Vector<String>();
-
+	
 	//selected vendor, driver and datasource
     private String selectedVendor="";
     private String selectedDatasource="";
     private String selectedDriver="";
     private Properties selectedProperties=new Properties();
-
+    
     //Driver property info to allow user configuration
     private DriverPropertyInfo[] driverProperties;
-
+    
     //Class to access JNDI namespace
     private JNDILookup databaseNamespace= new JNDILookup();
-
+    
     //object to populate JNDI namespace with data read from xmlLocation property file
     private JNDINamespaceBuilder nB;
-
+    
     //current connection to the database, object to be output upon completion of execution
     private Connection databaseConnection;
-
+    
     //flag set to true in order to display properties
     private boolean viewProps=false;
-
+    
     //Logger
     private Logger logger;
 
     //Jar loader to load an xml file with jar location and jar class data
     private org.meandre.components.io.datasource.support.JarXMLLoader jarLoader;
-
+    
     //default xml file location for jar location data. If it does not exist, it will be written at the end of use
     private String jarXMLFile = "JarProps.xml";
-
+    
+    //This boolean tracks whether or not this is a pooled connection- they use two seperate interfaces
+    private boolean pooled = false;
+    
     //Connection output
     @ComponentOutput(
 	 		description = "Connection",
 	 		name = "Connection")
 	 final static String DATA_OUTPUT = "Connection";
-
+    
     //This component property points to an xml file chosen by the user to store and load JNDI objects
 	@ComponentProperty(description="File of datasource xml file in published resources directory. If one does not exist, it will be created there on close.",
             	name="xmlLocation",
             	defaultValue="myxml.xml")
-
+            	
                final static String DATA_PROPERTY = "xmlLocation";
 
-
+	
     /** This method gets call when a request with no parameters is made to a
      * component WebUI fragment.
      *
@@ -189,14 +193,14 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     	//look in Datasource Factory for known vendors
     	knownVendors=DataSourceFactory.getKnownVendors();
     	String key,value;
-
+    	
     	//check to see if a vendor has been selected
     	if (selectedVendor!= "" && selectedVendor != null)
     	{
     		//find vendor props
     		selectedProperties=DataSourceFactory.discoverProps(selectedVendor);
     	}
-
+    	
         StringBuffer sb = new StringBuffer();
         sb.append("<html>\n");
         sb.append("<body>\n");
@@ -216,7 +220,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         sb.append("</select>\n");
         sb.append("<input type=\"submit\" value=\"Load Datasource\">\n");
         sb.append("</form>\n");
-
+      
         //If the user has selected an existing datasource from the JNDI namespace...
         if (selectedExistingDS != null && selectedExistingDS !="" )
         {
@@ -280,7 +284,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         	}
         }
         sb.append("</td>\n");
-
+        
         //Second coloumn for creation of new datasources
         //present user with known vendors
         sb.append("<td width=\"40%\" valign=\"top\">\n");
@@ -293,7 +297,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         sb.append("</select>\n");
         sb.append("<input type=\"submit\" value=\"Use this Vendor\">\n");
         sb.append("</form>\n");
-
+        
         //if a vendor has already been selected
         if (selectedVendor!=null && selectedVendor!="")
         {
@@ -301,9 +305,9 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         sb.append("<form action=\"/" +
                 sInstanceID+" method=\"get\">\n");
         sb.append("<p>Configure New Datasource</p><br />\n");
-
+        
         sb.append("<p>JNDI Location: </p><input type=\"text\" name=\"DBJNDILoc\" value=\"\" size=\"20\">\n");
-        sb.append("<br />\n");
+        sb.append("<br /><p>The JNDI location is a logical name for this datasource (for example, \"myPostgresDB\"). This name will be used to look up the datasource in the JNDI namespace.</p>\n");
         Enumeration propNames = selectedProperties.keys();
         while (propNames.hasMoreElements())
         {
@@ -325,6 +329,11 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         		sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.getCurrentDatasource(selectedVendor)+"\" size=\"20\">\n");
             	sb.append("<br />\n");
         	}
+        	else if (key.equalsIgnoreCase("Connection Pooling"))
+        	{
+        		sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.isPooled(selectedVendor)+"\" size=\"20\">\n");
+            	sb.append("<br />\n");
+        	}
         	else
         	{
         		sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\"\" size=\"20\">\n");
@@ -334,11 +343,11 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         //check to see if datasource class and driver class are in the classpath
         if (!DataSourceFactory.isKnownDriver(selectedDriver))
         {
-        	sb.append("<p>WARNING!: Vendor driver cannot be loaded! Check your installation </p><br />");
+        	sb.append("<p>WARNING!: Vendor driver cannot be loaded! Check your installation </p><br />");	
         }
         if (!DataSourceFactory.isKnownDataSource(selectedDatasource))
         {
-        	sb.append("<p>WARNING!: Vendor Datasource Class cannot be loaded! Check your installation </p><br />");
+        	sb.append("<p>WARNING!: Vendor Datasource Class cannot be loaded! Check your installation </p><br />");	
         }
         sb.append("<input type=\"submit\" value=\"Create Datasource\">\n");
         sb.append("</form>\n");
@@ -361,10 +370,13 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         sb.append("<br />\n");
         sb.append("<p>External Jar Location: (C:/pathToJar or /pathToJar): </p><input type=\"text\" name=\"vJarLoc\" value=\"\" size=\"20\">\n");
         sb.append("<br /><p>Location to load JDBC jar containing Datasource and Driver classes if not already loaded</p><br />\n");
+        sb.append("<br /><p>Is this a pooled connection datasource?</p><br />");
+		sb.append("<input type=\"radio\" name=\"PooledConn\" value=\"true\"> Yes \n");
+		sb.append("<input type=\"radio\" name=\"PooledConn\" value=\"false\"> No   \n");
         sb.append("<input type=\"submit\" value=\"Add Vendor\">\n");
         sb.append("</form>\n");
         sb.append("</td>\n");
-
+        
         sb.append("</tr>\n");
         sb.append("</table>\n");
         sb.append("</body>\n");
@@ -398,11 +410,14 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     	String snewJarName = request.getParameter("vJarName");
     	//User has requested to connect, remove, or view properties of existing datasource
     	String sDSconnection = request.getParameter("DSconnection");
-
+    	String pooledConnection = request.getParameter("PooledConn");
+    	
+    	String dbVendorName = request.getParameter("DBVendor Name");
+    	
     	String key,value;
     	//User has given a location to bind a new datasource object in the JNDI namespace
     	String sJNDILoc= request.getParameter("DBJNDILoc");
-
+    	
     	//User has chosen to input properties and reconnect to database existing in JNDI namespace
     	if (viewProps)
     	{
@@ -418,10 +433,16 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     			}
     		}
     		//use reconnect method with exisitng connection, the new properties, and the datasource from the JNDI namespace
-    		databaseConnection=DataSourceFactory.reConnect(databaseConnection, newProps, (DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    		if (DataSourceFactory.isPooled(selectedExistingDS))
+    		{
+    			databaseConnection=DataSourceFactory.reConnect(databaseConnection, newProps, (ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    		}
+    		else{
+    			databaseConnection=DataSourceFactory.reConnect(databaseConnection, newProps, (DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    		}
     		sDone="Done";
     	}
-
+    	
     	//User has selected to view properties, connect to, or remove a datasource from the JNDI namespace
     	if (sDSconnection != null && sDSconnection != "")
     	{
@@ -429,13 +450,72 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     		{
     			viewProps=true;
     			//get connection and properties using bound datasource
-    			databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
-    			driverProperties= DataSourceFactory.getConnectionProperties(databaseConnection, (DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    			logger.log(Level.INFO, "Attempting to connect to db");
+    			try{
+    				if (DataSourceFactory.isPooled(selectedExistingDS))
+    	    		{
+    					databaseConnection=DataSourceFactory.getExistingConnection((ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    	    		}
+    	    		else{
+    	    			databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    	    		}
+        
+        			}
+        			catch (Exception e)
+        			{
+        				logger.log(Level.SEVERE,"Problem connecting to datasource "+databaseConnection.toString()+" :"+e +":"+ e.getMessage());
+        		
+        			}
+    			logger.log(Level.INFO, "Connected to DB");
+    			logger.log(Level.INFO, "Reading Properties");
+    			if (DataSourceFactory.isPooled(selectedExistingDS))
+	    		{
+    				driverProperties= DataSourceFactory.getConnectionProperties(databaseConnection, (ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+	    		}
+	    		else{
+	    			driverProperties= DataSourceFactory.getConnectionProperties(databaseConnection, (DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+	    		}
+    		
+    			logger.log(Level.INFO, "Properties Read");
     		}
     		//User wants to connect to existing datasource without modifying properties
     		if (sDSconnection.equalsIgnoreCase("connect"))
     		{
-    			databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    			logger.log(Level.INFO, "Attempting to connect to db");
+    			try{
+    				if (DataSourceFactory.isPooled(selectedExistingDS))
+    	    		{
+    					logger.log(Level.INFO, "Connection is Pooled for "+selectedExistingDS);
+  
+    	    			ConnectionPoolDataSource cpds = (ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS);
+    	    			logger.log(Level.INFO, "Got DataSource");
+    	    		
+    	    			Connection conn;
+    	    			conn = cpds.getPooledConnection().getConnection();
+    	    			logger.log(Level.INFO,"Connected   ");
+    	    			logger.log(Level.INFO,conn.getMetaData().getURL());
+    	    			databaseConnection = conn;
+    	    			//databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    					//databaseConnection=DataSourceFactory.getExistingConnection((ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    	    		}
+    	    		else{
+    	    			logger.log(Level.INFO, "Connection is not Pooled "+selectedExistingDS);
+    	    			DataSource nopoolds = (DataSource) databaseNamespace.getExistingObject(selectedExistingDS);
+    	    			logger.log(Level.INFO, "Got DataSource");
+    	    			Connection conn= null;
+    	    			conn = nopoolds.getConnection();
+    	    			logger.log(Level.INFO,"Connected   ");
+    	    			logger.log(Level.INFO,conn.getMetaData().getURL());
+    	    			databaseConnection = conn;
+    	    			//databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
+    	    		}
+    				logger.log(Level.INFO, "Connected to DB");
+    			}
+    			catch (Exception e)
+    			{
+    				logger.log(Level.SEVERE,"Problem connecting to datasource "+databaseConnection.toString()+" :"+e +":"+ e.getMessage());
+    			
+    			}
     			sDone="Done";
     		}
     		//user wants to remove datasource from JNDI namespace
@@ -444,7 +524,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     			databaseNamespace.removeObject(selectedExistingDS);
     		}
     	}
-
+    	
     	//USer has input properties for a new datasource connection and has given a location to bind it to
     	if (sJNDILoc != "" && sJNDILoc != null && !sJNDILoc.equalsIgnoreCase("jdbc") && !sJNDILoc.equalsIgnoreCase("jdbc/"))
         {
@@ -456,17 +536,23 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
             	selectedProperties.setProperty(key, value);
             }
             //bind new datasource to JNDI namespace
-            databaseNamespace.bindObject(sJNDILoc, (Object)DataSourceFactory.createDS(selectedProperties));
+            if (DataSourceFactory.isPooled(dbVendorName))
+            {
+            	databaseNamespace.bindObject(sJNDILoc, (Object)DataSourceFactory.createPooledDS(selectedProperties));
+           }
+            else{
+            	databaseNamespace.bindObject(sJNDILoc, (Object)DataSourceFactory.createDS(selectedProperties));
+           }
         }
     	//user wants to load new vendor and specify an external jar file with classes
     	if (snewDriver != null && snewDatasource !=null && snewName !=null)
     	{
-
+    		
     		if (snewJarLoc != "" && snewJarLoc != null)
     		{
     			//jdbcLoader.loadJarClass(snewDriver, snewJarLoc);
     			try{
-    				jarLoader.addJar(snewName, snewDatasource, snewDriver, snewJarLoc, JarXMLLoader.getPublicResourcesDirectory(), snewJarName);
+    				jarLoader.addJar(pooledConnection, snewName, snewDatasource, snewDriver, snewJarLoc, JarXMLLoader.getPublicResourcesDirectory(), snewJarName);
     				//DataSourceFactory.addJarFile(snewJarLoc);
     				//DataSourceFactory.loadJarClass(snewDriver);
     				//DataSourceFactory.loadJarClass(snewDatasource);
@@ -489,6 +575,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     		selectedVendor=snewDS;
     		selectedDriver=DataSourceFactory.getCurrentDriver(selectedVendor);
     		selectedDatasource=DataSourceFactory.getCurrentDatasource(selectedVendor);
+    		pooled = DataSourceFactory.isPooled(selectedVendor);
     	}
     	//user has pressed done button or created a connection- release semaphore
     	if ( sDone!=null ) {
@@ -503,37 +590,47 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     *
     * @param ccp The component context properties
     */
-
+    
     public void initialize(ComponentContextProperties ccp) {
-
+    
     	//start up logger
     	logger = ccp.getLogger();
     	logger.log(Level.INFO, "Initializing Database Connect Component...");
-
+    	
     	//initialize the vendor database information in the Datasource factory BEFORE attempting to access it while loading jar files
     	DataSourceFactory.initDatabases();
-
+    	
+    	//set the server URL
+    	try{
+    		JarXMLLoader.setServerURL(ccp.getWebUIUrl ( true ));
+    	}
+    	catch (ComponentContextException e)
+    	{
+    		logger.log(Level.WARNING, "Could not get WebUIURL, using default server localhost at port 1714");
+    	
+    	}
     	//Load jar file from meandre-store public resources directory located in the meandre-install-directory/published_resources
     	//do this before attempting to create datsource classes with these files
-    	String fname = JarXMLLoader.getPublicResourcesDirectory();
+    	String fdir = JarXMLLoader.getPublicResourcesDirectory();
+    	String fname = JarXMLLoader.getPublicResourcesURL();
 		//append a '/' to the path
-    	if ((!(fname.endsWith("/"))) && (!(fname.endsWith("\\")))) {
-			fname += File.separator;
+    	if ((!(fdir.endsWith("/"))) && (!(fdir.endsWith("\\")))) {
+			fdir += File.separator;
 		}
-
+    	
     	//filepath for xml file containing jar configuration and location details
-		String xmlURL = fname+jarXMLFile;
-
+		String xmldir = fdir+jarXMLFile;
+		
 		logger.log(Level.INFO, "Loading Jars....");
-		jarLoader = new JarXMLLoader (xmlURL);
+		jarLoader = new JarXMLLoader (xmldir);
 		jarLoader.loadJars();
 		logger.log(Level.INFO, "...Jars Loaded");
-
+    	
     	//initialize vendor list
 		//get user defined xml configuration file for datasource objects from property
     	String xmlLoc = ccp.getProperty(DATA_PROPERTY);
     	//create path- xml datasource file is in same directory as xml jar file
-    	String dsPath = fname + xmlLoc;
+    	String dsPath = fdir + xmlLoc;
     	File dsfile = new File(dsPath).getAbsoluteFile();
     	//Use JNDINamespaceBuilder to load xml and populate namespace
     	logger.log(Level.INFO,"Preparing to load xml file at "+xmlLoc);
@@ -542,7 +639,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     	nB.buildNamespace();
        	logger.log(Level.INFO, "...Database Connect Component Initialized");
     }
-
+    
     /** When ready for execution.
      *
      * @param cc The component context
@@ -553,11 +650,11 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
             ComponentContextException {
     	//start the web UI
 
-
+    	
     	logger.log(Level.INFO,"Firing the web ui component");
 		sInstanceID = cc.getExecutionInstanceID();
 		try {
-
+			
 			sem.acquire();
 			logger.log(Level.INFO,">>>Rendering...");
 			cc.startWebUIFragment(this);
@@ -565,7 +662,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
 			sem.acquire();
 			sem.release();
 			logger.log(Level.INFO,">>>Done");
-
+		
 		}
 		catch ( Exception e ) {
 			throw new ComponentExecutionException(e);
@@ -584,17 +681,19 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
 		//now that execution is complete, write datasources to persistent file
 		String xmlLoc = ccp.getProperty(DATA_PROPERTY);
 		JNDINamespaceWriter xmlWriter = new JNDINamespaceWriter();
-
-		String fname = JarXMLLoader.getPublicResourcesDirectory();
-		if ((!(fname.endsWith("/"))) && (!(fname.endsWith("\\")))) {
-			fname += File.separator;
+		
+		String fname = JarXMLLoader.getPublicResourcesURL();
+		String fdir = JarXMLLoader.getPublicResourcesDirectory();
+		if ((!(fdir.endsWith("/"))) && (!(fdir.endsWith("\\")))) {
+			fdir += File.separator;
 		}
 		//use xml location to write out new jar file properties
-		String xmlURL = fname+jarXMLFile;
+		String xmlURL = fdir+jarXMLFile;
+		
 		jarLoader.writePropsFile(xmlURL);
-
+		//File jlfile = new File(Path).getAbsoluteFile();
 		//write out new properties for Datasources in JNDI namespace
-    	String dsPath = fname + xmlLoc;
+    	String dsPath = fdir + xmlLoc;
     	File dsfile = new File(dsPath).getAbsoluteFile();
     	xmlWriter.writeNamespace(dsfile.toString());
     }

@@ -50,7 +50,10 @@ import java.util.Hashtable;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.net.URLClassLoader;
+import java.net.URL;
 
+import java.util.Enumeration;
 /*
  * <p>Title: JNDILookup</p>
  * <p>
@@ -80,6 +83,7 @@ public class JNDILookup {
 	
 	private Logger logger= Logger.getAnonymousLogger();
 	
+	private ExternalJarLoader objectClassLoader;
 	 //==============
     // Constructors
     //==============
@@ -174,6 +178,7 @@ public class JNDILookup {
 		try{
 			//InitialContext ic = new InitialContext();
 			//ic.bind("java:comp/env/"+vJNDILoc, obj);
+			logger.log(Level.INFO,"Object class: "+obj.getClass().getName());
 		ctx.bind(vJNDILoc, obj);
 		}
 		
@@ -226,16 +231,77 @@ public class JNDILookup {
 	*/
 	public Object getExistingObject (String sObject)
 	{
+		logger.log(Level.INFO, "Attempting to load Object");
 		Object obj;//object to return
 		try{
 			//InitialContext ic = new InitialContext();
 			obj = ctx.lookup(sObject); //preform lookup
+			logger.log(Level.INFO, "Object loaded "+obj.getClass().getName());
+			
+			//if the object is a reference, then that means the object's factory could not be found.
+			if (obj.getClass().getName().equalsIgnoreCase("javax.naming.Reference"))
+			{
+				
+				//URLClassLoader testLoader;
+				
+				javax.naming.Reference objRef = (javax.naming.Reference) obj;
+				
+				Class factoryClass = DataSourceFactory.getClassForName(objRef.getFactoryClassName());
+				Class objClass = DataSourceFactory.getClassForName(objRef.getClassName());
+				
+				
+				
+				URL [] jarLocURLs = DataSourceFactory.jdbcLoader.getURLs();
+				
+				String factoryURL = "";
+				
+				for (int i=0; i<jarLocURLs.length; i++)
+				{
+					logger.log(Level.INFO, jarLocURLs[i].toString());
+					//testLoader = new URLClassLoader (jarLocURLs[i]);
+					//try
+					//{
+						//Class cl = testLoader.loadClass(factoryClass.getClass().getName());
+						//if (cl.getClass().getName().equalsIgnoreCase(factoryClass.getClass().getName()))
+							
+					factoryURL += jarLocURLs[i].toString() + " ";
+
+					
+				}
+				
+					
+				javax.naming.Reference newObjRef = new Reference (objClass.getName(), factoryClass.getName(), factoryURL);
+				
+				Enumeration addrEnum = objRef.getAll();
+			
+				
+				while(addrEnum.hasMoreElements())
+				{
+					RefAddr newaddr = (RefAddr)addrEnum.nextElement();
+					newObjRef.add(newaddr);
+				}
+				//logger.log(Level.INFO, "Rebinding");
+				ctx.rebind(sObject, newObjRef);
+				
+				
+				
+				Object dsObj = ctx.lookup(sObject);
+				
+				return dsObj;
+			}
+			else
+				return obj;
 		}
 		catch (NamingException e) {
-			logger.log(Level.WARNING,"Problem looking up Object "+sObject+" in the java:comp/env/jdbc JNDI namespase. Is the server namespace configured?: " + e +":"+ e.getMessage());
+			logger.log(Level.WARNING,"Problem looking up Object"+sObject+" in the java:comp/env/jdbc JNDI namespase. Is the server namespace configured?: " + e +":"+ e.getMessage()+e.getExplanation()+e.getClass().getName());
+			
 			return null;
 		}
-		return obj;
+		catch (ClassNotFoundException e) {
+			logger.log(Level.WARNING,"Problem looking up Object"+sObject+" in the java:comp/env/jdbc JNDI namespase. Is the server namespace configured?: " + e +":"+ e.getMessage());
+			
+			return null;
+		}
 	}
 
 }

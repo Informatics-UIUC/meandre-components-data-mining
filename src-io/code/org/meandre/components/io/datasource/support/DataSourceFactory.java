@@ -88,7 +88,7 @@ public class DataSourceFactory {
 	private static Vector<String> knownDatabaseVendors;
 	
 	//class loader for external jars, allows users to add unknown vendors at runtime
-	private static ExternalJarLoader jdbcLoader = new ExternalJarLoader (new URL [] {});
+	public static ExternalJarLoader jdbcLoader = new ExternalJarLoader (new URL [] {});
 	
     //================
     // Public Methods
@@ -107,22 +107,26 @@ public class DataSourceFactory {
 	knownDatabaseVendors.add("Apache Derby Client");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.ClientDriver");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.ClientDataSource40");
+	knownDatabaseVendors.add("false");
 
 	knownDatabaseVendors.add("Apache Derby Client- With Pooling");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.ClientDriver");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.ClientConnectionPoolDataSource40");
-
+	knownDatabaseVendors.add("true");//vendor uses pooling
+	
 	knownDatabaseVendors.add("Apache Derby Embedded");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedDriver");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedDataSource40");
+	knownDatabaseVendors.add("false");
 	
 	knownDatabaseVendors.add("Apache Derby Embedded- With Pooling");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedDriver");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource40");
+	knownDatabaseVendors.add("true");//vendor uses pooling
 	}
 
 
-	//Wrapper for jdbcLoader, adds path to jarFile, such as C:\jarFile or //home/jarFile
+	//Wrapper for jdbcLoader, adds path to jarFile, the path should be a url, such as http://localhost:1714/published/resources/contexts/mycontext.jar
     /** This method adds a external jar file path to the class loader
      *
      * @param jarFile string representation of jar file location
@@ -208,7 +212,7 @@ public class DataSourceFactory {
 	public static Vector<String> getKnownVendors()
 	{
 		Vector<String> vendorNames= new Vector<String>();
-		for (int i=0; i<knownDatabaseVendors.size(); i+=3)
+		for (int i=0; i<knownDatabaseVendors.size(); i+=4)
 		{
 			vendorNames.add(knownDatabaseVendors.elementAt(i));
 		}
@@ -224,7 +228,7 @@ public class DataSourceFactory {
 	public static String getCurrentDriver(String vName)
 	{
 		
-		for (int i=0; i<knownDatabaseVendors.size(); i+=3)
+		for (int i=0; i<knownDatabaseVendors.size(); i+=4)
 		{
 			if(knownDatabaseVendors.elementAt(i).equalsIgnoreCase(vName)){
 				//make sure driver is loaded first
@@ -244,7 +248,7 @@ public class DataSourceFactory {
 	public static String getCurrentDriverFromDatasource(String vDatasource)
 	{
 		
-		for (int i=2; i<knownDatabaseVendors.size(); i+=3)
+		for (int i=2; i<knownDatabaseVendors.size(); i+=4)
 		{
 			if(knownDatabaseVendors.elementAt(i).equalsIgnoreCase(vDatasource)){
 				return knownDatabaseVendors.elementAt(i-1);
@@ -261,7 +265,7 @@ public class DataSourceFactory {
     */
 	public static String getCurrentDatasource(String vName)
 	{
-		for (int i=0; i<knownDatabaseVendors.size(); i+=3)
+		for (int i=0; i<knownDatabaseVendors.size(); i+=4)
 		{
 			if(knownDatabaseVendors.elementAt(i).equalsIgnoreCase(vName))
 				return knownDatabaseVendors.elementAt(i+2);
@@ -277,12 +281,69 @@ public class DataSourceFactory {
     */
 	public static String getCurrentDatasourceFromDriver(String vDriver)
 	{
-		for (int i=1; i<knownDatabaseVendors.size(); i+=3)
+		for (int i=1; i<knownDatabaseVendors.size(); i+=4)
 		{
 			if(knownDatabaseVendors.elementAt(i).equalsIgnoreCase(vDriver))
 				return knownDatabaseVendors.elementAt(i+1);
 		}
 		return null;
+	}
+	
+	public static boolean isPooled(String vName)
+	{
+		for (int i=0; i<knownDatabaseVendors.size(); i+=4)
+		{
+			if(knownDatabaseVendors.elementAt(i).equalsIgnoreCase(vName))
+			{
+				if (knownDatabaseVendors.elementAt(i+3).equalsIgnoreCase("true"))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isPooledfromDriver(String vDriver)
+	{
+		for (int i=1; i<knownDatabaseVendors.size(); i+=4)
+		{
+			if(knownDatabaseVendors.elementAt(i).equalsIgnoreCase(vDriver))
+			{
+				if (knownDatabaseVendors.elementAt(i+2).equalsIgnoreCase("true"))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isPooledfromDataSource(String vDataSource)
+	{
+		for (int i=2; i<knownDatabaseVendors.size(); i+=4)
+		{
+			if(knownDatabaseVendors.elementAt(i).equalsIgnoreCase(vDataSource))
+			{
+				if (knownDatabaseVendors.elementAt(i+1).equalsIgnoreCase("true"))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+		return false;
 	}
 	
 	//checks to see if datasource is known- can it be loaded by Class.forName
@@ -335,11 +396,12 @@ public class DataSourceFactory {
     *@param vDriver string of full driver class name
     * @param vDataSource string of full datasource class name
     */
-	public static void addNewDatabaseVendor(String vName, String vDriver, String vDataSource)
+	public static void addNewDatabaseVendor(String vName, String vDriver, String vDataSource, String pooling)
 	{
 		knownDatabaseVendors.add(vName);
 		knownDatabaseVendors.add(vDriver);
 		knownDatabaseVendors.add(vDataSource);
+		knownDatabaseVendors.add(pooling);
 		addNewDriver(vDriver);//register driver
 	}
 	
@@ -366,7 +428,8 @@ public class DataSourceFactory {
 		basicDBProps.setProperty("Vendor Name", "java.lang.String");
 		basicDBProps.setProperty("Vendor Driver", "java.lang.String");
 		basicDBProps.setProperty("Vendor DataSource", "java.lang.String");
-
+		basicDBProps.setProperty("Connection Pooling", "java.lang.Boolean");
+		
 		//discover available datasource properties
 		try{
 			//use reflection to get class and available methods
@@ -401,6 +464,41 @@ public class DataSourceFactory {
     *@param newds the Datasource object to get the properties of
     */
 	public static Properties getDatasourceProps(DataSource newds)
+	{
+		Properties dsProps = new Properties();
+		try{
+			//look up class methods for datasource
+			Class c = newds.getClass();
+			Method[] methods = c.getMethods();
+			Class [] params;
+			Class returns;
+			//sort through methods for set functions
+			for (int i = 0; i < methods.length; i++) {
+				if (methods[i].getName().startsWith("get"))
+				{
+					params= methods[i].getParameterTypes();
+					returns = methods[i].getReturnType();
+					//ignore get methods with input values, ignore get functions that do not return primitive or strings
+					if (params.length == 0 && (returns.isPrimitive() || returns.getName().equalsIgnoreCase("java.lang.String")) )
+					{
+						//invoke method to get value
+						Object value = methods[i].invoke(newds, new Object [0]);
+						if (value != null)
+							dsProps.setProperty(methods[i].getName().substring(3).toLowerCase(), value.toString()  );
+						else
+							dsProps.setProperty(methods[i].getName().substring(3).toLowerCase(), "");
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.log(Level.WARNING,"Exception finding Datasource Properties " + e);
+			return dsProps;
+		}
+		return dsProps;
+	}
+	
+	public static Properties getDatasourceProps(ConnectionPoolDataSource newds)
 	{
 		Properties dsProps = new Properties();
 		try{
@@ -491,45 +589,184 @@ public class DataSourceFactory {
 					//if we have a value for this property, set the value
 					if (value != null && value !="")
 					{
+							//this only supports setting primitives and strings
+							//the primitive classes are used to parse string entries
+							if (params.length == 1)
+							{
+								//this only supports setting primitives and strings
+								//the primitive classes are used to parse string entries
+								if (params[0].getName().equalsIgnoreCase("boolean"))
+								{
+									
+									methods[i].invoke(ds, Boolean.getBoolean(value));
+								}
+								else if (params[0].getName().equalsIgnoreCase("int"))
+								{
+									
+									methods[i].invoke(ds, Integer.parseInt(value));
+								}
+								else if (params[0].getName().equalsIgnoreCase("char"))
+								{
+									
+									methods[i].invoke(ds, value);
+								}
+								else if (params[0].getName().equalsIgnoreCase("byte"))
+								{
+									
+									methods[i].invoke(ds, Byte.parseByte(value));
+								}
+								else if (params[0].getName().equalsIgnoreCase("short"))
+								{
+									
+									methods[i].invoke(ds, Short.parseShort(value));
+								}
+								else if (params[0].getName().equalsIgnoreCase("long"))
+								{
+									
+									methods[i].invoke(ds, Long.parseLong(value));
+								}
+								else if (params[0].getName().equalsIgnoreCase("float"))
+								{
+									
+									methods[i].invoke(ds, Float.parseFloat(value));
+								}
+								else if (params[0].getName().equalsIgnoreCase("double"))
+								{
+									
+									methods[i].invoke(ds, Double.parseDouble(value));
+								}
+								else if (params[0].getName().equalsIgnoreCase("java.lang.String"))
+								{			
+									
+									methods[i].invoke(ds, value);
+								}
+							}
+						}
+				}
+			}
+		}
+		catch (ClassNotFoundException e)
+		{
+			logger.log(Level.SEVERE,"Datasource class could not be found for binding. Check Installtion and path. "+e +":"+ e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		catch (SecurityException e)
+		{
+			logger.log(Level.SEVERE,"Member function access for datasource denied" +e +":"+ e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		catch (IllegalAccessException e)
+		{
+			logger.log(Level.SEVERE,"Member function access for datasource denied" +e +":"+ e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		catch (IllegalArgumentException e)
+		{
+			logger.log(Level.SEVERE,"Illegal Argument passed to Datasource or Illegal format for Port Number" +e +":"+ e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		catch (InvocationTargetException e)
+		{
+			logger.log(Level.SEVERE,"Invocation target exception. " +e +":"+ e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		catch(Exception e){
+			logger.log(Level.SEVERE,"Error occured during binding"+e +":"+ e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		logger.log(Level.INFO,"....Datasource Created "+ds.getClass().getName());
+		return ds;
+	}
+	
+	public static ConnectionPoolDataSource createPooledDS (Properties DBprops)
+	{
+		ConnectionPoolDataSource ds = null;
+		try{
+			//get class object for datasource class
+			logger.log(Level.INFO,"Creating Pooled Datasource.....");
+			Class cl = getClassForName(DBprops.getProperty("Vendor DataSource"));
+
+			//	create datasource object using class constructor
+			ds = (ConnectionPoolDataSource) cl.newInstance();
+
+			//look up datasource methods
+			Method[] methods = cl.getMethods();
+			String value;
+			for (int i = 0; i < methods.length; i++) {
+				//attempt to invoke setProperty methods
+				if (methods[i].getName().startsWith("set"))
+				{
+					//get parameters for a given class
+					Class [] params = methods[i].getParameterTypes();
+					
+					logger.log(Level.INFO, "Looking for value for "+methods[i].getName());
+					
+					//the key names should match the method names after the 'set' prefix- use .substring(3)
+					value = DBprops.getProperty(methods[i].getName().substring(3));//The string after set should be used for properly configured DBprops object. See discoverProps above
+					
+					//if the value is still null, check for a lower case version of the method name
+					if (value == null || value =="")
+					{
+						value = DBprops.getProperty(methods[i].getName().substring(3).toLowerCase());
+					}
+					
+					//if we have a value for this property, set the value
+					if (value != null && value !="")
+					{
 						//we can only set methods that require one parameter
 						if (params.length == 1)
 						{
 							//this only supports setting primitives and strings
 							//the primitive classes are used to parse string entries
-							if (params[0].getName().equalsIgnoreCase("java.lang.Boolean"))
+							if (params[0].getName().equalsIgnoreCase("boolean"))
 							{
+								
 								methods[i].invoke(ds, Boolean.getBoolean(value));
 							}
-							else if (params[0].getName().equalsIgnoreCase("java.lang.Integer"))
+							else if (params[0].getName().equalsIgnoreCase("int"))
 							{
+								
 								methods[i].invoke(ds, Integer.parseInt(value));
 							}
-							else if (params[0].getName().equalsIgnoreCase("java.lang.Character"))
+							else if (params[0].getName().equalsIgnoreCase("char"))
 							{
+								
 								methods[i].invoke(ds, value);
 							}
-							else if (params[0].getName().equalsIgnoreCase("java.lang.Byte"))
+							else if (params[0].getName().equalsIgnoreCase("byte"))
 							{
+								
 								methods[i].invoke(ds, Byte.parseByte(value));
 							}
-							else if (params[0].getName().equalsIgnoreCase("java.lang.Short"))
+							else if (params[0].getName().equalsIgnoreCase("short"))
 							{
-								methods[i].invoke(ds, Integer.parseInt(value));
-							}
-							else if (params[0].getName().equalsIgnoreCase("java.lang.Long"))
-							{
+								
 								methods[i].invoke(ds, Short.parseShort(value));
 							}
-							else if (params[0].getName().equalsIgnoreCase("java.lang.Float"))
+							else if (params[0].getName().equalsIgnoreCase("long"))
 							{
+								
+								methods[i].invoke(ds, Long.parseLong(value));
+							}
+							else if (params[0].getName().equalsIgnoreCase("float"))
+							{
+								
 								methods[i].invoke(ds, Float.parseFloat(value));
 							}
-							else if (params[0].getName().equalsIgnoreCase("java.lang.Double"))
+							else if (params[0].getName().equalsIgnoreCase("double"))
 							{
+								
 								methods[i].invoke(ds, Double.parseDouble(value));
 							}
 							else if (params[0].getName().equalsIgnoreCase("java.lang.String"))
 							{			
+								
 								methods[i].invoke(ds, value);
 							}
 						}
@@ -573,7 +810,7 @@ public class DataSourceFactory {
 			e.printStackTrace();
 			return null;
 		}
-		logger.log(Level.INFO,"....Datasource Created");
+		logger.log(Level.INFO,"....Datasource Created "+ds.getClass().getName());
 		return ds;
 	}
 	
@@ -598,6 +835,31 @@ public class DataSourceFactory {
 		}
 		try{
 			return dbConnection.getMetaData();//return metadata
+		}
+		catch (SQLException e)
+		{
+			logger.log(Level.WARNING,"Problem connecting to database "+DS.toString()+" :"+e +":"+ e.getMessage());
+			return null;
+		}
+	}
+
+	public static DatabaseMetaData getMetaData(ConnectionPoolDataSource DS)
+	{
+		//connection to database
+		PooledConnection dbConnection;
+		Connection dbConn;
+		try{
+			//InitialContext ic = new InitialContext();
+			dbConnection = DS.getPooledConnection();//get connection from datasource
+			dbConn = dbConnection.getConnection();
+		}
+		catch (SQLException e)
+		{
+			logger.log(Level.WARNING,"Problem connecting Datasource "+DS.toString()+e.getMessage());
+			return null;
+		}
+		try{
+			return dbConn.getMetaData();//return metadata
 		}
 		catch (SQLException e)
 		{
@@ -634,6 +896,7 @@ public class DataSourceFactory {
     */
 	public static DriverPropertyInfo[] getConnectionProperties(Connection conn, DataSource DS)
 	{
+		logger.log(Level.INFO,"Datasource- Attempting to get properties");
 		//Connection cannot return driver class name, only string name
 		//need to use datasource to look it up
 		 Driver d = null; 
@@ -647,6 +910,7 @@ public class DataSourceFactory {
 		 }
 		 try{
 			 //return the properties
+			 logger.log(Level.INFO, "Attempting to return properties");
 			 return d.getPropertyInfo(conn.getMetaData().getURL(), getDatasourceProps(DS));
 		 }
 		 catch (SQLException e)
@@ -656,6 +920,32 @@ public class DataSourceFactory {
 		 }
 	}
 
+	public static DriverPropertyInfo[] getConnectionProperties(Connection conn, ConnectionPoolDataSource DS)
+	{
+		logger.log(Level.INFO,"Datasource- Attempting to get properties");
+		//Connection cannot return driver class name, only string name
+		//need to use datasource to look it up
+		 Driver d = null; 
+		 String dsClassName = DS.getClass().getName();
+		 String driverClassName = getCurrentDriverFromDatasource(dsClassName);
+		 try {
+			 //get driver class
+			 d = (Driver)getClassForName(driverClassName).newInstance();
+		 } catch ( Exception e ){
+			 logger.log(Level.SEVERE,"There has been a problem connecting to driver: "+e);
+		 }
+		 try{
+			 //return the properties
+			 logger.log(Level.INFO, "Attempting to return properties");
+			 return d.getPropertyInfo(conn.getMetaData().getURL(), getDatasourceProps(DS));
+		 }
+		 catch (SQLException e)
+		 {
+			 logger.log(Level.SEVERE,"There has been a problem getting driver properties: "+e); 
+			return null;
+		 }
+	}
+	
     /** This method opens a new connection to the database using a set of properties provided. It closes the old connection.
     *
     *@param oldConn Connection object of old connection
@@ -693,6 +983,37 @@ public class DataSourceFactory {
 			 return null;
 		 }
 	}
+	
+	public static Connection reConnect(Connection oldConn, Properties connProps, ConnectionPoolDataSource DS)
+	{
+		//connection cannot tell us the driver class name
+		//need to use datasource to get driver class name
+		 Driver d = null;
+		 String connURL = ""; 
+		 String dsClassName = DS.getClass().getName();
+		 String driverName = getCurrentDriverFromDatasource(dsClassName);
+		 try{
+			 connURL = oldConn.getMetaData().getURL();
+			 oldConn.close();//close off old connection before returning new one
+		 }
+		 catch (SQLException e)
+		 {
+			 logger.log(Level.SEVERE,"There has been a problem getting old connection information: "+e);
+		 }
+		 try {
+			 d = (Driver)getClassForName(driverName).newInstance();
+		 } catch ( Exception e ){
+			 logger.log(Level.SEVERE,"There has been a problem connecting to driver: "+e);
+		 }
+		 try{
+		 	return d.connect(connURL, connProps);//get new connection with new properties
+		 }
+		 catch (SQLException e)
+		 {
+			 logger.log(Level.SEVERE,"There has been a problem getting new connection: "+e);
+			 return null;
+		 }
+	}
 
 	//get a connection from a datasource
     /** This method returns a connection to an existing datasource, using previously configured properties
@@ -700,18 +1021,26 @@ public class DataSourceFactory {
     *@param DS Datasource to connect 
     *@return Connection to datasource
     */
-	public static Connection getExistingConnection(DataSource DS)
+	public static Connection getExistingConnection(DataSource DS) throws SQLException
 	{
+		logger.log(Level.INFO, "Datasource- attempting connection");
 		Connection dbConnection;
-		try{
-			dbConnection = DS.getConnection();
-		}
-		catch (SQLException e)
-		{
-			logger.log(Level.SEVERE,"Problem connecting to datasource "+DS.toString()+" :"+e +":"+ e.getMessage());
-			return null;
-		}
+		dbConnection = DS.getConnection("tgridreader","tgr1dr3ad3r");
+		logger.log(Level.INFO, "Datasource- connected");
 		return dbConnection;
+		
 	}
 
+	public static Connection getExistingConnection(ConnectionPoolDataSource DS) throws SQLException
+	{
+		logger.log(Level.INFO, "Datasource- attempting connection");
+		PooledConnection dbConnection;
+		dbConnection = DS.getPooledConnection("tgridreader","tgr1dr3ad3r");
+		Connection dbConn = dbConnection.getConnection();
+		logger.log(Level.INFO, "Datasource- connected");
+		return dbConn;
+		
+	}
+	
+	
 }

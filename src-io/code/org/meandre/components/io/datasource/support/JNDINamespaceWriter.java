@@ -51,6 +51,7 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 
 import javax.sql.DataSource;
+import javax.sql.ConnectionPoolDataSource;
 
 import java.util.Properties;
 
@@ -156,19 +157,34 @@ public class JNDINamespaceWriter {
 			//add datasources
 				while (list.hasMore()) {
 					NameClassPair nc = (NameClassPair)list.next();
-					DataSource ds = (DataSource)getExistingObject(nc.getName());
-					//use datasourcefacotry to get the properties
-					dsProps = DataSourceFactory.getDatasourceProps(ds);
-					//add a class property
-					dsProps.setProperty("DSClass", ds.getClass().getName());
-					//add an object to the writer
-					xmlWriter.addObject(nc.getName(), dsProps);
-					logger.log(Level.INFO,"Resource " +nc+ "Has been added to writer");
+					Object ds = getExistingObject(nc.getName());
+					logger.log(Level.INFO, "Attempting to write class "+ds.getClass().getName());
+					if (DataSourceFactory.isPooledfromDataSource(ds.getClass().getName())){
+						ConnectionPoolDataSource cpds = (ConnectionPoolDataSource)getExistingObject(nc.getName());
+						//use datasourcefacotry to get the properties
+						dsProps = DataSourceFactory.getDatasourceProps(cpds);
+						//add a class property
+						dsProps.setProperty("DSClass", cpds.getClass().getName());
+						//add an object to the writer
+						xmlWriter.addObject(nc.getName(), dsProps);
+						logger.log(Level.INFO,"Resource " +nc+ "Has been added to writer");
+					}
+					else
+					{
+						DataSource newds = (DataSource)getExistingObject(nc.getName());
+						//use datasourcefacotry to get the properties
+						dsProps = DataSourceFactory.getDatasourceProps(newds);
+						//add a class property
+						dsProps.setProperty("DSClass", newds.getClass().getName());
+						//add an object to the writer
+						xmlWriter.addObject(nc.getName(), dsProps);
+						logger.log(Level.INFO,"Resource " +nc+ "Has been added to writer");
+					}
 				}
 			//write the objects
 			xmlWriter.writePropertiesFile();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,"Problem adding datasource to writer: " + e +":"+ e.getMessage());
+			logger.log(Level.SEVERE,"Problem adding datasource to writer: " + e +":"+ e.getMessage());		
 		}
 	}
 	

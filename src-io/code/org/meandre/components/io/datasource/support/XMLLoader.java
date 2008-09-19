@@ -48,6 +48,10 @@ import java.util.Enumeration;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import java.net.URL;
+
+import java.io.File;
+import java.io.FileInputStream;
 /*
  * <p>Title: JNDIXMLLoader</p>
  * <p>
@@ -224,7 +228,9 @@ public class XMLLoader {
 		java.io.InputStream is;
 		try {
 			//
-				is =new java.io.FileInputStream(xmlFile);				
+				//URL xmlURL = new URL (xmlFile);
+				//is = xmlURL.openStream();				
+				is =new java.io.FileInputStream(new File (xmlFile));
 				//use properties object load from xml file to get the properties
 				allProps.loadFromXML(is);
 				is.close();

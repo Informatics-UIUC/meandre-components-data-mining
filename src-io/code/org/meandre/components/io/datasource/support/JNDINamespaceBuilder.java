@@ -49,6 +49,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import javax.sql.DataSource;
+import javax.sql.ConnectionPoolDataSource;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -166,20 +167,40 @@ public class JNDINamespaceBuilder {
 					newDSProps.setProperty("Vendor DataSource", DSClass);
 					logger.log(Level.INFO,"Creating Datasource");
 					//create a new datasource using these properties
-					DataSource newDS = DataSourceFactory.createDS(newDSProps);
-					logger.log(Level.INFO,"Datasource created");
-					//pre-processing on the name to get the correct place to bind the object
-					if (JNDILoc.lastIndexOf('/')>0)
+					if (DataSourceFactory.isPooledfromDataSource(DSClass))
 					{
-						JNDILoc = JNDILoc.substring(JNDILoc.lastIndexOf('/')+1);
+						ConnectionPoolDataSource newDS = DataSourceFactory.createPooledDS(newDSProps);
+						logger.log(Level.INFO,"Datasource created");
+						//pre-processing on the name to get the correct place to bind the object
+						if (JNDILoc.lastIndexOf('/')>0)
+						{
+							JNDILoc = JNDILoc.substring(JNDILoc.lastIndexOf('/')+1);
+						}
+						else if (JNDILoc.lastIndexOf('\\')>0)
+						{
+							JNDILoc = JNDILoc.substring(JNDILoc.lastIndexOf('\\')+1);
+						}
+						//bind the object to the name
+						ctx.bind(JNDILoc, newDS);
+						logger.log(Level.INFO,"Resource "+newDS.toString()+" bound to "+JNDILoc);
 					}
-					else if (JNDILoc.lastIndexOf('\\')>0)
+					else
 					{
-						JNDILoc = JNDILoc.substring(JNDILoc.lastIndexOf('\\')+1);
+						DataSource newDS = DataSourceFactory.createDS(newDSProps);
+						logger.log(Level.INFO,"Datasource created");
+						//pre-processing on the name to get the correct place to bind the object
+						if (JNDILoc.lastIndexOf('/')>0)
+						{
+							JNDILoc = JNDILoc.substring(JNDILoc.lastIndexOf('/')+1);
+						}
+						else if (JNDILoc.lastIndexOf('\\')>0)
+						{
+							JNDILoc = JNDILoc.substring(JNDILoc.lastIndexOf('\\')+1);
+						}
+						//bind the object to the name
+						ctx.bind(JNDILoc, newDS);
+						logger.log(Level.INFO,"Resource "+newDS.toString()+" bound to "+JNDILoc);
 					}
-					//bind the object to the name
-					ctx.bind(JNDILoc, newDS);
-					logger.log(Level.INFO,"Resource "+newDS.toString()+" bound to "+JNDILoc);
 				}
 				catch (Exception e)
 				{

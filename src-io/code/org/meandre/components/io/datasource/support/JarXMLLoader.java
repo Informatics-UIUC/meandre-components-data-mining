@@ -48,6 +48,7 @@ import java.util.logging.Level;
 
 import java.util.Properties;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.io.File;
 
 /*
@@ -87,6 +88,9 @@ public class JarXMLLoader {
 	//properties object containing properties for all jars currently used
 	private Properties allJarProps;
 	
+	//This static URL tracks the base URL of the meandre server (defaults to localhost port 1714
+	private static URL serverURL;
+	
 	private int jarCount;
 	
 	//==============
@@ -123,6 +127,7 @@ public class JarXMLLoader {
 			String DSClass = "";
 			String DriverClass = "";
 			String jarName = "";
+			String pooling = "";
 			//go through all objects in file (defined by the count)
 			for (int i=0; i<xmlLoader.getObjCount(); i++)
 			{
@@ -133,20 +138,26 @@ public class JarXMLLoader {
 						jarName = xmlLoader.getObjProperty(i, "Jar");
 						DSClass = xmlLoader.getObjProperty(i, "DSClass");
 						DriverClass = xmlLoader.getObjProperty(i,"DriverClass");
+						pooling = xmlLoader.getObjProperty(i,"Pooling");
 						logger.log(Level.INFO,"Loading Jar " +jarName);
+						
+						String jarURL = getPublicResourcesURL()+jarName;
+						
+						logger.log(Level.INFO,"Jar URL is :"+jarURL);
 						
 						//set properties- after this for loop, allJarProps will contain all the properties for all jar files loaded
 						allJarProps.setProperty(countInt.toString(), Vendor);
 						allJarProps.setProperty(Vendor+"_Jar", jarName);
 						allJarProps.setProperty(Vendor+"_DSClass", DSClass);
 						allJarProps.setProperty(Vendor+"_DriverClass", DriverClass);
+						allJarProps.setProperty(Vendor+"_Pooling", pooling);
 						//create a new datasource using these properties
 	    			
 						//use the datasourcefactory to put the driver and datasource classes on the classpath
-	    				DataSourceFactory.addJarFile(jarName);
+	    				DataSourceFactory.addJarFile(jarURL);
 	    				DataSourceFactory.loadJarClass(DSClass);
 	    				DataSourceFactory.loadJarClass(DriverClass);
-	    				DataSourceFactory.addNewDatabaseVendor(Vendor, DriverClass, DSClass);
+	    				DataSourceFactory.addNewDatabaseVendor(Vendor, DriverClass, DSClass, pooling);
 	    			}
 	    			catch (Exception e)
 	    			{
@@ -165,7 +176,7 @@ public class JarXMLLoader {
 	    @param destURL String destURL- the destination url of the jar file. Typically this is in the meandre install directory under the published_resources folder
 	    @param JarName String JarName- the name of the vendor jar file
 	    */
-	public void addJar(String VendorName, String DatasourceClass, String DriverClass, String JarFilePath, String destURL, String JarName)
+	public void addJar(String pooling, String VendorName, String DatasourceClass, String DriverClass, String JarFilePath, String destURL, String JarName)
 	{
 		//use xml loader to get data and properties
 		Integer countInt = new Integer(jarCount);
@@ -175,7 +186,8 @@ public class JarXMLLoader {
 		if ((!(fname.endsWith("/"))) && (!(fname.endsWith("\\")))) {
 			fname += File.separator;
 		}
-		String jarURL = fname+JarName;
+		String jarDir = fname+JarName;
+		String jarURL = getPublicResourcesURL()+JarName;
 		
 		if ((!(JarFilePath.endsWith("/"))) && (!(JarFilePath.endsWith("\\")))) {
 			JarFilePath += File.separator;
@@ -185,17 +197,20 @@ public class JarXMLLoader {
 		
 		logger.log(Level.INFO,"Adding Jar " +JarName);
 		allJarProps.setProperty(countInt.toString(), VendorName);
-		allJarProps.setProperty(VendorName+"_Jar", jarURL);
+		allJarProps.setProperty(VendorName+"_Jar", JarName);
 		allJarProps.setProperty(VendorName+"_DSClass", DatasourceClass);
 		allJarProps.setProperty(VendorName+"_DriverClass", DriverClass);
+		allJarProps.setProperty(VendorName+"_Pooling", pooling);
 		//create a new datasource using these properties
 		try{
+			//copy jar file to published resources folder
 			java.io.File origJarFile = new java.io.File (filePath).getAbsoluteFile();
 			loadJar (destURL, JarName, origJarFile.toURL());
+			//add jar file to datasourcefactory, this will load the class into the JVM
 			DataSourceFactory.addJarFile(jarURL);
 			DataSourceFactory.loadJarClass(DatasourceClass);
 			DataSourceFactory.loadJarClass(DriverClass);
-			DataSourceFactory.addNewDatabaseVendor(VendorName, DriverClass, DatasourceClass);
+			DataSourceFactory.addNewDatabaseVendor(VendorName, DriverClass, DatasourceClass, pooling);
 		}
 		catch (Exception e)
 		{
@@ -291,6 +306,29 @@ public class JarXMLLoader {
 			newFile.mkdirs();
 		}
 		return path;
+	}
+	
+	public static void setServerURL(URL newServerURL)
+	{
+		serverURL = newServerURL;
+	}
+	
+	public static void setServerURL()
+	{
+		try{
+			serverURL = new URL ("http://localhost:1714");
+		}
+		catch (MalformedURLException e)
+		{}
+	}
+	
+	public static String getPublicResourcesURL()
+	{
+		String pubURL = serverURL.toString();
+		if ((!(pubURL.endsWith("/"))) && (!(pubURL.endsWith("\\")))) {
+			pubURL += File.separator;
+		}
+		return pubURL+"public/resources/contexts/datasources/";
 	}
 }
 
