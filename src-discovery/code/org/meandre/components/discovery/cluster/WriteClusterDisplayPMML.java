@@ -105,10 +105,6 @@ public class WriteClusterDisplayPMML  implements ExecutableComponent, ClusterPMM
 	   {
 		   return "cityBlock";
 	   }
-	   //else if (_distanceMetric == 2)
-	  // {
-		   
-	  // }
 	   else
 	   {
 		   return "euclidean";
@@ -117,14 +113,14 @@ public class WriteClusterDisplayPMML  implements ExecutableComponent, ClusterPMM
    			
    public void initialize(ComponentContextProperties ccp) {
 	   //get distance metric property
-	   String param = ccp.getProperty(WriteClusterPMML.DATA_PROPERTY_DISTANCE_METRIC);
+	   String param = ccp.getProperty(WriteClusterDisplayPMML.DATA_PROPERTY_DISTANCE_METRIC);
        int ival = -1;
        try {
     	   //try to parse it 
            ival = Integer.parseInt(param);
        } catch (Exception e){
            System.out.println("WriteClusterPMML invalid value for parameter: "
-                             + WriteClusterPMML.DATA_PROPERTY_DISTANCE_METRIC +
+                             + WriteClusterDisplayPMML.DATA_PROPERTY_DISTANCE_METRIC +
                   ". Value is set to: " + _distanceMetric);
        }
        //set distance metric to value
@@ -206,279 +202,17 @@ public class WriteClusterDisplayPMML  implements ExecutableComponent, ClusterPMM
        ArrayList clusters = ct.getClusters();
        //add clusters
        TableCluster rootCluster = ct.getRoot();
-       logger.log(Level.INFO, "Entering Recursion");
+     
        
-      /* Element rtcluster = clusterModel.addElement(CLUSTER);
-       rtcluster.addAttribute (NAME, new Integer(rootCluster.getClusterLabel()).toString() );
-	   //if (clust.getClusterLabel() == rootCluster.getClusterLabel())
-	   //{
-	   rtcluster.addAttribute("root", "true");
-	 //  }
-	 //  else
-	 //  {
-	//	   cluster.addAttribute("root", "false");
-	 //  }
-	   Element rtarray = rtcluster.addElement(ARRAY);
-	   rtarray.addAttribute (NUMBER, new Integer(rootCluster.getCentroid().length).toString());
-	   rtarray.addAttribute (TYPE, "real");
-	   String rtcentroidString = "";
-	   double [] rtclusterCentroid = rootCluster.getCentroid();
-	   logger.log(Level.INFO, "Getting Centroid");
-	   for (int j = 0; j<rtclusterCentroid.length; j++)
-	   {
-		   rtcentroidString += rtclusterCentroid[j] + " ";
-	   }
-	   logger.log(Level.INFO, "Got Centroid");
-	   rtarray.setText(rtcentroidString);
-	   Element rtnorm = rtcluster.addElement("centroid_norm");
-	   rtnorm.addAttribute ("norm", new Double (rootCluster.getCentroidNorm()).toString());
-	   Element rtdist = rtcluster.addElement("child_distance");
-	   rtdist.addAttribute ("dist", new Double (rootCluster.getChildDistance()).toString());
-	   Element rtclusterTable = rtcluster.addElement("table");
-       //Table clusttab =  rootCluster.getTable();
-	   //int clustNumCols =  clusttab.getNumColumns();
-       //int clustNumRows  = clusttab.getNumRows();
-       //logger.log(Level.INFO, "Filling Table");
-       //if (clustNumRows>100)
-       //{
-    	//   //numRows = 100;//only use first 100 rows- save space and memory
-       //clustNumRows = 10;
-      // logger.log(Level.INFO, new Integer(clustNumRows).toString());
-	  // for (int j=0; j<clustNumRows; j++)
-	  // {
-		//   Element clusterRow = clusterTable.addElement("row");
-	//	   String rowString = "";
-	//	   for (int k=0; k<clustNumCols; k++)
-	//	   {
-	//		   rowString += clusttab.getObject(j,k).toString()+" ";
-	//	   }
-	//	   clusterRow.setText(rowString);
-	 //  }
-      // }
-	 //  logger.log(Level.INFO, "TableFilled");
-	   
-	   int [] indexes = rootCluster.getMemberIndices();
-	   
-	   Table rtclusttab =  rootCluster.getTable();
-	   int rtclustNumCols =  rtclusttab.getNumColumns();
-       int rtclustNumRows  = indexes.length;
-       logger.log(Level.INFO, "Filling Table");
-       if (rtclustNumRows>100)
-       {
-    	   //numRows = 100;//only use first 100 rows- save space and memory
-       rtclustNumRows = 100;
-      // logger.log(Level.INFO, new Integer(clustNumRows).toString());
-	   for (int j=0; j<rtclustNumRows; j++)
-	   {
-		   Element clusterRow = rtclusterTable.addElement("row");
-		   String rowString = "";
-		   for (int k=0; k<rtclustNumCols; k++)
-		   {
-			   rowString += rtclusttab.getObject(indexes[j],k).toString()+" ";
-		   }
-		   clusterRow.setText(rowString);
-	   }
-       }
-	   logger.log(Level.INFO, "TableFilled");
-	   
-	   TableCluster rtlc = rootCluster.getLC();
-	   TableCluster rtrc = rootCluster.getRC();
-	   if (rtlc == null || rtrc == null)
-	   {
-		   logger.log(Level.INFO, "null children");
-		   //return doc;
-	   }
-	   else
-	   {
-		   logger.log(Level.INFO, "has children");
-		   Element rchild = rtcluster.addElement("right_child");
-		   Element lchild = rtcluster.addElement("left_child");
-		   rchild.addAttribute("name", new Integer(rtrc.getClusterLabel()).toString());
-		   lchild.addAttribute("name", new Integer(rtlc.getClusterLabel()).toString());
-		   
-		   //doc = addCluster (lc, doc, clusterModel);
-		   //logger.log(Level.INFO, "Finished Left Child");
-		   //return addCluster (rc, doc, clusterModel);
-	   }
-       
-       
-       
-       for (int i = 0; i < clusters.size(); i++)
-       {
-
-		   logger.log(Level.INFO, "Recursing!");
-		   Element cluster = clusterModel.addElement(CLUSTER);
-		   TableCluster clust = (TableCluster) clusters.get(i);
-		   cluster.addAttribute (NAME, new Integer(clust.getClusterLabel()).toString() );
-		   if (clust.getClusterLabel() == rootCluster.getClusterLabel())
-		   {
-			   cluster.addAttribute("root", "true");
-		   }
-		   else
-		   {
-			   cluster.addAttribute("root", "false");
-		   }
-		   Element array = cluster.addElement(ARRAY);
-		   array.addAttribute (NUMBER, new Integer(clust.getCentroid().length).toString());
-		   array.addAttribute (TYPE, "real");
-		   String centroidString = "";
-		   double [] clusterCentroid = clust.getCentroid();
-		   logger.log(Level.INFO, "Getting Centroid");
-		   for (int j = 0; j<clusterCentroid.length; j++)
-		   {
-			   centroidString += clusterCentroid[j] + " ";
-		   }
-		   logger.log(Level.INFO, "Got Centroid");
-		   array.setText(centroidString);
-		   Element norm = cluster.addElement("centroid_norm");
-		   norm.addAttribute ("norm", new Double (clust.getCentroidNorm()).toString());
-		   Element dist = cluster.addElement("child_distance");
-		   dist.addAttribute ("dist", new Double (clust.getChildDistance()).toString());
-		   Element clusterTable = cluster.addElement("table");
-	       Table clusttab =  clust.getTable();
-		   
-	       int [] clustindexes = clust.getMemberIndices();
-	       
-	       int clustNumCols =  clusttab.getNumColumns();
-	       int clustNumRows  = clustindexes.length;
-	       logger.log(Level.INFO, "Filling Table");
-	       if (clustNumRows>100)
-	       {
-	    	   //numRows = 100;//only use first 100 rows- save space and memory
-	       clustNumRows = 10;
-	       logger.log(Level.INFO, new Integer(clustNumRows).toString());
-		   for (int j=0; j<clustNumRows; j++)
-		   {
-			   Element clusterRow = clusterTable.addElement("row");
-			   String rowString = "";
-			   for (int k=0; k<clustNumCols; k++)
-			   {
-				   rowString += clusttab.getObject(clustindexes[j],k).toString()+" ";
-			   }
-			   clusterRow.setText(rowString);
-		   }
-	       }
-		   logger.log(Level.INFO, "TableFilled");
-		   TableCluster lc = clust.getLC();
-		   TableCluster rc = clust.getRC();
-		   if (lc == null || rc == null)
-		   {
-			   logger.log(Level.INFO, "null children");
-			   //return doc;
-		   }
-		   else
-		   {
-			   logger.log(Level.INFO, "has children");
-			   Element rchild = cluster.addElement("right_child");
-			   Element lchild = cluster.addElement("left_child");
-			   rchild.addAttribute("name", new Integer(rc.getClusterLabel()).toString());
-			   lchild.addAttribute("name", new Integer(lc.getClusterLabel()).toString());
-			   
-			   //doc = addCluster (lc, doc, clusterModel);
-			   //logger.log(Level.INFO, "Finished Left Child");
-			   //return addCluster (rc, doc, clusterModel);
-		   }
-		   
-		   //Element test = array.addElement("", centroidString);
-       }
-       
-       //
-      
-       
-       /*for (int i = 0; i<clusters.size(); i++)
-       {
-    	   Element cluster = clusterModel.addElement(CLUSTER);
-    	   cluster.addAttribute (NAME, new Integer(((TableCluster)clusters.get(i)).getClusterLabel()).toString());
-    	   Element array = cluster.addElement(ARRAY);
-    	   array.addAttribute (NUMBER, new Integer(((TableCluster)clusters.get(i)).getCentroid().length).toString());
-    	   array.addAttribute (TYPE, "real");
-    	   String centroidString = "";
-    	   double [] clusterCentroid = ((TableCluster)clusters.get(i)).getCentroid();
-    	   for (int j = 0; j<clusterCentroid.length; j++)
-    	   {
-    		   centroidString += clusterCentroid[j] + " ";
-    	   }
-    	   array.setText(centroidString);
-    	   //Element test = array.addElement("", centroidString);
-       }
-       
-       //datafield = dataDictionary.addElement(DATA_FIELD);
-       //datafield.addAttribute(NAME, "item");
-       //datafield.addAttribute(OPTYPE, CATEGORICAL);
-
-       // Association model
-       //List items = rt.getNamesList();
-       //List itemSets = rt.getItemSetsList();
-//
-       //Element assocModel = root.addElement(ASSOC_MODEL);
-       //assocModel.addAttribute(FUNCTION_NAME, "associationRules");
-       //assocModel.addAttribute(NUM_TRANS,
-        //                       Integer.toString(rt.getNumberOfTransactions()));
-      // assocModel.addAttribute(MIN_SUP,
-       //                        Double.toString(rt.getMinimumSupport()));
-       //assocModel.addAttribute(MIN_CON,
-       //                        Double.toString(rt.getMinimumConfidence()));
-       //assocModel.addAttribute(NUM_ITEM,
-       //                        Integer.toString(items.size()));
-      // assocModel.addAttribute(NUM_ITEMSETS,
-       //                        Integer.toString(itemSets.size()));
-      // assocModel.addAttribute(NUM_RULE,
-      //                         Integer.toString(rt.getNumRules()));
- 
-       // Association items
-     //  for (int i = 0; i < items.size(); i++) {
-    //       Element assocItem = assocModel.addElement(ITEM);
-     //      assocItem.addAttribute(ID, Integer.toString(i));
-     //      assocItem.addAttribute(VALUE, (String) items.get(i));
-     //  }
-
-       // Association itemsets
-     //  for (int i = 0; i < itemSets.size(); i++) {
-     //      FreqItemSet fis = (FreqItemSet) itemSets.get(i);
-//
-  //         Element set = assocModel.addElement(ITEMSET);
-      //     set.addAttribute(ID, Integer.toString(i));
-       //    set.addAttribute(SUPPORT, Integer.toString((int) fis.support));
-
-          // int[] vals = fis.items.toNativeArray();
-          // for (int j = 0; j < vals.length; j++) {
-         //      Element assocItemRef = set.addElement(ITEMREF);
-         //      assocItemRef.addAttribute(ITEM_REF, Integer.toString(vals[j]));
-         //  }
-      // }
-
-       // Association rules
-    //   for (int i = 0; i < rt.getNumRules(); i++) {
-    //       int hd = rt.getRuleAntecedentID(i);
-    //       int bd = rt.getRuleConsequentID(i);
-    //       double conf = rt.getConfidence(i);
-    //       double supp = rt.getSupport(i);
-
-    //       Element assocRule = assocModel.addElement(ASSOC_RULE);
-    //       assocRule.addAttribute(SUPPORT, Double.toString(supp));
-    //       assocRule.addAttribute(CONFIDENCE, Double.toString(conf));
-     //      assocRule.addAttribute(ANTECEDENT, Integer.toString(hd));
-     //      assocRule.addAttribute(CONSEQUENT, Integer.toString(bd));
-     //  }
-
-       /*try {
-           XMLWriter writer = new XMLWriter(new FileWriter(fileName),
-                                            OutputFormat.createPrettyPrint());
-           writer.write(document);
-           writer.flush();
-           writer.close();
-       } catch (Exception e) {
-           e.printStackTrace();
-       }*/
        document = addCluster (rootCluster, document, clusterModel);
-       logger.log(Level.INFO, "Finished Recursion");
+   
        return document;
    }
 
 
 	public static Document addCluster (TableCluster clust, Document doc, Element clusterModel)
 	{
-			logger.log(Level.INFO, "Recursing!");
+		
 		   Element cluster = clusterModel.addElement(CLUSTER);
 		   cluster.addAttribute (NAME, new Integer(clust.getClusterLabel()).toString() );
 		   Element array = cluster.addElement(ARRAY);
@@ -486,12 +220,12 @@ public class WriteClusterDisplayPMML  implements ExecutableComponent, ClusterPMM
 		   array.addAttribute (TYPE, "real");
 		   String centroidString = "";
 		   double [] clusterCentroid = clust.getCentroid();
-		   logger.log(Level.INFO, "Getting Centroid");
+		 
 		   for (int j = 0; j<clusterCentroid.length; j++)
 		   {
 			   centroidString += clusterCentroid[j] + " ";
 		   }
-		   logger.log(Level.INFO, "Got Centroid");
+		
 		   array.setText(centroidString);
 		   Element norm = cluster.addElement("centroid_norm");
 		   norm.addAttribute ("norm", new Double (clust.getCentroidNorm()).toString());
@@ -504,7 +238,7 @@ public class WriteClusterDisplayPMML  implements ExecutableComponent, ClusterPMM
 		   Table clusttab =  clust.getTable();
 		   int numCols =  clusttab.getNumColumns();
 	       int numRows  = indexes.length;
-	       logger.log(Level.INFO, "Filling Table");
+	
 	       if (numRows>50)
 	       {
 	    	   //numRows = 100;//only use first 100 rows- save space and memory
@@ -526,19 +260,16 @@ public class WriteClusterDisplayPMML  implements ExecutableComponent, ClusterPMM
 		   TableCluster rc = clust.getRC();
 		   if (lc == null || rc == null)
 		   {
-			   logger.log(Level.INFO, "Returning DOC");
 			   return doc;
 		   }
 		   else
 		   {
-			   logger.log(Level.INFO, "Recursion ho!");
 			   Element rchild = cluster.addElement("right_child");
 			   Element lchild = cluster.addElement("left_child");
 			   rchild.addAttribute("name", new Integer(rc.getClusterLabel()).toString());
 			   lchild.addAttribute("name", new Integer(lc.getClusterLabel()).toString());
 			   
 			   doc = addCluster (lc, doc, clusterModel);
-			   logger.log(Level.INFO, "Finished Left Child");
 			   return addCluster (rc, doc, clusterModel);
 		   }
 		   
