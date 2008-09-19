@@ -58,7 +58,7 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-
+import org.meandre.annotations.Component.Mode;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentProperty;
