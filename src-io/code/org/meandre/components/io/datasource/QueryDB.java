@@ -70,7 +70,13 @@ import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 
 @Component(creator="Erik Johnson",
-        description="Enter a Query for the Database",
+        description="This compnent executes a query and returns the resultset. " +
+        		"The user has three options. " +
+        		"First they may specify a path to a query file on the local filesystem using the Query_Path property. " +
+        		"If this property is not blank, the component will attempt to load from the path and execute the query stored in that file. " +
+        		"If the Query_Path property is blank, it will check the Query_Statement Property. " +
+        		"If this is not blank, it will attempt to execute the text in the Query_Statement property as an sql query. " +
+        		"Finally, if both properties are blank, it will present the user with a WebUI to enter a query manually",
         name="QueryDB",
         tags="database")
 
@@ -102,7 +108,7 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
     
     //Connection Input
     @ComponentInput(
-	 		description = "The input connection",
+	 		description = "The input databse connection",
 	 		name = "Connection")
 	final static String DATA_INPUT = "Connection";
     
@@ -120,10 +126,17 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
        
     //This component property points to an xml file chosen by the user to store and load JNDI objects
 	@ComponentProperty(description="Full path to a text file with an sql query (i.e. C:/myquery.sql). This file will be parsed for an sql query. Lines beginning with // will be ignored as comments. The first semicolon will be treated as the end of the file; this component does not support multiple simultaneous queries. If the value \"none\" is specified, a webUI will be started to allow the user to enter a query manually.",
-            	name="Query",
+            	name="Query_Path",
             	defaultValue="none")
-    final static String DATA_PROPERTY = "Query";
+    final static String DATA_PROPERTY1 = "Query_Path";
     
+	//This component property is a sql statement to execute on the database
+	//The component first checks for a path property then a query statement before prompting the user for a query
+	@ComponentProperty(description="This property is a SQL query (such as SELECT * FROM SAMPLETABLE). If no sql query file path is specified, the component will look at this property before presenting the user with a WebUI. If it is not blank it will execute this query.",
+            	name="Query_Statement",
+            	defaultValue="none")
+    final static String DATA_PROPERTY2 = "Query_Statement";
+	
     /** This method gets call when a request with no parameters is made to a
      * component WebUI fragment.
      *
@@ -242,34 +255,43 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
      public void execute(ComponentContext cc)
      throws ComponentExecutionException, ComponentContextException {
     	//query from property
-     	sqlQuery = cc.getProperty(DATA_PROPERTY);
+     	String sqlQueryPath = cc.getProperty(DATA_PROPERTY1);
+     	String sqlQueryStatement= cc.getProperty(DATA_PROPERTY2);
      	//get input connection
      	conn = (Connection)cc.getDataComponentFromInput(DATA_INPUT);
      	//if the property was blank, start a webUI component to get properties
-     	if (sqlQuery ==null || sqlQuery.equalsIgnoreCase("none"))
+     	if (sqlQueryPath ==null || sqlQueryPath.equalsIgnoreCase("none"))
      	{
-     		logger.log(Level.INFO,"Component Query property = none");
-     		logger.log(Level.INFO,"Firing the web ui component");
-    		sInstanceID = cc.getExecutionInstanceID();
-    		try {
+     		logger.log(Level.INFO,"Component Query Path property = none");
+     		if (sqlQueryStatement ==null || sqlQueryStatement.equalsIgnoreCase("none"))
+     		{
+     			logger.log(Level.INFO,"Component Query Statment = none");
+     			logger.log(Level.INFO,"Firing the web ui component");
+     			sInstanceID = cc.getExecutionInstanceID();
+     			try {
     			
-    			sem.acquire();
-    			logger.log(Level.INFO,">>>Rendering...");
-    			cc.startWebUIFragment(this);
-    			logger.log(Level.INFO,">>>STARTED");
-    			sem.acquire();
-    			sem.release();
-    			logger.log(Level.INFO,">>>Done");
+     				sem.acquire();
+     				logger.log(Level.INFO,">>>Rendering...");
+     				cc.startWebUIFragment(this);
+     				logger.log(Level.INFO,">>>STARTED");
+     				sem.acquire();
+     				sem.release();
+     				logger.log(Level.INFO,">>>Done");
     		
-    		}
-    		catch ( Exception e ) {
-    			throw new ComponentExecutionException(e);
-    		}
+     			}
+     			catch ( Exception e ) {
+     				throw new ComponentExecutionException(e);
+     			}
+     		}
+     		else
+     		{
+     			sqlQuery = sqlQueryStatement;
+     		}
      	}
      	else {
      		try{
      			BufferedReader inputQuery
-     				= new BufferedReader(new FileReader(sqlQuery));
+     				= new BufferedReader(new FileReader(sqlQueryPath));
      			String lineIn = "";
      			boolean go = true;
      			sqlQuery = "";
@@ -311,7 +333,7 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
      		}
      		catch (Exception e)
      		{
-     			logger.log(Level.INFO, "Could not open sql file at: "+sqlQuery);
+     			logger.log(Level.INFO, "Could not open sql file at: "+sqlQueryPath);
      		}
      	}
      	try{
