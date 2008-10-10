@@ -68,6 +68,7 @@ import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Connection;
 /**
 * Given a resultset object from an SQL query, create a table for data-mining
 *
@@ -87,10 +88,16 @@ public class RStoTable implements ExecutableComponent {
 
    @ComponentInput(description = "A query resultset to create a table from", name = "ResultSet")
    final static String DATA_INPUT_PARSER = "ResultSet";
-
+   
+   @ComponentInput(description = "Connection to Database", name = "ConnectionIn")
+   final static String DATA_INPUT_CONNECTION = "ConnectionIn";
+   
    @ComponentOutput(description = "A table created from the resultset data", name = "table")
    final static String DATA_OUTPUT_TABLE = "table";
 
+   @ComponentOutput(description = "Connection to Datbase", name = "ConnectionOut")
+   final static String DATA_OUTPUT_CONNECTION = "ConnectionOut";
+   
    @ComponentProperty(description = "If this is set to true, this component will discard incomplete rows from the resultset." +
            "Incomplete rows have one or more blank columns.", name = "Discard_Incomplete_Rows", defaultValue = "false")
    final static String DATA_PROPERTY_USE_BLANKS = "Discard_Incomplete_Rows";
@@ -271,7 +278,7 @@ public class RStoTable implements ExecutableComponent {
 				    		   {
 			    				   //_logger.log(Level.INFO, "Adding Null data");
 			    				   ti.setValueToEmpty(true, rowcount, i);
-			                       switch (rsTypetoTableType (rsmd.getColumnType(i))) {
+			                       switch (rsTypetoTableType (rsmd.getColumnType(i+1))) {
 			                       case ColumnTypes.INTEGER:
 			                       case ColumnTypes.SHORT:
 			                       case ColumnTypes.LONG:
@@ -378,7 +385,14 @@ public class RStoTable implements ExecutableComponent {
 				    		   {
 				    			   try{
 				    				   //_logger.log(Level.INFO, "Adding data: "+data[i].toString());
-				    				   ti.setObject(data[i], rowcount, i);
+				    				   if (rsTypetoTableType (rsmd.getColumnType(i+1)) == ColumnTypes.STRING)
+				    				   {
+				    					   String temp = (String) data[i];
+				    					   temp = temp.trim();
+				    					   ti.setObject(temp, rowcount, i);
+				    				   }
+				    				   else
+				    					   ti.setObject(data[i], rowcount, i);
 				    			   }
 				    			   catch(NumberFormatException e) {
 				                       ti.setChars(Integer.toString(0).toCharArray(), rowcount, i);
@@ -426,13 +440,14 @@ public class RStoTable implements ExecutableComponent {
 	public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
 	    _logger.log(Level.INFO, "Getting RS for conversion");
 		ResultSet rs = (ResultSet) context.getDataComponentFromInput(DATA_INPUT_PARSER);
-	
+		Connection conn= (Connection) context.getDataComponentFromInput(DATA_INPUT_CONNECTION);
 		_logger.log(Level.INFO, "Creating Table Factory");
 	    TableFactory tf = new BasicTableFactory();
 	    _logger.log(Level.INFO, "Creating Table");
 	    Table table = createTablefromResultSet(rs, tf);
 	    _logger.log(Level.INFO, "Table Created Sucessfully");
 	    
+	    context.pushDataComponentToOutput(DATA_OUTPUT_CONNECTION, conn);
 	    context.pushDataComponentToOutput(DATA_OUTPUT_TABLE, table);
 	}
 
