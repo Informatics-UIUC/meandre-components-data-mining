@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-    Generic Build script for a Meandre Components repository. This file
-    should be kept in sync with build-skel.xml, (TODO:which currently has no
-    permanent home.) 
+    Generic Build script for a Meandre Components repository. 
 
     This build.xml provides targets useful in dealing with a repository of
     Meandre Components. These targets do things like generating rdf descriptors
     that Meandre needs to execute and the ability to upload the code and
     descriptors to a running Meandre server.
 -->
-
 
 <project name="Components-Data-Mining" default="dist" basedir=".">
 
@@ -24,39 +21,6 @@
     <!-- used in jar file name, error messages, etc. -->
     <property name="project.name" value="datamining"/>
 
-    <!-- put all the source files in a single place.
-        THE SOURCE DIRECTORIES NEED TO BE OVERRIDDEN IN EVERY PROJECT!-->
-    <target name="aggregate-sources"
-        description="copy all source files to a common source root"
-        depends="init">
-        <echo message="Copying source files to a commontree in build/src-copy"/>
-        <copy todir="${src.copy.dir}"
-              includeEmptyDirs="yes"
-              preservelastmodified="yes">
-              <fileset dir="src-control/code" includes="**/*"/>
-              <fileset dir="src-control/test" includes="**/*"/>
-              <fileset dir="src-datatype/code" includes="**/*"/>
-              <fileset dir="src-datatype/test" includes="**/*"/>
-              <fileset dir="src-discovery/code" includes="**/*"/>
-              <fileset dir="src-discovery/test" includes="**/*"/>
-              <fileset dir="src-io/code" includes="**/*"/>
-              <fileset dir="src-io/test" includes="**/*"/>
-              <fileset dir="src-predict/code" includes="**/*"/>
-              <fileset dir="src-predict/test" includes="**/*"/>
-              <fileset dir="src-transform/code" includes="**/*"/>
-              <fileset dir="src-transform/test" includes="**/*"/>
-              <fileset dir="src-util/code" includes="**/*"/>
-              <fileset dir="src-util/test" includes="**/*"/>
-              <fileset dir="src-viz/code" includes="**/*"/>
-              <fileset dir="src-viz/test" includes="**/*"/>
-              <!--<fileset dir="src-dir1/" includes="**/*"/>-->
-              <!--<fileset dir="src-dir2/" includes="**/*"/>-->
-        </copy>
-
-    </target>
-        
-
-
     <!-- 
     =================================
     ENVIRONMENT CHECKS
@@ -65,7 +29,7 @@
 
     <!-- Check whether Java 1.5 is being used -->
     <condition property="using.java.1.5">
-            <contains string="${java.version}" substring="1.5"/>
+        <contains string="${java.version}" substring="1.5"/>
     </condition>
 
     <!-- Check whether Ant 1.7 is being used. 1.7 is needed for junit4 
@@ -76,8 +40,7 @@
 
     <!-- Make sure we're running under the correct environment -->
     <fail message="This package requires Ant 1.7." unless="using.ant.1.7"/>
-    <fail message="This package requires Java 5. Please set JAVA_HOME to point
-            to where JDK 1.5 is installed."
+    <fail message="This package requires Java 5. Please set JAVA_HOME to point to where JDK 1.5 is installed."
           unless="using.java.1.5"/>
 
     <!-- 
@@ -87,21 +50,19 @@
     -->
 
     <!-- Project structure -->
-    <property name="lib.dir" value="lib/"/>
-    <property name="build.dir" value="build/"/>
-    <property name="classes.dir" value="${build.dir}/classes/"/>
-    <property name="src.gen.dir" value="${build.dir}/src-gen/"/>
-    <property name="src.copy.dir" value="${build.dir}/src-copy/"/>
-    <property name="dist.dir" value="${build.dir}/dist/"/>
-    <property name="descriptors.dir" value="${build.dir}/descriptors/"/>
-    <property name="scripts.gen.dir" value="${build.dir}/scripts/"/>
-    <property name="javadoc.dir" value="${build.dir}/javadoc/"/>
+    <property name="lib.dir" value="${basedir}/lib/jars"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="src.gen.dir" value="${build.dir}/src-gen"/>
+    <property name="dist.dir" value="${build.dir}/dist"/>
+    <property name="descriptors.dir" value="${build.dir}/descriptors"/>
+    <property name="scripts.gen.dir" value="${build.dir}/scripts"/>
+    <property name="javadoc.dir" value="${build.dir}/javadoc"/>
 
 
     <!-- JUnit elements -->
     <property name="test.classes.dir" value="${build.dir}/classes-test/"/>
-    <property name="test.src.dir" value="src-test/"/>
-    <property name="test.root.dir" value="tests/"/>
+    <property name="test.root.dir" value="${basedir}/tests/"/>
     <property name="test.logs.dir" value="${test.root.dir}/log"/>
     <property name="test.output.dir" value="${test.root.dir}/output"/>
 
@@ -110,6 +71,17 @@
     <!-- Generated upload script name -->
     <property name="uploader.file" value="upload-${project.name}-components.sh"/>    
 
+    
+    <!-- Code locations -->
+    <path id="src.code.dirs">
+        <dirset dir="${basedir}" includes="src-*/code"/>
+    </path>
+
+    <!-- Test locations -->
+    <path id="src.test.dirs">
+        <dirset dir="${basedir}" includes="src-*/test"/>
+    </path>
+
   
     <!--
     =================
@@ -117,9 +89,12 @@
     =================
     -->  
     <!-- Confluence settings (for update-wiki task) -->
+    <!-- These need to be handled differently - they should probably be set in $HOME/.SEASR/WikiCreateComponentPages.conf or specified via command line -->
+    <!--
     <property name="confluence.server" value="https://apps.lis.uiuc.edu/wiki"/>
     <property name="confluence.space" value="seasrD"/>
     <property name="confluence.title" value="Available Components"/>
+    -->
 
 
     <!--
@@ -130,20 +105,14 @@
 
     <!-- Compilation classpath -->
     <path id="classpath.build">
-        <fileset dir="${lib.dir}">
-            <include name="**/*.jar"/>
-            <include name="*.jar"/>
-        </fileset>
+        <fileset dir="${lib.dir}" includes="*.jar"/>
     </path>
-
 
     <!-- Runtime class path -->
     <path id="classpath.runtime">
         <path refid="classpath.build"/>
         <pathelement path="${java.class.path}"/>
-        <fileset dir="${dist.dir}">
-            <include name="*.jar"/>
-        </fileset>
+        <fileset dir="${dist.dir}" includes="*.jar"/>
     </path>    
 
 
@@ -183,35 +152,34 @@
     </target>
 
     <!--
-      Compiles all Meandre components
+        Compiles components code
     -->
     <target name="compile"
-        depends="aggregate-sources"
+        depends="init"
         description="-> compiles all components">
         <!-- compile -->
-        <echo message="Compiling build/src-copy"/>
-        <javac srcdir="${src.copy.dir}"
-               source="1.5"
+        <javac source="1.5"
                debug="on"
                debuglevel="lines,vars,source"
                destdir="${classes.dir}">
+            <src refid="src.code.dirs"/>
             <classpath refid="classpath.build"/>
         </javac>
 
         <!-- include other files that should be available to runtime classpath-->
-        <echo message="Copying non-source artifacts to classes dir"/>
         <copy todir="${classes.dir}"
               includeEmptyDirs="no">
-            <fileset dir="${src.copy.dir}">
-                <include name="**/*.properties"/>
-                <include name="**/*.xml"/>
-                <include name="**/*.vm"/>
-                <include name="**/*.list"/>
+            <fileset dir="${basedir}">
+                <include name="src-*/code/**/*.properties"/>
+                <include name="src-*/code/**/*.xml"/>
+                <include name="src-*/code/**/*.vm"/>
+                <include name="src-*/code/**/*.list"/>
             </fileset>
+            <regexpmapper from="^src-(.*)/code/(.*)$" to="\2"/>
         </copy>
     </target>
 
-   <!--
+    <!--
         Packages all components into one jar file
     -->
     <target name="dist"
@@ -228,22 +196,31 @@
     -->
 
     <!--
-        Compile src-tests
+        Compile tests
     -->
     <target name="compile-tests"
             depends="dist"
             description="-> compiles the unit tests">
-        <javac srcdir="${test.src.dir}/"
-               debug="on"
+        <!-- compile -->
+        <javac debug="on"
                debuglevel="lines,vars,source"
                destdir="${test.classes.dir}">
-            <classpath>
-                <path refid="classpath.build"/>
-                <pathelement location="${classes.dir}"/>
-            </classpath>
+            <src refid="src.test.dirs"/>
+            <classpath refid="classpath.runtime"/>
         </javac>
-    </target>
 
+        <!-- include other files that should be available to runtime classpath-->
+        <copy todir="${test.classes.dir}"
+              includeEmptyDirs="no">
+            <fileset dir="${basedir}">
+                <include name="src-*/test/**/*.properties"/>
+                <include name="src-*/test/**/*.xml"/>
+                <include name="src-*/test/**/*.vm"/>
+                <include name="src-*/test/**/*.list"/>
+            </fileset>
+            <regexpmapper from="^src-(.*)/test/(.*)$" to="\2"/>
+        </copy>
+    </target>
 
 
     <!--
@@ -251,8 +228,8 @@
     -->
     <target name="run-tests"
             depends="compile-tests"
-            description=
-                    "runs the unit tests and generates xml logs and html reports">
+            description= "-> runs the unit tests and generates xml logs and html reports">
+        <mkdir dir="${test.logs.dir}/xml"/>
         <junit printsummary="yes"
                forkmode="once"
                errorProperty="test.failed"
@@ -261,16 +238,13 @@
                showoutput="yes">
             <jvmarg value="-Duser.language=en"/>
             <classpath>
-                <path refid="classpath.build"/>
-                <pathelement location="${classes.dir}"/>
+                <path refid="classpath.runtime"/>
                 <pathelement location="${test.classes.dir}"/>
             </classpath>
             <formatter type="xml"/>
             <formatter type="brief" usefile="false"/>
             <batchtest todir="${test.logs.dir}/xml">
-                <fileset dir="${test.src.dir}">
-                    <include name="**/*Test.java"/>
-                </fileset>
+                <fileset dir="${test.classes.dir}" includes="**/*Test.class"/>
             </batchtest>
         </junit>
         <junitreport todir="${test.logs.dir}/xml">
@@ -449,3 +423,7 @@
         </java>
     </target>
 </project>
+
+<!-- DO NOT EDIT BELOW THIS LINE PLEASE -->
+<!-- vim:sw=4:softtabstop=4:expandtab
+-->
