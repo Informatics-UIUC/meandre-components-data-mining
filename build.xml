@@ -54,6 +54,7 @@
     <property name="build.dir" value="${basedir}/build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="src.gen.dir" value="${build.dir}/src-gen"/>
+    <property name="src.copy.dir" value="${build.dir}/src-copy"/>
     <property name="dist.dir" value="${build.dir}/dist"/>
     <property name="descriptors.dir" value="${build.dir}/descriptors"/>
     <property name="scripts.gen.dir" value="${build.dir}/scripts"/>
@@ -78,7 +79,7 @@
     </path>
 
     <!-- Test locations -->
-    <path id="src.test.dirs">
+    <path id="src.test.root.dirs">
         <dirset dir="${basedir}" includes="src-*/test"/>
     </path>
 
@@ -205,7 +206,7 @@
         <javac debug="on"
                debuglevel="lines,vars,source"
                destdir="${test.classes.dir}">
-            <src refid="src.test.dirs"/>
+            <src refid="src.test.root.dirs"/>
             <classpath refid="classpath.runtime"/>
         </javac>
 
@@ -436,29 +437,29 @@
     </target>
 
     <target name="with.clover" depends="guard.noclover" description="-> enables code coverage analysis for following tasks">
-        <mkdir dir="${test.dir}/clover"/>
+        <mkdir dir="${test.root.dir}/clover"/>
         <clover-setup/>
     </target>
 
     <target name="clover-xml" description="-> generates the code coverage report in XML format">
-        <mkdir dir="${test.dir}/clover/history"/>
-        <clover-historypoint historyDir="${test.dir}/clover/history"/>
+        <mkdir dir="${test.root.dir}/clover/history"/>
+        <clover-historypoint historyDir="${test.root.dir}/clover/history"/>
         <clover-report>
-            <current outfile="${test.dir}/clover/coverage.xml">
+            <current outfile="${test.root.dir}/clover/coverage.xml">
                 <format type="xml"/>
             </current>
         </clover-report>
     </target>
 
     <target name="clover-html" description="-> generates the code coverage report in HTML format">
-        <clover-historypoint historyDir="${test.dir}/clover/history"/>
-        <clover-html-report outdir="${test.dir}/clover"/>
-        <echo message="The code coverage report is available at file:///${test.dir}/clover"/>
+        <clover-historypoint historyDir="${test.root.dir}/clover/history"/>
+        <clover-html-report outdir="${test.root.dir}/clover"/>
+        <echo message="The code coverage report is available at file:///${test.root.dir}/clover"/>
     </target>
 
     <target name="clover-pdf" description="-> generates the code coverage report in PDF format">
-        <clover-historypoint historyDir="${test.dir}/clover/history"/>
-        <clover-pdf-report outfile="${test.dir}/clover/coverage.pdf"/>
+        <clover-historypoint historyDir="${test.root.dir}/clover/history"/>
+        <clover-pdf-report outfile="${test.root.dir}/clover/coverage.pdf"/>
     </target>
 
 </project>
