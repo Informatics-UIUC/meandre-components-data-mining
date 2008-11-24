@@ -627,15 +627,39 @@ public class FPGrowth implements ExecutableComponent {
      * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
      */
     public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
+       
+       ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
+       
+       HashMap sNames    = iss.unique;
+       //int[] targetIndices = iss.targetIndices;
+       String[] nameAry  = iss.names;
+       int numExamples   = iss.numExamples;
+       boolean[][] vals  = iss.getItemFlags();
+       
+       
+       // now run the algorithm
+       int[][] ovals = runFP(context, sNames, nameAry, numExamples, vals);
+       if (ovals != null){
+          context.pushDataComponentToOutput(DATA_OUTPUT_FREQ_ITEM_SETS, ovals);
+       }
+       
+    }
+       
+    
+    
+    protected int[][] runFP(ComponentContext context,
+                             HashMap sNames,
+                             String[] nameAry,
+                             int numExamples,
+                             boolean[][] vals)
+        throws ComponentExecutionException, 
+               ComponentContextException 
+    {
+       
         long start = System.currentTimeMillis();
 
         try {
-            ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
-            HashMap sNames = iss.unique;
-            //        int[] targetIndices = iss.targetIndices;
-            String[] nameAry = iss.names;
-            int numExamples = iss.numExamples;
-
+            
             _cutoff = (int) ((double) numExamples * (_support / 100.0));
 
             if (((double) numExamples * (_support / 100.0)) > (double) _cutoff) {
@@ -645,7 +669,7 @@ public class FPGrowth implements ExecutableComponent {
             // BUILD INITIAL PROBLEM
             FPProb prob = null;
 
-            boolean[][] vals = iss.getItemFlags();
+           
             FPSparse tab = new FPSparse(nameAry.length);
             FPPattern.clearElementMapping();
 
@@ -730,8 +754,9 @@ public class FPGrowth implements ExecutableComponent {
             }
 
             if (_patterns.size() > 0) {
-                context.pushDataComponentToOutput(DATA_OUTPUT_FREQ_ITEM_SETS, ovals);
+                return ovals;
             }
+            return null;
 
         } catch (Exception ex) {
         	_logger.log(Level.SEVERE, "Execution error: ", ex);
