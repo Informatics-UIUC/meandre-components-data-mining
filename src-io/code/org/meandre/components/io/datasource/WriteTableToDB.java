@@ -81,8 +81,8 @@ import org.meandre.components.datatype.table.Table;
         		"If the Query_Path property is blank, it will check the Query_Statement Property. " +
         		"If this is not blank, it will attempt to execute the text in the Query_Statement property as an sql query. " +
         		"Finally, if both properties are blank, it will present the user with a WebUI to enter a query manually",
-        name="QueryDB",
-        tags="database")
+        name="WriteTableToDB",
+        tags="database, io, table")
 
 /** This component allows a user to enter and run an SQL query that produces a result set. The query can be entered as a property string or typed by the user at runtime.
  *
@@ -158,7 +158,7 @@ public class WriteTableToDB implements ExecutableComponent {
     @ComponentInput(
 	 		description = "The input D2K table to write",
 	 		name = "TableIn")
-	final static String DATA_INPUT2 = "Table";
+	final static String DATA_INPUT2 = "TableIn";
     
     //Connection output
     @ComponentOutput(
@@ -222,11 +222,20 @@ public class WriteTableToDB implements ExecutableComponent {
      	{
      		if (tableTypetoRSType(writeTable.getColumnType(i)) != null)
      		{
-     			tableString +=writeTable.getColumnLabel(i)+" "+tableTypetoRSType(writeTable.getColumnType(i))+", ";
+     			if (tableTypetoRSType(writeTable.getColumnType(i)).equalsIgnoreCase("VARCHAR"))
+     				tableString +=writeTable.getColumnLabel(i)+" "+tableTypetoRSType(writeTable.getColumnType(i))+"(100), ";
+     			else
+     				tableString +=writeTable.getColumnLabel(i)+" "+tableTypetoRSType(writeTable.getColumnType(i))+", ";
      		}
      	}
+     	//cut off the last comma added
+     	if (tableString.lastIndexOf(',')!=-1)
+     		tableString = tableString.substring(0,tableString.lastIndexOf(','));
+     	//add parenthesis
      	tableString +=")";
 
+     	logger.log(Level.INFO, tableString);
+     	
      	//Execute statement to create table in database
      	try {
      			stmt = conn.createStatement();
@@ -261,6 +270,7 @@ public class WriteTableToDB implements ExecutableComponent {
      				}
      			}
      			tableString+=")";
+     			logger.log(Level.INFO, tableString);
      			stmt = conn.createStatement();
      			stmt.executeUpdate(tableString);
      			stmt.close();
