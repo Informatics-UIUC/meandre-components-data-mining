@@ -60,6 +60,8 @@ import org.meandre.components.datatype.table.basic.MutableTableImpl;
 import org.meandre.components.datatype.table.basic.TableImpl;
 import org.meandre.components.discovery.ruleassociation.support.FreqItemSet;
 import org.meandre.components.discovery.ruleassociation.support.ItemSets;
+import org.meandre.components.discovery.ruleassociation.support.ItemSetInterface;
+
 import org.meandre.components.discovery.ruleassociation.support.RuleTable;
 
 import org.meandre.core.ComponentContext;
@@ -303,21 +305,24 @@ import org.meandre.annotations.ComponentProperty;
 		long startTime = System.currentTimeMillis();
 
 		// pull the inputs.
-		ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
+		// ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
+		ItemSetInterface iss = 
+		   (ItemSetInterface) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
+		
 		int[][] fis = (int[][]) context.getDataComponentFromInput(DATA_INPUT_FREQ_ITEM_SETS);
 
-		String[] items = iss.names;
-		HashMap names = iss.unique;
+		String[] items = iss.getNames();
+		HashMap names = iss.getUnique();
 
 		// Init the counters.
-		int numExamples = iss.numExamples;
+		int numExamples = iss.getNumExamples();
 		int numFis = fis.length;
 		int numItems = items.length;
 		int[] targetIndex = null;
 
 		// So here we have a list of fields that we are going to
 		// target, these are the outputs.
-		String[] targets = iss.targetNames;
+		String[] targets = iss.getTargetNames();
 		Iterator keys = names.keySet().iterator();
 		Iterator indxs = names.values().iterator();
 		ArrayList list = new ArrayList();
@@ -350,7 +355,7 @@ import org.meandre.annotations.ComponentProperty;
 		boolean[][] itemFlags = iss.getItemFlags();
 		Vector finalRules = new Vector();
 		//     MutableIntegerArray[] documentMap = (MutableIntegerArray[]) iss.userData;
-		iss.userData = null;
+		
 
 		if (debug) {
 			_logger.fine("ComputeConfidence-> number of items: " + numItems);
