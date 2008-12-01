@@ -57,6 +57,7 @@ import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPSpars
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPTreeNode;
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FeatureTableElement;
 import org.meandre.components.discovery.ruleassociation.support.ItemSets;
+import org.meandre.components.discovery.ruleassociation.support.ItemSetInterface;
 
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
@@ -628,12 +629,15 @@ public class FPGrowth implements ExecutableComponent {
      */
     public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
        
-       ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
+       // ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
        
-       HashMap sNames    = iss.unique;
+       ItemSetInterface iss = 
+          (ItemSetInterface) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
+       
+       HashMap sNames    = iss.getUnique();
        //int[] targetIndices = iss.targetIndices;
-       String[] nameAry  = iss.names;
-       int numExamples   = iss.numExamples;
+       String[] nameAry  = iss.getNames();
+       int numExamples   = iss.getNumExamples();
        boolean[][] vals  = iss.getItemFlags();
        
        
