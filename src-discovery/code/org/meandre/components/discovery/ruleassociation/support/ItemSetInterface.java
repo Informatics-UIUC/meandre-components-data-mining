@@ -57,9 +57,22 @@ import java.util.HashMap;
  */
 
 public interface ItemSetInterface {
-   public int getNumExamples();
+   
+   /** number of examples. */
+   public int      getNumExamples();
+  
+   /** this array contains a list of attribute names of target attributes. */
    public String[] getTargetNames();
-   public HashMap getUnique();
+
+   /** for each unique item, this hashtable contains it's frequency count and it's
+    *  order in terms of frequency. */
+   public HashMap  getUnique();
+
+   /** this is the list of unique attribute value names ordered by frequency. */
    public String[] getNames();
-   public boolean [] getItemFlags();
+
+   /** for each example contains a boolean array with an entry for each item,
+    *  set to true only if the item is represented in the example or not.  */
+   public boolean [][] getItemFlags();
+
 }
