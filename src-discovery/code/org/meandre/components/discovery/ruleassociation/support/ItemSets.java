@@ -64,7 +64,8 @@ import java.util.*;
  * @author unascribed
  * @version 1.0
  */
-public class ItemSets implements Serializable {
+public class ItemSets implements ItemSetInterface, Serializable {
+   
 	/** number of examples. */
 	public int numExamples;
 
@@ -72,7 +73,7 @@ public class ItemSets implements Serializable {
 	public String [] targetNames = null;
 
 	/** this array contains a list of attribute indices of target attributes. */
-	public int [] targetIndices = null;
+	private int [] targetIndices = null;
 
 	/** for each unique item, this hashtable contains it's frequency count and it's
 	 *  order in terms of frequency. */
@@ -88,7 +89,7 @@ public class ItemSets implements Serializable {
 	/** holds some method specific data.*/
 	public Object userData;
 
-        public ItemSets(){}
+   public ItemSets(){}
 
 	public ItemSets(Table vt) {
 		// number of cols and rows in original table
@@ -357,6 +358,12 @@ public class ItemSets implements Serializable {
 		if (i < r)
 			quickSort(ind, vals, j+1, r);
 	}
+	
+	
+	
+	// 
+	// ItemSetInterface
+	//
 
 	/**
 	 * Returns an 2D array of booleans with one row for each example, and one bit
@@ -367,6 +374,10 @@ public class ItemSets implements Serializable {
 	public boolean [][] getItemFlags () {
 		return itemFlags;
 	}
+	public int getNumExamples() {return numExamples;}
+	public String[] getTargetNames() {return targetNames;}
+   public HashMap  getUnique() {return unique;}
+   public String[] getNames() {return names;}
 
 }
 
