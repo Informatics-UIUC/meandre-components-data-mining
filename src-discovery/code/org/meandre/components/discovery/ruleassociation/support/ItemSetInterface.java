@@ -62,6 +62,7 @@ public interface ItemSetInterface {
    public int      getNumExamples();
   
    /** this array contains a list of attribute names of target attributes. */
+   /* getTargetNames().length == numberOfAttributes  (number of columns) */
    public String[] getTargetNames();
 
    /** for each unique item, this hashtable contains it's frequency count and it's
@@ -73,6 +74,7 @@ public interface ItemSetInterface {
 
    /** for each example contains a boolean array with an entry for each item,
     *  set to true only if the item is represented in the example or not.  */
-   public boolean [][] getItemFlags();
+   // public boolean [][] getItemFlags();
+   public boolean getItemFlag(int exampleNum, int attributeNum);
 
 }

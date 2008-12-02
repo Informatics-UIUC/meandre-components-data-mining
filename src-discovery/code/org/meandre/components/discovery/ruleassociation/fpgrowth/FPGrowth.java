@@ -634,15 +634,8 @@ public class FPGrowth implements ExecutableComponent {
        ItemSetInterface iss = 
           (ItemSetInterface) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
        
-       HashMap sNames    = iss.getUnique();
-       //int[] targetIndices = iss.targetIndices;
-       String[] nameAry  = iss.getNames();
-       int numExamples   = iss.getNumExamples();
-       boolean[][] vals  = iss.getItemFlags();
-       
-       
        // now run the algorithm
-       int[][] ovals = runFP(context, sNames, nameAry, numExamples, vals);
+       int[][] ovals = runFP(context, iss);
        if (ovals != null){
           context.pushDataComponentToOutput(DATA_OUTPUT_FREQ_ITEM_SETS, ovals);
        }
@@ -652,13 +645,17 @@ public class FPGrowth implements ExecutableComponent {
     
     
     protected int[][] runFP(ComponentContext context,
-                             HashMap sNames,
-                             String[] nameAry,
-                             int numExamples,
-                             boolean[][] vals)
+                             ItemSetInterface iss)
         throws ComponentExecutionException, 
                ComponentContextException 
     {
+       
+       HashMap sNames    = iss.getUnique();
+       //int[] targetIndices = iss.targetIndices;
+       String[] nameAry  = iss.getNames();
+       int numExamples   = iss.getNumExamples();
+       // boolean[][] vals  = iss.getItemFlags();
+       String[] atts     = iss.getTargetNames(); // number of attributes
        
         long start = System.currentTimeMillis();
 
@@ -673,7 +670,6 @@ public class FPGrowth implements ExecutableComponent {
             // BUILD INITIAL PROBLEM
             FPProb prob = null;
 
-           
             FPSparse tab = new FPSparse(nameAry.length);
             FPPattern.clearElementMapping();
 
@@ -682,11 +678,12 @@ public class FPGrowth implements ExecutableComponent {
                 FPPattern.addElementMapping(i, nameAry[i]);
             }
 
-            for (int i = 0, n = vals.length; i < n; i++) {
+            int rows = numExamples; // was vals.length
+            for (int i = 0, n = rows; i < n; i++) {
+                int cols = nameAry.length; // was vals[i].length
+                for (int j = 0, m = cols; j < m; j++) {
 
-                for (int j = 0, m = vals[i].length; j < m; j++) {
-
-                    if (vals[i][j] == true) {
+                    if (iss.getItemFlag(i, j) == true) {
                         tab.setInt(1, i, j);
                     }
                 }

@@ -352,7 +352,7 @@ import org.meandre.annotations.ComponentProperty;
 		}
 
 		// get the bit map indicating what items were bought for each example.
-		boolean[][] itemFlags = iss.getItemFlags();
+		// boolean[][] itemFlags = iss.getItemFlags();
 		Vector finalRules = new Vector();
 		//     MutableIntegerArray[] documentMap = (MutableIntegerArray[]) iss.userData;
 		
@@ -419,11 +419,13 @@ import org.meandre.annotations.ComponentProperty;
 
 					// First determine if the antecedents exist in the set.
 					int y = 0;
-					boolean[] itf = itemFlags[x];
+					//boolean[] itf = itemFlags[x];
+					int rowIdx = x;
 
 					for (; y < ruleLenLessOne; y++) {
-
-						if (itf[newRule[y]] == false) {
+                  int colIdx = newRule[y];
+						//if (itf[newRule[y]] == false) {
+                  if (iss.getItemFlag(rowIdx,colIdx) == false) {
 							break;
 						}
 					}
@@ -431,8 +433,9 @@ import org.meandre.annotations.ComponentProperty;
 					// Did the antecedent exist in this set?
 					if (y == ruleLenLessOne) {
 						total++;
-
-						if (itf[mark] == true) {
+                  int colIdx = mark;
+						// if (itf[mark] == true) {
+                  if (iss.getItemFlag(rowIdx,colIdx) == true) {
 							hits++;
 						}
 					}

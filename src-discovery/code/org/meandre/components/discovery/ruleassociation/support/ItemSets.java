@@ -87,7 +87,7 @@ public class ItemSets implements ItemSetInterface, Serializable {
 	protected boolean [][] itemFlags;
 
 	/** holds some method specific data.*/
-	public Object userData;
+	//public Object userData;
 
    public ItemSets(){}
 
@@ -294,6 +294,23 @@ public class ItemSets implements ItemSetInterface, Serializable {
 		for (int i = 0 ; i < numRows ; i++)
 			for (int j = 0 ; j < numAttributes ; j++)
 				itemFlags[i][documents[i][j]] = true;
+		
+		
+		// DEBUG 
+		//
+		// Assert numAttributes == targetNames.length
+		/*
+		System.out.println("num attributes " + numAttributes);
+		System.out.println(unique.size() + " vs " + names.length);
+		for (int i = 0 ; i < targetNames.length; i++) {
+         System.out.println(targetNames[i]);
+		}
+		System.out.println("NAmes");
+		for (int i = 0 ; i < names.length; i++) {
+		   int[] out = (int[]) unique.get(names[i]);
+         System.out.println(names[i] + " " + out[0] + " " + out[1]);
+      }
+      */
 
 		// Figure out the indices of those items that are targets
 		Iterator keys = unique.keySet().iterator();
@@ -308,10 +325,10 @@ public class ItemSets implements ItemSetInterface, Serializable {
 				for (int i = 0 ; i < targetNames.length; i++) {
 					if (name.startsWith (targetNames[i])) {
 						list.add (indx);
-                                        }
-                                }
+               }
+            }
 			}
-                }
+      }
 
 		// Put the indexes of the targets into the list.
 		int size = list.size ();
@@ -371,13 +388,17 @@ public class ItemSets implements ItemSetInterface, Serializable {
 	 * set.
 	 * @return a 2D array of booleans indicating if an item was purchased or not for each example.
 	 */
-	public boolean [][] getItemFlags () {
-		return itemFlags;
+	//public boolean [][] getItemFlags () {
+	//   return itemFlags;
+	// }
+	
+	public boolean getItemFlag(int exampleNum, int attributeNum) {
+		return itemFlags[exampleNum][attributeNum];
 	}
-	public int getNumExamples() {return numExamples;}
+	public int getNumExamples() {    return numExamples;}
 	public String[] getTargetNames() {return targetNames;}
-   public HashMap  getUnique() {return unique;}
-   public String[] getNames() {return names;}
+   public HashMap  getUnique()      {return unique;}
+   public String[] getNames()       {return names;}
 
 }
 
