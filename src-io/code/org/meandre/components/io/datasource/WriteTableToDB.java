@@ -163,7 +163,7 @@ public class WriteTableToDB implements ExecutableComponent {
 	 		name = "ConnectionOut")
 	final static String DATA_OUTPUT = "ConnectionOut";
 
-    
+    //comment
 	//The name of the table to create in the database
 	@ComponentProperty(description="The name of the table to create in the database",
             	name="Table_Name",
