@@ -74,13 +74,10 @@ import org.meandre.components.datatype.table.ColumnTypes;
 import org.meandre.components.datatype.table.Table;
 
 @Component(creator="Erik Johnson",
-        description="This compnent executes a query and returns the resultset. " +
-        		"The user has three options. " +
-        		"First they may specify a path to a query file on the local filesystem using the Query_Path property. " +
-        		"If this property is not blank, the component will attempt to load from the path and execute the query stored in that file. " +
-        		"If the Query_Path property is blank, it will check the Query_Statement Property. " +
-        		"If this is not blank, it will attempt to execute the text in the Query_Statement property as an sql query. " +
-        		"Finally, if both properties are blank, it will present the user with a WebUI to enter a query manually",
+        description="This component writes a D2K table into a databse. "+
+        "The user specifies the name of the database table. "+
+        "The user sets createTable = true if the table needs to be created in the databse. "+
+        "If createTable is false, it will append the d2k table to an existing database table.",
         name="WriteTableToDB",
         tags="database, io, table")
 
@@ -173,7 +170,10 @@ public class WriteTableToDB implements ExecutableComponent {
             	defaultValue="")
     final static String DATA_PROPERTY = "Table_Name";
 	
-
+	@ComponentProperty(description="The name of the table to create in the database",
+        	name="Create_Table",
+        	defaultValue="TRUE")
+final static String DATA_PROPERTY2 = "Create_Table";
 
 
 
@@ -206,6 +206,8 @@ public class WriteTableToDB implements ExecutableComponent {
      throws ComponentExecutionException, ComponentContextException {
     	//query from property
      	tableName = cc.getProperty(DATA_PROPERTY);
+     	//create table property
+     	boolean createTable = Boolean.parseBoolean(cc.getProperty(DATA_PROPERTY2));
      	//get input connection
      	conn = (Connection)cc.getDataComponentFromInput(DATA_INPUT);
      	//get table to write
@@ -214,37 +216,38 @@ public class WriteTableToDB implements ExecutableComponent {
      	int numCols = writeTable.getNumColumns();
      	int numRows = writeTable.getNumRows();
      	
-     	//Begin to create SQL statement to create table
-     	tableString = "CREATE TABLE "+tableName+" (";
+     	if (createTable){
+     		//Begin to create SQL statement to create table
+     		tableString = "CREATE TABLE "+tableName+" (";
 		
-     	//Turn table columns into data types for the database
-     	for (int i = 0; i<numCols; i++)
-     	{
-     		if (tableTypetoRSType(writeTable.getColumnType(i)) != null)
+     		//Turn table columns into data types for the database
+     		for (int i = 0; i<numCols; i++)
      		{
-     			if (tableTypetoRSType(writeTable.getColumnType(i)).equalsIgnoreCase("VARCHAR"))
-     				tableString +=writeTable.getColumnLabel(i)+" "+tableTypetoRSType(writeTable.getColumnType(i))+"(100), ";
-     			else
-     				tableString +=writeTable.getColumnLabel(i)+" "+tableTypetoRSType(writeTable.getColumnType(i))+", ";
+     			if (tableTypetoRSType(writeTable.getColumnType(i)) != null)
+     			{
+     				if (tableTypetoRSType(writeTable.getColumnType(i)).equalsIgnoreCase("VARCHAR"))
+     					tableString +=writeTable.getColumnLabel(i)+" "+tableTypetoRSType(writeTable.getColumnType(i))+"(100), ";
+     				else
+     					tableString +=writeTable.getColumnLabel(i)+" "+tableTypetoRSType(writeTable.getColumnType(i))+", ";
+     			}
      		}
-     	}
-     	//cut off the last comma added
-     	if (tableString.lastIndexOf(',')!=-1)
-     		tableString = tableString.substring(0,tableString.lastIndexOf(','));
-     	//add parenthesis
-     	tableString +=")";
+     		//cut off the last comma added
+     		if (tableString.lastIndexOf(',')!=-1)
+     			tableString = tableString.substring(0,tableString.lastIndexOf(','));
+     		//add parenthesis
+     		tableString +=")";
 
-     	logger.log(Level.INFO, tableString);
+     		logger.log(Level.INFO, tableString);
      	
-     	//Execute statement to create table in database
-     	try {
+     		//Execute statement to create table in database
+     		try {
      			stmt = conn.createStatement();
      			stmt.executeUpdate(tableString);
      			stmt.close();
-     	} catch(SQLException ex) {
-     		System.err.println("SQLException: " + ex.getMessage());
+     		} catch(SQLException ex) {
+     			System.err.println("SQLException: " + ex.getMessage());
+     		}
      	}
-     	
      	
      	
      	//Now write all table rows to new table
