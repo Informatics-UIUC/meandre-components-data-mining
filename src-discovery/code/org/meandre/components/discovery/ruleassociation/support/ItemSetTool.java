@@ -23,14 +23,12 @@ public class ItemSetTool {
          String key = names[i];
          int[] cnt_and_id = (int[]) unique.get(key);
          int count = cnt_and_id[0];
-         System.out.println(i + " " + key +  "(" + cnt_and_id[1] + ")" + " has freq: " + count);
-         
+         System.out.println(i + " " + key +  "(" + cnt_and_id[1] + ")" + " has freq: " + count);    
       }
       
       assert unique.size() == names.length;
       assert unique.size() == itemSet.getItemsOrderedByFrequency().length;
       
- 
       int rows = itemSet.getNumExamples();
       int cols = itemSet.getItemsOrderedByFrequency().length;
       for (int i = 0;i < rows; i++) {
