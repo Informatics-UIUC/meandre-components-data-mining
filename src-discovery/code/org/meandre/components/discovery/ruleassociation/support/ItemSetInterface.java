@@ -62,19 +62,23 @@ public interface ItemSetInterface {
    public int      getNumExamples();
   
    /** this array contains a list of attribute names of target attributes. */
-   /* getTargetNames().length == numberOfAttributes  (number of columns) */
+   // this may or may NOT be equal to the number of columns
    public String[] getTargetNames();
 
    /** for each unique item, this hashtable contains it's frequency count and it's
     *  order in terms of frequency. */
+   // int[] values = (int[]) getUnique().get(key)
    public HashMap  getUnique();
 
    /** this is the list of unique attribute value names ordered by frequency. */
-   public String[] getNames();
+   // was getNames() 
+   public String[] getItemsOrderedByFrequency();
+   
 
    /** for each example contains a boolean array with an entry for each item,
     *  set to true only if the item is represented in the example or not.  */
-   // public boolean [][] getItemFlags();
+   // was public boolean [][] getItemFlags();
+   // atributeNum {0.. unique.size() }
    public boolean getItemFlag(int exampleNum, int attributeNum);
 
 }
