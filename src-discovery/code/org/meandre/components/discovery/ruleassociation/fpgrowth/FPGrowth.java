@@ -650,12 +650,14 @@ public class FPGrowth implements ExecutableComponent {
                ComponentContextException 
     {
        
-       HashMap sNames    = iss.getUnique();
+       // HashMap sNames    = iss.getUnique();
        //int[] targetIndices = iss.targetIndices;
-       String[] nameAry  = iss.getNames();
-       int numExamples   = iss.getNumExamples();
        // boolean[][] vals  = iss.getItemFlags();
-       String[] atts     = iss.getTargetNames(); // number of attributes
+       // String[] atts     = iss.getTargetNames(); // number of attributes
+       
+       
+       String[] nameAry  = iss.getItemsOrderedByFrequency();
+       int numExamples   = iss.getNumExamples();
        
         long start = System.currentTimeMillis();
 
@@ -701,11 +703,11 @@ public class FPGrowth implements ExecutableComponent {
             long stop = System.currentTimeMillis();
             _logger.fine((stop - start) / 1000 + " seconds");
 
-
             int numpatsout = 0;
 
             gnu.trove.TIntIntHashMap tiihm = new gnu.trove.TIntIntHashMap();
-
+            // HashMap<Integer, Integer> tiihm = new HashMap<Integer, Integer>();
+            
             for (int i = 0, n = _patterns.size(); i < n; i++) {
                 FPPattern pat = (FPPattern) _patterns.get(i);
                 int sz = pat.getSize();
@@ -715,6 +717,8 @@ public class FPGrowth implements ExecutableComponent {
             }
 
             int[] keys = tiihm.keys();
+            //Integer[] keys = tiihm.keySet().toArray(new Integer[0]);
+            
 
             for (int i = 0, n = keys.length; i < n; i++) {
 
