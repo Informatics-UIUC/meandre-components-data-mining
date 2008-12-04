@@ -344,6 +344,11 @@ public class ReadFileNames implements ExecutableComponent {
 
 		// convert name into file and make sure it exists and that it is a
 		// directory
+		//check and remove file url, 'file://' from front of dirname so it doesn't fail 
+		
+		if (_dirName.startsWith("file://"))
+			_dirName = _dirName.substring(7);
+		
 		File inFile = new File(_dirName);
 		if (!inFile.isDirectory()) {
 			_logger
