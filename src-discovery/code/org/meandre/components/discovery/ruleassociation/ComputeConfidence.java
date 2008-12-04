@@ -292,6 +292,8 @@ import org.meandre.annotations.ComponentProperty;
 			_logger.log(Level.SEVERE, "Initialization error: ", e);
 			throw new RuntimeException(e);
 		}
+		
+		// System.out.println("debug " + debug + " showProgress " + showProgress);
 	}
 
 	/*
@@ -311,8 +313,8 @@ import org.meandre.annotations.ComponentProperty;
 		
 		int[][] fis = (int[][]) context.getDataComponentFromInput(DATA_INPUT_FREQ_ITEM_SETS);
 
-		String[] items = iss.getNames();
-		HashMap names = iss.getUnique();
+		String[] items = iss.getItemsOrderedByFrequency();
+		HashMap unique = iss.getUnique();
 
 		// Init the counters.
 		int numExamples = iss.getNumExamples();
@@ -323,14 +325,15 @@ import org.meandre.annotations.ComponentProperty;
 		// So here we have a list of fields that we are going to
 		// target, these are the outputs.
 		String[] targets = iss.getTargetNames();
-		Iterator keys = names.keySet().iterator();
-		Iterator indxs = names.values().iterator();
+		Iterator keys = unique.keySet().iterator();
+		// Iterator indxs = names.values().iterator();
 		ArrayList list = new ArrayList();
 
 		// for each of the attributes, see if the inputs include the attribute.
 		while (keys.hasNext()) {
 			String name = (String) keys.next();
-			int[] indx = (int[]) indxs.next();
+			// int[] indx = (int[]) indxs.next();
+			int[] indx = (int[]) unique.get(name);
 
 			for (int i = 0; i < targets.length; i++) {
 
@@ -361,6 +364,10 @@ import org.meandre.annotations.ComponentProperty;
 			_logger.fine("ComputeConfidence-> number of items: " + numItems);
 			_logger.fine("ComputeConfidence-> number of frequent item sets: " + numFis);
 			_logger.fine("ComputeConfidence-> number of examples: " + numExamples);
+			
+			System.out.println("ComputeConfidence-> number of items: " + numItems);
+         System.out.println("ComputeConfidence-> number of frequent item sets: " + numFis);
+         System.out.println("ComputeConfidence-> number of examples: " + numExamples);
 		}
 
 		///////////////////////////////////////
