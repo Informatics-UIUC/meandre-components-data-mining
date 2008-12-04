@@ -174,13 +174,15 @@ public class WriteRuleAssocPMML  implements ExecutableComponent, RulePMMLTags {
             assocRule.addAttribute(ANTECEDENT, Integer.toString(hd));
             assocRule.addAttribute(CONSEQUENT, Integer.toString(bd));
         }
+        
 
-        /*try {
-            XMLWriter writer = new XMLWriter(new FileWriter(fileName),
+        /* try {
+            XMLWriter writer = new XMLWriter(new FileWriter("/tmp/tmp.out"),
                                              OutputFormat.createPrettyPrint());
             writer.write(document);
             writer.flush();
             writer.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }*/
