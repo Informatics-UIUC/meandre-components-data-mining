@@ -288,9 +288,13 @@ public class ReadFileNames implements ExecutableComponent {
 
 			// get next name to output
 			String result = (String) _names.remove(0);
-			_logger.fine("ReadFileNames" + ": pushing out file name -- : "
+			
+			if (!result.startsWith("http")) 
+				result = "file://"+result;	
+			
+			_logger.info("ReadFileNames" + ": pushing out file name -- : "
 					+ result);
-
+			
 			ctx.pushDataComponentToOutput(DATA_OUTPUT_FILE_NAMES, result);
 			_docsProcessed++;
 		}
@@ -391,7 +395,7 @@ public class ReadFileNames implements ExecutableComponent {
 
 	private void searchSubs(File parent, List<String> names, ComponentContext context) {
 		// get the class name
-		_logger.fine("ReadFileNames: path is -- " + parent.getPath()
+		_logger.info("ReadFileNames: path is -- " + parent.getPath()
 				+ " -- is directory ? " + parent.isDirectory());
 		File[] children = null;
 		if (_sRegexFilter == null) {
@@ -417,7 +421,7 @@ public class ReadFileNames implements ExecutableComponent {
 
 	private void searchSubsSet(File parent, Set<Object[]> names, ComponentContext context) {
 		// get the class name
-		_logger.fine("ReadFileNames: path is = " + parent.getPath()
+		_logger.info("ReadFileNames: path is = " + parent.getPath()
 				+ " -- is a directory ? " + parent.isDirectory());
 		File[] children = null;
 		if (_sRegexFilter == null) {

@@ -105,8 +105,8 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
 
 	//Private variables
 	
-    /** The blocking semaphore for Web UI component*/
-    private Semaphore sem = new Semaphore(1, true);
+//    /** The blocking semaphore for Web UI component*/
+//    private Semaphore sem = new Semaphore(1, true);
 
     /** The instance ID for Web UI component*/
     private String sInstanceID = null;
@@ -152,6 +152,8 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     
     //This boolean tracks whether or not this is a pooled connection- they use two seperate interfaces
     private boolean pooled = false;
+
+	private String sDone;
     
     //Connection output
     @ComponentOutput(
@@ -397,7 +399,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
             WebUIException {
     	//get parameters
     	//user has hit done button
-    	String sDone = request.getParameter("done"); //done button eliminated, user must create a connection to exit component
+        sDone = (request.getParameter("done")==null)?"notDone":"Done"; //done button eliminated, user must create a connection to exit component
     	//user has selected DS from JNDI namespace
     	String spersistentDS = request.getParameter("persistentDS");
     	//user has requested to connect to existing datasource
@@ -579,7 +581,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     	}
     	//user has pressed done button or created a connection- release semaphore
     	if ( sDone!=null ) {
-			sem.release();
+			//sem.release();
 		}
     	//do nothing
 		else
@@ -650,17 +652,16 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
             ComponentContextException {
     	//start the web UI
 
-    	
+    	this.sDone = "notDone";
     	logger.log(Level.INFO,"Firing the web ui component");
 		sInstanceID = cc.getExecutionInstanceID();
 		try {
-			
-			sem.acquire();
 			logger.log(Level.INFO,">>>Rendering...");
 			cc.startWebUIFragment(this);
 			logger.log(Level.INFO,">>>STARTED");
-			sem.acquire();
-			sem.release();
+			while (!cc.isFlowAborting() && sDone.equals("notDone") ) {
+                 Thread.sleep(1000);
+            }
 			logger.log(Level.INFO,">>>Done");
 		
 		}
