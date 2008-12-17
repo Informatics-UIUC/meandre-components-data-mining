@@ -51,6 +51,7 @@
 
     <!-- Project structure -->
     <property name="lib.dir" value="${basedir}/lib/jars"/>
+    <property name="lib.devkit.dir" value="${basedir}/lib/devkit"/>
     <property name="build.dir" value="${basedir}/build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="src.gen.dir" value="${build.dir}/src-gen"/>
@@ -107,6 +108,7 @@
     <!-- Compilation classpath -->
     <path id="classpath.build">
         <fileset dir="${lib.dir}" includes="*.jar"/>
+        <fileset dir="${lib.devkit.dir}" includes="*.jar"/>
     </path>
 
     <!-- Runtime class path -->
@@ -114,8 +116,15 @@
         <path refid="classpath.build"/>
         <pathelement path="${java.class.path}"/>
         <fileset dir="${dist.dir}" includes="*.jar"/>
-    </path>    
-
+    </path>   
+     
+    <!-- Runtime class path for component installer (alpha)-->
+    <path id="classpath.devkit">
+        <path refid="classpath.build"/>
+        <path location="${classes.dir}"/>
+        <pathelement path="${java.class.path}"/>
+        <fileset dir="${dist.dir}" includes="*.jar"/>
+    </path>   
 
     <!--
     =================
@@ -268,141 +277,45 @@
 
 
     <!--
-        Creates descriptor for a single user-specified component
-    -->
-    <target name="create-descriptor"
-            depends="dist"
-            description="-> creates descriptor for acomponent.  Example: >ant create-descriptor -DcomponentClass=org.seasr.meandre.components.io.PushString">
-        <java classname="org.meandre.tools.components.CreateComponentDescriptor"
-              fork="yes"
-              maxmemory="1024m">
-            <classpath refid="classpath.runtime"/>
-            <jvmarg value="-showversion"/>
-            <arg value="${componentClass}"/>
-            <arg value="${componentsDescriptorsDir}"/>
-        </java>
-    </target>    
-
-
-    <!--
-        Creates descriptors for all components in any src directory
-    -->
-    <target name="create-all-descriptors"
-            depends="dist"
-            description="-> creates descriptors for all components under src-*">
-        <java classname="org.meandre.tools.components.CreateAllComponentDescriptor"
-              fork="yes"
-              maxmemory="1024m">
-            <classpath refid="classpath.runtime"/>
-            <jvmarg value="-showversion"/>
-            <arg value="${src.copy.dir}"/>
-            <arg value="${descriptors.dir}"/>
-        </java>
-    </target>    
-
-    <!--
-        Finds dependencies (based on the classpath) for the specified component
-        and creates its corresponding package-info.java file
-    -->
-    <target name="create-package-info"
-            depends="dist"
-            description="-> finds dependencies for the specified component and creates its corresponding package-info file.  Example: >ant create-package-info -Dcomponent=build/classes/org/seasr/meandre/components/io/PushString.class">
-        <java classname="org.meandre.tools.components.FindComponentDep"
-              fork="yes"
-              maxmemory="1024m">
-            <classpath refid="classpath.runtime"/>
-            <jvmarg value="-showversion"/>
-            <arg value="${component}"/>
-            <arg value="${lib.dir}"/>
-        </java>
-    </target>
-
-    <!--
-        Finds dependencies (based on the classpath) for all SEASR components
-        and creates the corresponding package-info.java files
-    -->
-    <target name="create-all-package-info"
-            depends="dist"
-            description="-> finds dependencies for all Meandre components and creates the corresponding package-info files">
-        <java classname="org.meandre.tools.components.FindAllComponentDep"
-              fork="yes"
-              maxmemory="1024m">
-            <classpath refid="classpath.runtime"/>
-            <jvmarg value="-showversion"/>
-            <arg value="${src.copy.dir}"/>
-            <arg value="${classes.dir}"/>
-            <arg value="${src.gen.dir}"/>
-            <arg value="${lib.dir}"/>
-        </java>
-    </target>
-
-    <!--
-        Compiles package-info.java files in src-gen/
-    -->
-    <target name="compile-package-infos"
-            depends="create-all-package-info"
-            description="-> compiles package-info.java files in build/src-gen/">
-        <javac srcdir="${src.gen.dir}"
-               debug="on"
-               source="1.5"
-               debuglevel="lines,vars,source"
-               destdir="${classes.dir}">
-            <classpath refid="classpath.build"/>
-        </javac>
-        <!-- we want these to be in the generated jar file so they can
-            be in the classpath by default, so force the distribution
-            to be redone
-        -->
-        <antcall target="dist"/>
-    </target>
-
-    <!--
-        Creates a UNIX shell script (scripts/upload.sh) that uploads all 
-        components, then moves it to scripts-gen/.
-    -->
-    <target name="create-upload-script"
-            depends="dist, compile-package-infos, create-all-descriptors"
-            description = "-> creates a scripts/upload.sh shell script that uploads all components">
-        <java classname="org.meandre.tools.components.InstallAllComponents" 
-            fork="yes" 
-            maxmemory="1024m">
-            <classpath refid="classpath.runtime"/>
-            <jvmarg value="-showversion"/>
-            <arg value="${lib.dir}"/>
-            <arg value="${src.copy.dir}"/>
-            <arg value="${descriptors.dir}"/>
-            <arg value="${dist.dir}/${components.jar.file}"/>
-            <arg value="${scripts.gen.dir}"/>
-            <arg value="${uploader.file}"/>
-        </java>
-    </target>
-
-    <!--
-        Runs generated upload script
+      installs all components (descriptors and java contexts) to a 
+      meandre-infrastructure server
     -->
     <target name="upload-components"
-            depends="create-upload-script"
-            description="-> runs upload.sh script to upload the components to a Meandre-Infrastructure server running on localhost:1714>">
-        <exec executable="sh">
-            <arg value="${scripts.gen.dir}/${uploader.file}"/>
-        </exec>
-    </target>
+        depends="compile"
+        description="-> ">
+        <java classname="org.meandre.tools.components.InstallComponentsCMD"
+              fork="yes"
+              maxmemory="1024m">
+            <classpath refid="classpath.devkit"/>
+            <jvmarg value="-showversion"/>
 
-    <!--
-        Attempts to perform all tasks necessary to upload to a running server, 
-        including generating all package-infos, descriptors, and upload scripts.
-    -->
-    <target name="upload-from-scratch"
-            depends="dist, create-all-descriptors, 
-                    create-all-package-info, upload-components"
-            description="-> runs everything necessary after a 'clean' to get the components uploaded to a Meandre server on localhost.">
+            <arg value="--class-dir"/>
+            <arg value="${classes.dir}"/>
+
+            <arg value="--lib-dir"/>
+            <arg value="${lib.dir}"/>
+
+            <arg value="--tmp-dir"/>
+            <arg value="${build.dir}"/>
+
+            <arg value="--meandre-host"/>
+            <arg value="localhost"/>
+
+            <arg value="--meandre-port"/>
+            <arg value="1714"/>
+
+            <arg value="--meandre-username"/>
+            <arg value="admin"/>
+
+            <arg value="--meandre-password"/>
+            <arg value="admin"/>
+        </java>
     </target>
 
     <!--
         Creates/updates the wiki component documentation
     -->
     <target name="update-wiki"
-            depends="create-all-descriptors"
             description="-> updates the wiki documentation for components.  Example: >ant update-wiki -Dusername=wiki_username -Dpassword=wiki_password">
         <java classname="org.meandre.tools.components.WikiCreateComponentPages"
               fork="yes"
