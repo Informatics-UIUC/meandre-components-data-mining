@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.transform;
 
@@ -67,19 +67,19 @@ import org.meandre.annotations.ComponentOutput;
  * <P>
  * Data Handling: This modules modifies the input Table
  * </P>
- * 
+ *
  * @author clutter (original)
  * @author Boris Capitanu
- * 
+ *
  * BC: Imported from d2k (ncsa.d2k.modules.core.transform.ApplyTransformation)
- * 
+ *
  */
 
 @Component(creator = "Boris Capitanu", description = "<p>This module applies a Transformation to a Table. "
 		+ "</p><p>Detailed Description: "
 		+ "This module applies a Transformation to a MutableTable and outputs "
 		+ "the transformed table as a MutableTable. "
-		+ "</p><p>Data Handling: This modules modifies the input Table</p>",
+		+ "</p><p>Data Handling: This module modifies the input Table</p>",
 		name = "Apply Transformation", tags = "transform, mutabletable"
 )
 public class ApplyTransformation implements ExecutableComponent {
@@ -92,12 +92,12 @@ public class ApplyTransformation implements ExecutableComponent {
 
 	@ComponentOutput(description = "The transformed input table", name = "table")
 	final static String DATA_OUTPUT_TABLE = "table";
-	
+
 	private Logger _logger;
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.meandre.core.ExecutableComponent#initialize(org.meandre.core.ComponentContextProperties)
 	 */
 	public void initialize(ComponentContextProperties context) {
@@ -106,16 +106,14 @@ public class ApplyTransformation implements ExecutableComponent {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
 	 */
 	public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
 		Transformation t = (Transformation) context.getDataComponentFromInput(DATA_INPUT_TRANSFORMATION);
 		MutableTable mt = (MutableTable) context.getDataComponentFromInput(DATA_INPUT_TABLE);
 
-		boolean ok = t.transform(mt);
-
-		if (!ok) {
+		if (!t.transform(mt)) {
 			_logger.severe("Transformation failed");
 			throw new ComponentExecutionException("Transformation failed.");
 		} else {
@@ -127,7 +125,7 @@ public class ApplyTransformation implements ExecutableComponent {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.meandre.core.ExecutableComponent#dispose(org.meandre.core.ComponentContextProperties)
 	 */
 	public void dispose(ComponentContextProperties arg0) {

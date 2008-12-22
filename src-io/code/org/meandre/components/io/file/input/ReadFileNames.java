@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.io.file.input;
 
@@ -97,7 +97,7 @@ import org.meandre.tools.webdav.*;
 		+ "<p>The default regex is txt.</p>"
 		+ "<p>All of the file names are collected into an array and they are pushed out one by one. </p>"
 		+ "<p>An integer count of the total number of names output is pushed out at the end.</p>",
-		name = "ReadFileNames", tags = "io read file")
+		name = "Read File Names", tags = "io, read file")
 public class ReadFileNames implements ExecutableComponent {
 
 	// ==============
@@ -117,7 +117,7 @@ public class ReadFileNames implements ExecutableComponent {
 	private Pattern _sRegexFilter = null;
 
 	// props
-	
+
 	@ComponentProperty(description = "Treat source as webdav?", name = "webdav", defaultValue = "false")
 	final static String DATA_PROPERTY_WEBDAV = "webdav";
 
@@ -137,7 +137,7 @@ public class ReadFileNames implements ExecutableComponent {
 	public final static String DATA_INPUT_DIRNAME = "directory_name";
 
 	// IO
-	
+
 	@ComponentOutput(description = "File names.", name = "file_names")
 	public final static String DATA_OUTPUT_FILE_NAMES = "file_names";
 
@@ -156,7 +156,7 @@ public class ReadFileNames implements ExecutableComponent {
 
 	/**
 	 * Test
-	 */	
+	 */
 	static public void main(String[] args) {
 
 //		// get a flow builder instance
@@ -288,13 +288,13 @@ public class ReadFileNames implements ExecutableComponent {
 
 			// get next name to output
 			String result = (String) _names.remove(0);
-			
-			if (!result.startsWith("http")) 
-				result = "file://"+result;	
-			
+
+			if (!result.startsWith("http"))
+				result = "file://"+result;
+
 			_logger.info("ReadFileNames" + ": pushing out file name -- : "
 					+ result);
-			
+
 			ctx.pushDataComponentToOutput(DATA_OUTPUT_FILE_NAMES, result);
 			_docsProcessed++;
 		}
@@ -348,11 +348,11 @@ public class ReadFileNames implements ExecutableComponent {
 
 		// convert name into file and make sure it exists and that it is a
 		// directory
-		//check and remove file url, 'file://' from front of dirname so it doesn't fail 
-		
+		//check and remove file url, 'file://' from front of dirname so it doesn't fail
+
 		if (_dirName.startsWith("file://"))
 			_dirName = _dirName.substring(7);
-		
+
 		File inFile = new File(_dirName);
 		if (!inFile.isDirectory()) {
 			_logger

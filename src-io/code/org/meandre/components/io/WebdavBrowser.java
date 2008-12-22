@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.io;
 
@@ -72,11 +72,11 @@ import org.meandre.tools.webdav.WebdavClient;
         creator = "Boris Capitanu",
         description = "Outputs the list of files in a WebDAV tree matching the specified criteria.",
         name = "Webdav Browser",
-        tags = "io,webdav,input"
+        tags = "io, webdav, input"
 )
 public class WebdavBrowser implements ExecutableComponent {
 
-    @ComponentProperty(description = "The URL where to start looking for files", 
+    @ComponentProperty(description = "The URL where to start looking for files",
     				   name = "start_url",
                        defaultValue = "null")
     final static String DATA_PROPERTY_START_URL = "start_url";
@@ -88,11 +88,11 @@ public class WebdavBrowser implements ExecutableComponent {
 	@ComponentProperty(description = "Webdav password", name = "password", defaultValue = "null")
 	final static String DATA_PROPERTY_PASSWORD = "password";
 
-    @ComponentProperty(description = "The regular expression used to filter files", 
+    @ComponentProperty(description = "The regular expression used to filter files",
     		name = "regex_filter", defaultValue = "*")
     final static String DATA_PROPERTY_REGEX_FILTER = "regex_filter";
 
-    @ComponentProperty(description = "Recurse subdirectories? (true/false)", 
+    @ComponentProperty(description = "Recurse subdirectories? (true/false)",
     		name = "recursive", defaultValue = "false")
     final static String DATA_PROPERTY_RECURSIVE = "recursive";
 
@@ -126,13 +126,13 @@ public class WebdavBrowser implements ExecutableComponent {
     		_sUsername = context.getProperty(DATA_PROPERTY_USERNAME);
     		_sPassword = context.getProperty(DATA_PROPERTY_PASSWORD);
     		_bRecurseSubdirs = Boolean.parseBoolean(context.getProperty(DATA_PROPERTY_RECURSIVE));
-    		
+
     		boolean useAuthentication = _sUsername.trim().equalsIgnoreCase("null");
     		_logger.fine("startUrl=" + _sStartUrl);
     		_logger.fine("regexFilter=" + _sRegexFilter);
     		_logger.fine("recurseSubdirectories=" + _bRecurseSubdirs);
     		_logger.fine("Using authentication: " + useAuthentication);
- 
+
         	if (useAuthentication)
         		_webdav = new WebdavClient(_sStartUrl,
         				new UsernamePasswordCredentials(_sUsername, _sPassword));
@@ -143,7 +143,7 @@ public class WebdavBrowser implements ExecutableComponent {
     		_logger.log(Level.SEVERE, "Initialize error", e);
     		throw new RuntimeException(e);
     	}
-        
+
         _logger.exiting(this.getClass().getName(), "initialize");
     }
 

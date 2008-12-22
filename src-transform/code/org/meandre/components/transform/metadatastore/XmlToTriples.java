@@ -3,12 +3,12 @@
  * Open Source License
  *
  * Copyright (c) 2008, NCSA.  All rights reserved.
- * 
+ *
  * Developed by:
  * The Automated Learning Group
  * University of Illinois at Urbana-Champaign
  * http://www.seasr.org
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal with the Software without restriction, including
@@ -16,19 +16,19 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject
  * to the following conditions:
- * 
+ *
  * Redistributions of source code must retain the above copyright
  * notice, this list of conditions and the following disclaimers.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright
  * notice, this list of conditions and the following disclaimers in
  * the documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the names of The Automated Learning Group, University of
  * Illinois at Urbana-Champaign, nor the names of its contributors may
  * be used to endorse or promote products derived from this Software
  * without specific prior written permission.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -71,7 +71,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
  * converts the XML data to RDF triples, pushing them to their respective outputs as they are produced.
  *
  * @author Boris Capitanu
- * @jira COMPONENTS-10 Create XmlToTriples component
  */
 @Component(
         creator = "Boris Capitanu",
@@ -79,14 +78,14 @@ import com.hp.hpl.jena.rdf.model.Statement;
         		"The TEI-XML format contains two sections ('teiHeader' and 'text') which " +
         		"this component processes separately to generate triples for each section.<br/>" +
         		"<u>Note:</u> The end-of-section processing is indicated by pushing out the string: 'EOF'",
-        name = "XmlToTriples",
+        name = "XML To Triples",
         tags = "rdf, xml, triples, tei, converter"
 )
 public class XmlToTriples implements ExecutableComponent, IRdfStatementProcessor {
-    @ComponentInput(description = "Location of XML data", name = "url")
-    final static String DATA_INPUT_URL = "url";
+    @ComponentInput(description = "Location of XML data", name = "data_url")
+    final static String DATA_INPUT_URL = "data_url";
 
-    @ComponentOutput(description = "The triples corresponding to the 'teiHeader' section", 
+    @ComponentOutput(description = "The triples corresponding to the 'teiHeader' section",
     		name = "header_triples")
     final static String DATA_OUTPUT_HEADER_TRIPLES = "header_triples";
 
@@ -218,7 +217,7 @@ public class XmlToTriples implements ExecutableComponent, IRdfStatementProcessor
 
     /**
      * Called whenever a header triple has been generated
-     * 
+     *
      * @param stmt the newly-generated header triple
      */
     public void processHeaderStatement(Statement stmt) {
@@ -255,7 +254,7 @@ public class XmlToTriples implements ExecutableComponent, IRdfStatementProcessor
 
     /**
      * Called whenever a body triple has been generated
-     * 
+     *
      * @param stmt the newly-generated body triple
      */
     public void processBodyStatement(Statement stmt) {

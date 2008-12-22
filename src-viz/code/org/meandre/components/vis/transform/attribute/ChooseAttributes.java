@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.transform.attribute;
+package org.meandre.components.vis.transform.attribute;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -66,6 +67,7 @@ import org.meandre.webui.WebUIFragmentCallback;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.Component.Mode;
 
 
@@ -105,6 +107,12 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
     @ComponentOutput(description = "The Example Table with input and output features assigned", name = "example_table")
     final static String DATA_OUTPUT_EXAMPLE_TABLE = "example_table";
 
+    @ComponentProperty(description = "Set to 'true' if selection of an output attribute is required",
+                       name = "require_output_selection",
+                       defaultValue = "true")
+    final static String DATA_PROPERTY_REQUIRE_OUTPUT = "require_output_selection";
+
+
 
     //~ Instance fields *********************************************************
 
@@ -114,13 +122,22 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
     private String[] attributeLabels;
     private ArrayList<String> selectedInputs;
     private ArrayList<String> selectedOutputs;
+    private boolean requireOutputSelection;
 
     private String executionInstanceId;
 
     //url of the webui, to redirect to when done
     private String webUIUrl;
 
-    public void dispose(ComponentContextProperties context) { }
+    public void initialize(ComponentContextProperties context) {
+        try {
+            requireOutputSelection = Boolean.parseBoolean(context.getProperty(DATA_PROPERTY_REQUIRE_OUTPUT));
+        }
+        catch (Exception e) {
+            context.getLogger().log(Level.SEVERE, "Initialize error: ", e);
+            throw new RuntimeException(e);
+        }
+    }
 
     public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
         executionInstanceId = context.getExecutionInstanceID();
@@ -194,9 +211,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
         context.pushDataComponentToOutput(DATA_OUTPUT_EXAMPLE_TABLE, exampleTable);
     }
 
-
-    public void initialize(ComponentContextProperties context) { }
-
+    public void dispose(ComponentContextProperties context) { }
 
     public void emptyRequest(HttpServletResponse response) throws WebUIException {
         try {
@@ -213,12 +228,17 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
         String[] inputs = request.getParameterValues("inputs");
         String[] outputs = request.getParameterValues("outputs");
 
-        if (inputs == null || inputs.length == 0 || outputs == null || outputs.length == 0) {
+        boolean missingOutputs = requireOutputSelection && (outputs == null || outputs.length == 0);
+        if (inputs == null || inputs.length == 0 || missingOutputs) {
             // return error message
             try {
                 PrintWriter writer = response.getWriter();
                 writer.println("<html><head><title>Choose Attributes</title></head><body>");
-                writer.println("<h3 style='color: red;'>You need to select at least one input and one output attribute.</h3><p/>");
+                writer.print("<h3 style='color: red;'>You need to select at least one input");
+                if (requireOutputSelection)
+                    writer.print(" and one output");
+                writer.println(" attribute.</h3><p/>");
+
                 writer.println("<form><input type='button' value='Go back' onClick='history.back()'/></form>");
                 writer.println("</body></html>");
             } catch (IOException e) {
@@ -230,7 +250,8 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
             selectedOutputs.clear();
 
             selectedInputs.addAll(Arrays.asList(inputs));
-            selectedOutputs.addAll(Arrays.asList(outputs));
+            if (outputs != null)
+                selectedOutputs.addAll(Arrays.asList(outputs));
 
              //redirect the browser back to the webui's main url so any
             //subsequent visualizations will appear automatically
@@ -258,7 +279,10 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
                 "         var submit = document.frmSelectAttributes.submitButton; " +
                 "         var inputs = document.frmSelectAttributes.inputs; " +
                 "         var outputs = document.frmSelectAttributes.outputs; " +
-        		"         submit.disabled = ((inputs.selectedIndex == -1) || (outputs.selectedIndex == -1)); " +
+
+                ((requireOutputSelection) ?
+        		"         submit.disabled = ((inputs.selectedIndex == -1) || (outputs.selectedIndex == -1)); " :
+        		"         submit.disabled = (inputs.selectedIndex == -1); ") +
         		"     } " +
         		"" +
         		"     function checkDuplicates(source, dest) {" +

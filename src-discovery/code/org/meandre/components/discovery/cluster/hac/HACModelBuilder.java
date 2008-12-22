@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.discovery.cluster.hac;
 
@@ -52,6 +52,8 @@ package org.meandre.components.discovery.cluster.hac;
 
 //import org.meandre.tools.components.*;
 //import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
+
+import java.util.logging.Level;
 
 import org.meandre.core.*;
 import org.meandre.annotations.*;
@@ -74,8 +76,8 @@ import org.meandre.components.discovery.cluster.hac.support.HACWork;
 @Component(
         creator = "Duane Searsmith",
         description ="Takes a d2k table object and builds a full bottom up cluster tree.",
-        name = "HACModelBuilder",
-        tags = "cluster unsupervised model_builder")
+        name = "HAC Model Builder",
+        tags = "cluster, unsupervised, model builder")
 
 public class HACModelBuilder implements ExecutableComponent {
 
@@ -83,22 +85,22 @@ public class HACModelBuilder implements ExecutableComponent {
     // Data Members
     //==============
 
-    @ComponentInput(description = "Table", name = "d2k_table")
-            public final static String DATA_INPUT_D2K_TABLE = "d2k_table";
+    @ComponentInput(description = "Table", name = "table")
+            public final static String DATA_INPUT_D2K_TABLE = "table";
 
     @ComponentOutput(description = "Cluster Model", name = "cluster_model")
             public final static String DATA_OUTPUT_CLUSTER_MODEL = "cluster_model";
 
 
     @ComponentProperty(defaultValue="" + HACWork.s_WardsMethod_CLUSTER,
-                       description="The clustering method to be used.",
+                       description="The clustering method to be used",
                        name="cluster_method")
     public final static String DATA_PROPERTY_CLUSTER_METHOD = "cluster_method";
     /** The clustering method to be used. */
     protected int _clusterMethod = HACWork.s_WardsMethod_CLUSTER;
 
     @ComponentProperty(defaultValue="" + HACWork.s_Euclidean_DISTANCE,
-                       description="The distance metric to be used.",
+                       description="The distance metric to be used",
                        name="distance_metric")
     public final static String DATA_PROPERTY_DISTANCE_METRIC = "distance_metric";
     /** The distance metric to be used. */
@@ -111,10 +113,10 @@ public class HACModelBuilder implements ExecutableComponent {
     /** The number of clusters to create. */
     protected int _numberOfClusters = 5;
 
-    @ComponentProperty(defaultValue=".10",
+    @ComponentProperty(defaultValue="10",
                        description="The percentage of the maximum distance " +
                                    "to use as a cutoff value to halt cluster " +
-                                   "agglomeration.",
+                                   "agglomeration (0..100)",
                        name="threshold")
     public final static String DATA_PROPERTY_THRESHOLD = "threshold";
     /**
@@ -312,7 +314,7 @@ public class HACModelBuilder implements ExecutableComponent {
      * @param noc The new value for the distance threshold property. Must be an
      *            integer between 1 and 100 (represent a percentage).
      */
-    public void setDistanceThreshold(int noc) { _thresh = noc; }
+    public void setDistanceThreshold(int treshold) { _thresh = treshold; }
 
     /**
      * Sets the number of clusters property.
@@ -328,73 +330,17 @@ public class HACModelBuilder implements ExecutableComponent {
 
     public void initialize(ComponentContextProperties context) {
 
-        String param = context.getProperty(HACModelBuilder.DATA_PROPERTY_MISSING_VALUES);
-        if (param.toLowerCase().equals("n")){
-            this.setCheckMissingValues(false);
-        } else if (param.toLowerCase().equals("y")){
-            this.setCheckMissingValues(true);
-        } else {
-            System.out.println("HACModelBuilder invalid value for parameter: "
-                               + DATA_PROPERTY_MISSING_VALUES +
-                    ". Value is set to: " + this.getCheckMissingValues());
-        }
-        param = context.getProperty(HACModelBuilder.DATA_PROPERTY_VERBOSE);
-        if (param.toLowerCase().equals("false")){
-            this.setVerbose(false);
-        } else if (param.toLowerCase().equals("true")){
-            this.setVerbose(true);
-        } else {
-            System.out.println("HACModelBuilder invalid value for parameter: "
-                               + HACModelBuilder.DATA_PROPERTY_VERBOSE +
-                    ". Value is set to: " + this.getVerbose());
-        }
-        param = context.getProperty(HACModelBuilder.DATA_PROPERTY_CLUSTER_METHOD);
-        int ival = -1;
         try {
-            ival = Integer.parseInt(param);
-        } catch (Exception e){
-            System.out.println("HACModelBuilder invalid value for parameter: "
-                              + HACModelBuilder.DATA_PROPERTY_CLUSTER_METHOD +
-                   ". Value is set to: " + this.getClusterMethod());
+            setCheckMissingValues(Boolean.parseBoolean(context.getProperty(HACModelBuilder.DATA_PROPERTY_MISSING_VALUES)));
+            setVerbose(Boolean.parseBoolean(context.getProperty(HACModelBuilder.DATA_PROPERTY_VERBOSE)));
+            setClusterMethod(Integer.parseInt(context.getProperty(HACModelBuilder.DATA_PROPERTY_CLUSTER_METHOD)));
+            setDistanceMetric(Integer.parseInt(context.getProperty(HACModelBuilder.DATA_PROPERTY_DISTANCE_METRIC)));
+            setNumberOfClusters(Integer.parseInt(context.getProperty(HACModelBuilder.DATA_PROPERTY_NUM_CLUSTERS)));
+            setDistanceThreshold(Integer.parseInt(context.getProperty(HACModelBuilder.DATA_PROPERTY_THRESHOLD)));
         }
-        if (ival > -1){
-            this.setClusterMethod(ival);
-        }
-        param = context.getProperty(HACModelBuilder.DATA_PROPERTY_DISTANCE_METRIC);
-        ival = -1;
-        try {
-            ival = Integer.parseInt(param);
-        } catch (Exception e){
-            System.out.println("HACModelBuilder invalid value for parameter: "
-                              + HACModelBuilder.DATA_PROPERTY_DISTANCE_METRIC +
-                   ". Value is set to: " + this.getDistanceMetric());
-        }
-        if (ival > -1){
-            this.setDistanceMetric(ival);
-        }
-        param = context.getProperty(HACModelBuilder.DATA_PROPERTY_NUM_CLUSTERS);
-        ival = -1;
-        try {
-            ival = Integer.parseInt(param);
-        } catch (Exception e){
-            System.out.println("HACModelBuilder invalid value for parameter: "
-                              + HACModelBuilder.DATA_PROPERTY_NUM_CLUSTERS +
-                   ". Value is set to: " + this.getNumberOfClusters());
-        }
-        if (ival > -1){
-            this.setNumberOfClusters(ival);
-        }
-        param = context.getProperty(HACModelBuilder.DATA_PROPERTY_THRESHOLD);
-        double dval = -1;
-        try {
-            dval = Double.parseDouble(param);
-        } catch (Exception e){
-            System.out.println("HACModelBuilder invalid value for parameter: "
-                              + HACModelBuilder.DATA_PROPERTY_THRESHOLD +
-                   ". Value is set to: " + this.getDistanceThreshold());
-        }
-        if ((dval >= 0) && (dval <= 100)){
-            this.setDistanceThreshold(ival);
+        catch (Exception e) {
+            context.getLogger().log(Level.SEVERE, "Initialization error: ", e);
+            throw new RuntimeException(e);
         }
     }
 

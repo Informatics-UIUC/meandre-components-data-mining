@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -67,12 +67,12 @@ import org.meandre.components.io.graph.support.jung_piccolo.PGraphML;
  * <i>XMLToGraphFromURL</i>, extended to access the data through
  * <i>DataObjectProxy</i>.
  * </p>
- * 
+ *
  * @author gpape
  * @version $Revision: 1.2 $, $Date: 2007/01/23 23:09:35 $
  */
-@Component(creator = "Duane Searsmith", 
-		
+@Component(creator = "Duane Searsmith",
+
 		description = "<p>Overview: This module creates a Jung Graph object from a "
 			+ "GraphML file.  The input may be a local file or remote.</p>"
 			+ "<p><b>Note:</b>  This module is the same as deprecated module "
@@ -80,9 +80,9 @@ import org.meandre.components.io.graph.support.jung_piccolo.PGraphML;
 			+ "<i>DataObjectProxy</i>.</p>"
 			+ "<p>Acknowledgement: This module uses "
 			+ "functionality from the JUNG project. See "
-			+ "http://jung.sourceforge.net.</p>", 
-		
-		name = "XMLToGraphFromURL", tags = "io file transform jung xml graphml graph")
+			+ "http://jung.sourceforge.net.</p>",
+
+		name = "XML To Graph From URL", tags = "io, file transform, jung, xml, graphml, graph")
 public class XMLToGraphFromURL implements ExecutableComponent {
 
 	private static Logger _logger = Logger.getLogger("XMLToGraphFromURL");

@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,36 +38,33 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.discovery.ruleassociation.fpgrowth;
 
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPPattern;
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPProb;
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPSparse;
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPTreeNode;
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FeatureTableElement;
-import org.meandre.components.discovery.ruleassociation.support.ItemSets;
 import org.meandre.components.discovery.ruleassociation.support.ItemSetInterface;
-
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentInput;
-import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.ComponentProperty;
 
 
 /**
@@ -130,9 +127,9 @@ import org.meandre.annotations.ComponentProperty;
  *
  * @author D. Searsmith (original)
  * @author Boris Capitanu
- * 
+ *
  * BC: Imported from d2k (ncsa.d2k.modules.core.discovery.ruleassociation.fpgrowth.FPGrowth)
- * 
+ *
  */
 
 @Component(
@@ -190,13 +187,13 @@ import org.meandre.annotations.ComponentProperty;
         "this algorithm. Choosing/Binning components can be included in the itinerary "+
         "prior to this components to reduce the number of Item Sets entries.  </p>",
 
-        name = "FPGrowth",
+        name = "FP Growth",
         tags = "frequent pattern mining, rule association, discovery"
 )
 public class FPGrowth implements ExecutableComponent {
 
     @ComponentInput(description = "An object produced by a <i>Table To Item Sets</i> component " +
-            "containing items that will appear in the frequent itemsets. ", name = "item_sets")
+            "containing items that will appear in the frequent itemsets.", name = "item_sets")
     final static String DATA_INPUT_ITEM_SETS = "item_sets";
 
     @ComponentOutput(description = "A representation of the frequent itemsets found by the component. " +
@@ -250,7 +247,7 @@ public class FPGrowth implements ExecutableComponent {
     private boolean _debug;
 
     private Logger _logger;
-    
+
     /** the maximum number of attributes that will be included in any rule. */
     private int _maxSize;
 
@@ -608,9 +605,9 @@ public class FPGrowth implements ExecutableComponent {
      */
     public void initialize(ComponentContextProperties context) {
         _logger = context.getLogger();
-    	
+
     	_patterns = null;
-        
+
     	try {
     		_debug = Boolean.parseBoolean(context.getProperty(DATA_PROPERTY_DEBUG));
     		_verbose = Boolean.parseBoolean(context.getProperty(DATA_PROPERTY_VERBOSE));
@@ -628,41 +625,41 @@ public class FPGrowth implements ExecutableComponent {
      * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
      */
     public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
-       
+
        // ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
-       
-       ItemSetInterface iss = 
+
+       ItemSetInterface iss =
           (ItemSetInterface) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
-       
+
        // now run the algorithm
        int[][] ovals = runFP(context, iss);
        if (ovals != null){
           context.pushDataComponentToOutput(DATA_OUTPUT_FREQ_ITEM_SETS, ovals);
        }
-       
+
     }
-       
-    
-    
+
+
+
     protected int[][] runFP(ComponentContext context,
                              ItemSetInterface iss)
-        throws ComponentExecutionException, 
-               ComponentContextException 
+        throws ComponentExecutionException,
+               ComponentContextException
     {
-       
+
        // HashMap sNames    = iss.getUnique();
        //int[] targetIndices = iss.targetIndices;
        // boolean[][] vals  = iss.getItemFlags();
        // String[] atts     = iss.getTargetNames(); // number of attributes
-       
-       
+
+
        String[] nameAry  = iss.getItemsOrderedByFrequency();
        int numExamples   = iss.getNumExamples();
-       
+
         long start = System.currentTimeMillis();
 
         try {
-            
+
             _cutoff = (int) ((double) numExamples * (_support / 100.0));
 
             if (((double) numExamples * (_support / 100.0)) > (double) _cutoff) {
@@ -707,7 +704,7 @@ public class FPGrowth implements ExecutableComponent {
 
             gnu.trove.TIntIntHashMap tiihm = new gnu.trove.TIntIntHashMap();
             // HashMap<Integer, Integer> tiihm = new HashMap<Integer, Integer>();
-            
+
             for (int i = 0, n = _patterns.size(); i < n; i++) {
                 FPPattern pat = (FPPattern) _patterns.get(i);
                 int sz = pat.getSize();
@@ -718,7 +715,7 @@ public class FPGrowth implements ExecutableComponent {
 
             int[] keys = tiihm.keys();
             //Integer[] keys = tiihm.keySet().toArray(new Integer[0]);
-            
+
 
             for (int i = 0, n = keys.length; i < n; i++) {
 

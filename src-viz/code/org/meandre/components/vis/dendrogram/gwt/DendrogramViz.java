@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.gwt.dendrogram;
+package org.meandre.components.vis.dendrogram.gwt;
 
 // ==============
 // Java Imports
@@ -90,15 +90,15 @@ import org.meandre.webui.*;
 // import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
 
 /**
- * 
+ *
  * <p>
  * Title: Dendrogram Visualization
  * </p>
- * 
+ *
  * <p>
  * Description: A dendrogram visualization of cluster models.
  * </p>
- * 
+ *
  * <p>
  * Properties: <br>
  * The "use_local_host" means that you intend to run the server and browser
@@ -113,15 +113,15 @@ import org.meandre.webui.*;
  * because the table may have thousands of columns. This value tells the
  * application how many column values to display in descending order by support.
  * </p>
- * 
+ *
  * <p>
  * Copyright: Copyright (c) 2008
  * </p>
- * 
+ *
  * <p>
  * Company: Automated Learning Group, NCSA
  * </p>
- * 
+ *
  * @author D. Searsmith
  * @version 1.0
  */
@@ -142,7 +142,7 @@ description = "<p>Dendrogram visualization of SEASR cluster models.</p>"
 		+ "have thousands of columns.  This value tells the application how many column values to "
 		+ "display in descending order by support." + "</p>",
 
-name = "DendrogramViz", tags = "visualization, dendrogram, cluster", mode = Mode.webui, dependency = { "DendrogramViz_001.jar" })
+name = "Dendrogram Vis", tags = "visualization, dendrogram, cluster", mode = Mode.webui, dependency = { "DendrogramViz_001.jar" })
 public class DendrogramViz implements ExecutableComponent,
 		WebUIFragmentCallback {
 
@@ -308,7 +308,7 @@ public class DendrogramViz implements ExecutableComponent,
 
 	/**
 	 * When ready for execution.
-	 * 
+	 *
 	 * @param ctx
 	 *            The component context.
 	 * @throws ComponentExecutionException
@@ -376,7 +376,7 @@ public class DendrogramViz implements ExecutableComponent,
 	/**
 	 * This method gets call when a request with no parameters is made to a
 	 * component webui fragment.
-	 * 
+	 *
 	 * @param response
 	 *            The response object
 	 * @throws WebUIException
@@ -394,7 +394,7 @@ public class DendrogramViz implements ExecutableComponent,
 	/**
 	 * This method gets called when a call with parameters is made to a given
 	 * component webUI fragment
-	 * 
+	 *
 	 * @param target
 	 *            The target path
 	 * @param request
@@ -510,7 +510,7 @@ public class DendrogramViz implements ExecutableComponent,
 
 	/**
 	 * A simple message.
-	 * 
+	 *
 	 * @return The html containing the page
 	 */
 	private String getViz() {

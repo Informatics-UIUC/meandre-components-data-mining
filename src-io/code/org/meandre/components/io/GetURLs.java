@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.io;
 
@@ -63,12 +63,12 @@ import org.meandre.tools.webdav.IResourceInfo;
  * TODO: testing
  * @author D. Searsmith and Lily Dong(conversion to SEASR 6/08)
  */
-@Component(creator = "Duane Searsmith and Lily Dong", 
-		
+@Component(creator = "Duane Searsmith and Lily Dong",
+
 		description = "<p>Overview:<br>"
-		+ "This module reads URLs residing underneith the URL that is pointed to " 
-		+ "by the input WebDAV client.</p>"		
-		, name = "GetURLs", tags = "io url")
+		+ "This module reads URLs residing underneith the URL that is pointed to "
+		+ "by the input WebDAV client.</p>"
+		, name = "Get URLs", tags = "io, url")
 public class GetURLs implements ExecutableComponent {
 	// ==============
 	// Data Members
@@ -95,7 +95,7 @@ public class GetURLs implements ExecutableComponent {
 	public final static String DATA_PROPERTY_SEARCH_DEPTH = "search_depth";
 
 	// io
-	@ComponentInput(description = "WevdavClient pointing to a resource", 
+	@ComponentInput(description = "WevdavClient pointing to a resource",
                     name = "webdavClient")
     final static String DATA_INPUT_CLIENT= "webdavClient";
 
@@ -145,7 +145,7 @@ public class GetURLs implements ExecutableComponent {
 
 	/**
 	 * Return information about the module.
-	 * 
+	 *
 	 * @return A detailed description of the module.
 	 */
 	public String getModuleInfo() {
@@ -194,14 +194,14 @@ public class GetURLs implements ExecutableComponent {
 
 		try {
 			_urlsPushedCount = 0;
-			
+
 			String url = (String)ctx.getDataComponentFromInput(DATA_INPUT_URL);
 		    WebdavClient client = (WebdavClient)ctx.getDataComponentFromInput(DATA_INPUT_CLIENT);
-			
+
 		    if(!url.endsWith("/")) //make sure url ending with /
 		        url += "/";
 		    String str1 = url.substring(0, url.length()-1); //str1 equals the url without the last /
-		    str1 = str1.substring(str1.lastIndexOf("/")+1); 
+		    str1 = str1.substring(str1.lastIndexOf("/")+1);
 		    IResourceInfo[] info = client.listContents(url);
 			for(int i=0; i<info.length; i++) {
 			    String path = info[i].getPath();
@@ -210,7 +210,7 @@ public class GetURLs implements ExecutableComponent {
 			            path = path.substring(1);
 			        int index = path.indexOf(str1); //look for the first /
 			        String str2 = null;
-			        if(index != -1) 
+			        if(index != -1)
 			            str2 = path.substring(index + str1.length());
 			        if(str2 != null && str2.startsWith("/"))
 			            str2 = str2.substring(1);
@@ -222,11 +222,11 @@ public class GetURLs implements ExecutableComponent {
 			    }
 			    urlsVector.add(path);
 			}
-		    
+
 			/*DataObjectProxy dop = (DataObjectProxy) ctx
 					.getDataComponentFromInput(DATA_INPUT_DATA_PROXY);
 			urlsVector = dop.getChildrenURLs(getSearchDepth(ctx), true);*/
-			
+
 			if (getVerbose(ctx)) {
 				System.out.println("GetURLs: the returned urls --\n"
 						+ urlsVector.toString());
