@@ -66,7 +66,7 @@ import org.meandre.tools.webdav.IResourceInfo;
 @Component(creator = "Duane Searsmith and Lily Dong",
 
 		description = "<p>Overview:<br>"
-		+ "This module reads URLs residing underneith the URL that is pointed to "
+		+ "This module reads URLs residing underneath the URL that is pointed to "
 		+ "by the input WebDAV client.</p>"
 		, name = "Get URLs", tags = "io, url")
 public class GetURLs implements ExecutableComponent {

@@ -125,24 +125,28 @@ import org.meandre.webui.*;
  * @author D. Searsmith
  * @version 1.0
  */
+
 @Component(creator = "Duane Searsmith",
+        description = "<p>Dendrogram visualization of SEASR cluster models.</p>"
+            + "<p>"
+            + "Properties: <br>"
+            + "The 'use_local_host' means that you intend to run the server and browser client "
+            + "on the same machine.  This is set to false by default.  If you do run both on the "
+            + "same machine then it is important to set this property to true.  The reason is that "
+            + "when Java queries to OS for the local machines IP it often gets internal LAN IP's "
+            + "that often are not reachable as url's in your browser, and therefore an error will result. "
+            + "By choosing to set this property to true you force the client app to use '127.0.0.1' "
+            + "for your local address.<br>"
+            + "The sparse_detail_limit property defaults to 10.  For sparse tables it is not practical "
+            + "to display the entire table subset that make up a given cluster because the table may "
+            + "have thousands of columns.  This value tells the application how many column values to "
+            + "display in descending order by support." + "</p>",
 
-description = "<p>Dendrogram visualization of SEASR cluster models.</p>"
-		+ "<p>"
-		+ "Properties: <br>"
-		+ "The 'use_local_host' means that you intend to run the server and browser client "
-		+ "on the same machine.  This is set to false by default.  If you do run both on the "
-		+ "same machine then it is important to set this property to true.  The reason is that "
-		+ "when Java queries to OS for the local machines IP it often gets internal LAN IP's "
-		+ "that often are not reachable as url's in your browser, and therefore an error will result. "
-		+ "By choosing to set this property to true you force the client app to use '127.0.0.1' "
-		+ "for your local address.<br>"
-		+ "The sparse_detail_limit property defaults to 10.  For sparse tables it is not practical "
-		+ "to display the entire table subset that make up a given cluster because the table may "
-		+ "have thousands of columns.  This value tells the application how many column values to "
-		+ "display in descending order by support." + "</p>",
+            name = "Dendrogram Vis",
+            tags = "visualization, dendrogram, cluster",
+            mode = Mode.webui,
+            dependency = { "DendrogramViz_001.jar" })
 
-name = "Dendrogram Vis", tags = "visualization, dendrogram, cluster", mode = Mode.webui, dependency = { "DendrogramViz_001.jar" })
 public class DendrogramViz implements ExecutableComponent,
 		WebUIFragmentCallback {
 

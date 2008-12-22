@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.io.file.input;
 
@@ -73,7 +73,7 @@ import java.io.*;
  * @author  unascribed (original)
  * @author Boris Capitanu
  * @author Lily Dong
- * 
+ *
  * BC: Imported from d2k (ncsa.d2k.modules.core.io.file.input.Input1FileURL)
  *
  * TODO: testing
@@ -101,40 +101,40 @@ import java.io.*;
         "The WebdavClient is made available on the WebdavClient output " +
         "port.  For local url, a path may or may not be included " +
         "in the file name string.",
-        name = "Input URL or Path",
+        name = "Input URL Or Path",
         tags = "io, input",
         dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar"})
-       
+
 public class InputFileUrl implements ExecutableComponent {
 
-    @ComponentOutput(description = "WebdavClient pointing to a resource.", 
+    @ComponentOutput(description = "WebdavClient pointing to a resource.",
                      name = "webdavClient")
     final static String DATA_OUTPUT_CLIENT = "webdavClient";
-    
+
     @ComponentOutput(description = "URL pointing to a resource location.",
                      name = "url")
     final static String DATA_OUTPUT_URL = "url";
 
-    @ComponentProperty(description = "The input file URL", 
-                       name = "file_url", 
+    @ComponentProperty(description = "The input file URL",
+                       name = "file_url",
                        defaultValue = " ")
     final static String DATA_PROPERTY_FILE_URL = "file_url";
 
     @ComponentProperty(description = "The user login name to access the object. " +
                                      "if needed, use null to indicate no authentication " +
                                      "is to be performed.",
-                       name = "username", 
+                       name = "username",
                        defaultValue = "null")
     final static String DATA_PROPERTY_USERNAME = "username";
 
     @ComponentProperty(description = "The password to access the object, if needed",
-                       name = "password", 
+                       name = "password",
                        defaultValue = "null")
     final static String DATA_PROPERTY_PASSWORD = "password";
 
     //~ Instance fields *********************************************************
     private WebdavClient client;
-    
+
     private URL fileUrl;
 
     /** The password property. */
@@ -142,7 +142,7 @@ public class InputFileUrl implements ExecutableComponent {
 
     /** The username property. */
     private String username;
-    
+
     private Logger _logger;
 
     //~ Methods *****************************************************************
@@ -181,23 +181,23 @@ public class InputFileUrl implements ExecutableComponent {
      */
     public void initialize(ComponentContextProperties context) {
 	    _logger = context.getLogger();
-	
+
 	    username = context.getProperty(DATA_PROPERTY_USERNAME);
 	    password = context.getProperty(DATA_PROPERTY_PASSWORD);
-	
+
 	    if (username.equalsIgnoreCase("null")) username = "";
 	    if (password.equalsIgnoreCase("null")) password = "";
-	
+
 	    setUserName(username);
 	    setPassword(password);
-	
+
 	    try {
 	        fileUrl = new URL(context.getProperty(DATA_PROPERTY_FILE_URL));
 	    } catch (MalformedURLException e) {
 	    	_logger.log(Level.SEVERE, "Initialize error: ", e);
 	    	throw new RuntimeException(e);
 	    }
-	    
+
 	    client = null;
 	}
 
@@ -205,22 +205,22 @@ public class InputFileUrl implements ExecutableComponent {
      * (non-Javadoc)
      * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
      */
-	public void execute(ComponentContext context) 
+	public void execute(ComponentContext context)
 	    throws ComponentExecutionException, ComponentContextException {
-	
+
 	    /*DataObjectProxy dataobj;
 	    try {
 	        dataobj = DataObjectProxyFactory.getDataObjectProxy(fileUrl, username, password);
 	    } catch (DataObjectProxyException e) {
 	    	_logger.log(Level.SEVERE, "Execution exception: ", e);
 	        throw new ComponentExecutionException(e);
-	    }	
+	    }
 	    context.pushDataComponentToOutput(DATA_OUTPUT_DATAOBJECTPROXY, dataobj);*/
-	    
+
 	    Credentials credentials = null;
         if(username.length() != 0 && password.length() != 0)
             credentials = new UsernamePasswordCredentials(username, password);
-        
+
         try {
             client = new WebdavClient(context.getProperty(DATA_PROPERTY_FILE_URL),
                                       credentials);
@@ -228,19 +228,19 @@ public class InputFileUrl implements ExecutableComponent {
             e.printStackTrace();
             _logger.log(Level.SEVERE, "Execution exception: ", e);
             throw new ComponentExecutionException(e);
-        } 
-        
+        }
+
         context.pushDataComponentToOutput(
-                DATA_OUTPUT_URL, context.getProperty(DATA_PROPERTY_FILE_URL));     
-        context.pushDataComponentToOutput(DATA_OUTPUT_CLIENT, client); 
-        
+                DATA_OUTPUT_URL, context.getProperty(DATA_PROPERTY_FILE_URL));
+        context.pushDataComponentToOutput(DATA_OUTPUT_CLIENT, client);
+
         /*File file = new File("/birdy_project/iris.arff");
         try {
             client.put("http://norma.ncsa.uiuc.edu/alg-dav/iris.arff", file, "text/plain");
         }catch(IOException e) {
             e.printStackTrace();
         }*/
-	} 
+	}
 
 	/*
 	 * (non-Javadoc)
