@@ -855,12 +855,12 @@ public class WebdavDataObjectProxyImpl extends DataObjectProxy {
       File parentDir = new File(System.getProperty("user.dir"));
 
       if (parentDir.canWrite()) {
-         tempDataDir = new File("d2kTempData");
+         tempDataDir = new File("tempData");
       } else {
          parentDir = new File(System.getProperty("user.home"));
 
          if (parentDir.canWrite()) {
-            tempDataDir = new File(parentDir + File.separator + "d2kTempData");
+            tempDataDir = new File(parentDir + File.separator + "tempData");
          } else {
             throw new DataObjectProxyException("Need write access to \n" +
                                                System.getProperty("user.dir") +
