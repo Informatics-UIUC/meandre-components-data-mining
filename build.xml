@@ -69,7 +69,9 @@
     <property name="test.output.dir" value="${test.root.dir}/output"/>
 
     <!-- Generated JAR location -->
-    <property name="components.jar.file" value="${project.name}-components.jar"/>    
+    <property name="components.jar.file" value="${project.name}-components.jar"/>
+    <property name="datastructs.jar.file" value="${project.name}-structs.jar"/>
+
     <!-- Generated upload script name -->
     <property name="uploader.file" value="upload-${project.name}-components.sh"/>    
 
@@ -195,8 +197,18 @@
     <target name="dist"
             depends="compile"
             description="-> creates components jar file">
+
+        <!-- all classes -->
         <jar destfile="${dist.dir}/${components.jar.file}"
              basedir="${classes.dir}"/>
+
+        <!-- only data structures and utils -->
+        <jar destfile="${dist.dir}/${datastructs.jar.file}">
+             <fileset dir="${classes.dir}">
+                <include name="org/meandre/components/datatype/**/*.class"/>
+                <include name="org/meandre/components/util/**/*.class"/>
+             </fileset>
+        </jar>
     </target>
 
     <!--
