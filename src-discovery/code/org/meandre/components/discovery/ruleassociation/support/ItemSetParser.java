@@ -15,7 +15,7 @@ import java.util.StringTokenizer;
 public class ItemSetParser {
 	
     
-    ItemSetInterface getItemSets(String filename)
+    public ItemSetInterface getItemSets(String filename)
        throws FileNotFoundException, IOException
     {
        File file = new File(filename);
@@ -23,7 +23,7 @@ public class ItemSetParser {
        return getItemSets(new InputStreamReader(fis));
     }
     
-    ItemSetInterface getItemSets(Reader r)
+    public ItemSetInterface getItemSets(Reader r)
        throws IOException
     {
        BufferedReader reader = new BufferedReader(r);
