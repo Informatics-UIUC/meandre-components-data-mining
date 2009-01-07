@@ -232,8 +232,10 @@ final static String DATA_PROPERTY2 = "Create_Table";
         	//if (createTable)
           	  //createTable = false;
         }
+        /*
         else
         	cc.getOutputConsole().println("should i be here?");
+        	*/
         
         /*if (cc.isInputAvailable(DATA_INPUT2)){
         	writeTable = (Table)cc.getDataComponentFromInput(DATA_INPUT2);
