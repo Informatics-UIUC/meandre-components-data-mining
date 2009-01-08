@@ -54,16 +54,21 @@ public class InputStreamToItemSets implements ExecutableComponent {
 		url    = (String) cc.getDataComponentFromInput(DATA_INPUT_URL);
 		InputStreamReader reader = new InputStreamReader(client.getResourceAsStream(url));   
 	*/
-			               
 	
-			               
-    final static String DATA_INPUT_STREAM = "inputStream";
+	@ComponentProperty(description="number of itemsets per group",
+        	                  name="itemsetsPerGroup",
+        	           defaultValue="1")
+    final static String DATA_PROPERTY = "itemsetsPerGroup";
+	
+    
 	@ComponentInput(description = "java.io.InputStream", 
-			               name = DATA_INPUT_STREAM)
+			               name = "inputStream")
+    final static String DATA_INPUT_STREAM = "inputStream";      
 	
+	
+	
+	@ComponentOutput(description="ItemSetInterface", name = "itemset")
 	final static String DATA_OUTPUT_OBJECT = "itemset";
-	@ComponentOutput(description="ItemSetInterface", name = DATA_OUTPUT_OBJECT)
-	
     
 	
 	/** This method is invoked when the Meandre Flow is being prepared for 
@@ -77,9 +82,11 @@ public class InputStreamToItemSets implements ExecutableComponent {
 	 *         access was detected
 	 */
 	 
-	Reader reader;
 	public void initialize ( ComponentContextProperties ccp ) 
 	throws ComponentExecutionException, ComponentContextException {
+		
+     	
+
 	 
 	}
 
@@ -97,10 +104,12 @@ public class InputStreamToItemSets implements ExecutableComponent {
 		
 		
 		try {
+			int itemsPerGroup = Integer.parseInt(cc.getProperty(DATA_PROPERTY));
+
 			InputStream is   = (InputStream) cc.getDataComponentFromInput(DATA_INPUT_STREAM);
 
 			ItemSetParser parser = new ItemSetParser();
-			ItemSetInterface itemSets = parser.getItemSets(new InputStreamReader(is));
+			ItemSetInterface itemSets = parser.getItemSets(new InputStreamReader(is), itemsPerGroup);
          
 			ItemSetTool.print(itemSets); 
          

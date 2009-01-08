@@ -24,26 +24,40 @@ public class ItemSetParser {
     }
     
     public ItemSetInterface getItemSets(Reader r)
+    throws IOException
+    {
+    	return getItemSets(r,1);
+    }
+    
+    public ItemSetInterface getItemSets(Reader r, int linesPerSet)
        throws IOException
     {
        BufferedReader reader = new BufferedReader(r);
+       int lineNumber = 0;
           
      
        String line = null;
        SimpleItemSet itemSet = new SimpleItemSet();
+       Set<String> set = new HashSet<String>();
        
        while ( (line = reader.readLine()) != null) {
+    	   
+    	  lineNumber++;
           
           line = line.replaceAll("[{}]", "");
           line = line.trim();
           StringTokenizer tokens = new StringTokenizer(line, ",");
           
-          Set<String> set = new HashSet<String>();
           while(tokens.hasMoreTokens()){
              String item = tokens.nextToken();
              set.add(item);
           }
-          itemSet.addSet(set); 
+          
+          if (lineNumber%linesPerSet == 0) {
+        	  
+             itemSet.addSet(set); 
+             set = new HashSet<String>();
+          }
        }
        
        itemSet.compute();
