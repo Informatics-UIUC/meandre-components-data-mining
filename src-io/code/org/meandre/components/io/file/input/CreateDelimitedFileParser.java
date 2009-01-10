@@ -92,8 +92,9 @@ import org.meandre.tools.webdav.WebdavClient;
         "large a java OutOfMemory error might occur. <p>Data Handling: " +
         "The module does not destroy or modify the input data.",
         name = "Create Delimited File Parser",
-        tags = "file parser"
-)
+        tags = "file parser",
+        baseURL="meandre://seasr.org/components/")
+
 public class CreateDelimitedFileParser implements ExecutableComponent {
 
     @ComponentInput(description = "WebdavClient pointing to a resource",

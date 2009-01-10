@@ -72,7 +72,6 @@ import org.meandre.components.io.graph.support.jung_piccolo.PGraphML;
  * @version $Revision: 1.2 $, $Date: 2007/01/23 23:09:35 $
  */
 @Component(creator = "Duane Searsmith",
-
 		description = "<p>Overview: This module creates a Jung Graph object from a "
 			+ "GraphML file.  The input may be a local file or remote.</p>"
 			+ "<p><b>Note:</b>  This module is the same as deprecated module "
@@ -81,8 +80,9 @@ import org.meandre.components.io.graph.support.jung_piccolo.PGraphML;
 			+ "<p>Acknowledgement: This module uses "
 			+ "functionality from the JUNG project. See "
 			+ "http://jung.sourceforge.net.</p>",
-
-		name = "XML To Graph From URL", tags = "io, file transform, jung, xml, graphml, graph")
+		name = "XML To Graph From URL", tags = "io, file, transform, jung, xml, graphml, graph",
+        baseURL="meandre://seasr.org/components/")
+        
 public class XMLToGraphFromURL implements ExecutableComponent {
 
 	private static Logger _logger = Logger.getLogger("XMLToGraphFromURL");

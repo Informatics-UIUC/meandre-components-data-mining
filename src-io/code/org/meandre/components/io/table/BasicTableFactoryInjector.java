@@ -65,13 +65,13 @@ import org.meandre.core.ExecutableComponent;
  * @version $Revision: 1.9 $, $Date: 2007/05/18 21:25:08 $
  */
 @Component(creator = "Duane Searsmith",
-
 		description = "<p>Overview: Outputs a <i>TableFactory</i> suitable for " +
              "creating D2K Tables from the " +
              "ncsa.d2k.modules.core.datatype.table.basic package. This is " +
              "a standard Table suitable for most applications.</p>",
-
-             name = "Basic Table Factory Injector", tags = "table factory")
+             name = "Basic Table Factory Injector", tags = "table factory",
+             baseURL="meandre://seasr.org/components/")
+             
 public class BasicTableFactoryInjector implements ExecutableComponent {
 
 	private static Logger _logger = Logger.getLogger("BasicTableFactoryInjector");

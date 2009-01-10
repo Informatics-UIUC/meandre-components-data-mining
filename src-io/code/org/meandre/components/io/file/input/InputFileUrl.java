@@ -103,7 +103,8 @@ import java.io.*;
         "in the file name string.",
         name = "Input URL Or Path",
         tags = "io, input",
-        dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar"})
+        dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar"},
+        baseURL="meandre://seasr.org/components/")
 
 public class InputFileUrl implements ExecutableComponent {
 

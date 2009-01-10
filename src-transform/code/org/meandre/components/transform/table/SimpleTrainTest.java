@@ -90,7 +90,8 @@ import org.meandre.core.ExecutableComponent;
            "This module should scale linearly with the number of rows in the table.  The module needs to " +
            "be able to allocate arrays of integers to hold the indices of the test and train examples.",
            name="SimpleTrainTest",
-           tags="Training")
+           tags="train, test",
+           baseURL="meandre://seasr.org/components/")
 
 public class SimpleTrainTest implements ExecutableComponent {
     @ComponentInput(description="Read org.meandre.components.datatype.table.Table " +

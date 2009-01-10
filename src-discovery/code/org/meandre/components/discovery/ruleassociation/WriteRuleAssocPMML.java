@@ -65,7 +65,8 @@ import org.meandre.annotations.*;
 @Component(creator="Lily Dong",
            description="Write a RuleAssociationModel out in PMML(Predictive Model Markup Language) format complying with the PMML 2.0 DTD.",
            name="WriteRuleAssocPMML",
-           tags="frequent pattern mining, rule association")
+           tags="frequent pattern mining, rule association",
+           baseURL="meandre://seasr.org/components/")
 
 public class WriteRuleAssocPMML  implements ExecutableComponent, RulePMMLTags {
     @ComponentInput(description="A representaiton of association rules to be displayed. " +

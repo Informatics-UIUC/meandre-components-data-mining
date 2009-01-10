@@ -142,7 +142,9 @@ import org.meandre.annotations.ComponentProperty;
 	+ "This module searches all the Items Sets to compute the confidence for each Frequent Itemset. "
 	+ "The module allocated memory for the resulting Rule Table. </p>",
 
-	name = "Compute Confidence", tags = "rule association,confidence,discovery")
+	name = "Compute Confidence", tags = "rule association,confidence,discovery",
+    baseURL="meandre://seasr.org/components/")
+    
 	public class ComputeConfidence implements ExecutableComponent,
 	java.io.Serializable {
 

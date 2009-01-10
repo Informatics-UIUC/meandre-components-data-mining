@@ -60,7 +60,8 @@ import java.sql.SQLException;
 @Component(creator="Erik Johnson",
         description="Close Database",
         name="CloseDB",
-        tags="database, close")
+        tags="database, close",
+        baseURL="meandre://seasr.org/components/")
 
 /** A component to close the DB connection passed to it.
  *

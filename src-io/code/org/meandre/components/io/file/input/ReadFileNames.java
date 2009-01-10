@@ -97,7 +97,9 @@ import org.meandre.tools.webdav.*;
 		+ "<p>The default regex is txt.</p>"
 		+ "<p>All of the file names are collected into an array and they are pushed out one by one. </p>"
 		+ "<p>An integer count of the total number of names output is pushed out at the end.</p>",
-		name = "Read File Names", tags = "io, read file")
+		name = "Read File Names", tags = "io, read, file",
+        baseURL="meandre://seasr.org/components/")
+        
 public class ReadFileNames implements ExecutableComponent {
 
 	// ==============

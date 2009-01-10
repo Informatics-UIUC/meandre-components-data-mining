@@ -72,7 +72,8 @@ import org.meandre.components.datatype.table.ExampleTable;
 @Component(creator="Johnson",
           description="Write a ClusterModel out in PMML(Predictive Model Markup Language) format, optimized for Processing Display Algorithm.",
           name="WriteClusterDisplayPMML",
-          tags="frequent pattern mining, clustering")
+          tags="frequent pattern mining, clustering",
+          baseURL="meandre://seasr.org/components/")
 
 public class WriteClusterDisplayPMML  implements ExecutableComponent, ClusterPMMLTags {
    

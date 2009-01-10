@@ -87,7 +87,8 @@ import org.meandre.core.ComponentContextProperties;
            "Scalability: a large enough number of features will result " +
            "in an OutOfMemory error. Use feature selection to reduce the number of features.",
            name = "CreateBinTree",
-           tags = "binning, bin tree")
+           tags = "binning, bin tree",
+           baseURL="meandre://seasr.org/components/")
 
 
 public class CreateBinTree implements ExecutableComponent {

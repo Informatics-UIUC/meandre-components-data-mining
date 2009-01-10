@@ -79,8 +79,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
         		"this component processes separately to generate triples for each section.<br/>" +
         		"<u>Note:</u> The end-of-section processing is indicated by pushing out the string: 'EOF'",
         name = "XML To Triples",
-        tags = "rdf, xml, triples, tei, converter"
-)
+        tags = "rdf, xml, triples, tei, converter",
+        baseURL="meandre://seasr.org/components/")
+
 public class XmlToTriples implements ExecutableComponent, IRdfStatementProcessor {
     @ComponentInput(description = "Location of XML data", name = "data_url")
     final static String DATA_INPUT_URL = "data_url";

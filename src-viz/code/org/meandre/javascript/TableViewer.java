@@ -90,7 +90,8 @@ import org.meandre.components.datatype.table.Table;
            description="View table using jQuery.",
            name="Table Viewer",
            tags="table, viewer",
-           mode=Mode.webui)
+           mode=Mode.webui,
+           baseURL="meandre://seasr.org/components/")
 
 public class TableViewer implements ExecutableComponent, WebUIFragmentCallback {
    @ComponentInput(description="Read org.meandre.components.datatype.table.Table as input.",

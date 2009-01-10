@@ -117,8 +117,9 @@ import org.meandre.components.discovery.ruleassociation.support.ItemSets;
         "smaller than the original data.    </p>",
 
         name = "Table To Item Sets",
-        tags = "rule association, converter, itemsets, table, discovery"
-)
+        tags = "rule association, converter, itemsets, table, discovery",
+        baseURL="meandre://seasr.org/components/")
+        
 public class TableToItemSets implements ExecutableComponent {
 
     @ComponentInput(description = "The table that items and sets will be extracted from", name = "table")

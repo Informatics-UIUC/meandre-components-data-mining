@@ -105,7 +105,8 @@ import org.meandre.core.ComponentContextException;
            "count the number of correct and incorrect predictions.",
            name="PredictionTableReport",
            tags="prediction, visualization",
-           mode=Mode.webui)
+           mode=Mode.webui,
+           baseURL="meandre://seasr.org/components/")
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",

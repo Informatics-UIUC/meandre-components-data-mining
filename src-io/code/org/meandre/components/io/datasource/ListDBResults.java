@@ -70,7 +70,8 @@ import javax.servlet.http.*;
         description="List Database Resultsets using WebUI",
         name="ListDBResults",
         tags="database, table",
-        mode=Mode.webui)
+        mode=Mode.webui,
+        baseURL="meandre://seasr.org/components/")
 
 /** This components lists the contents of a resultset
  *

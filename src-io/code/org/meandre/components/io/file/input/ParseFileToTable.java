@@ -78,8 +78,9 @@ import org.meandre.annotations.ComponentProperty;
         "initialized with the contents of a flat file from disk.",
 
         name = "Parse File To Table",
-        tags = "io, table"
-)
+        tags = "io, table",
+        baseURL="meandre://seasr.org/components/")
+
 public class ParseFileToTable implements ExecutableComponent {
 
     @ComponentInput(description = "A FlatFileParser to read data from", name = "parser")

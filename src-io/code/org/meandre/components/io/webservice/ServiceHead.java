@@ -23,9 +23,10 @@ import org.meandre.annotations.Component.Mode;
 	@Component(creator = "Xavier Llora",
 		description = "service call for input to webUI fragment",
 		name = "ServiceHead",
-		tags = "input webUI",
+		tags = "input, webUI",
 		mode = Mode.webui,
-		firingPolicy = Component.FiringPolicy.all)
+		firingPolicy = Component.FiringPolicy.all,
+        baseURL="meandre://seasr.org/components/")
 
 	public class ServiceHead implements ExecutableComponent, WebUIFragmentCallback {
 

@@ -92,7 +92,8 @@ import  org.meandre.components.transform.binning.support.AutoBinOPT;
            "Scalability: The module requires enough memory to make copies of " +
            "each of the scalar input columns.",
            name = "AutoBin",
-           tags = "binning, transform", dependency={"trove-2.0.3.jar"})
+           tags = "binning, transform", dependency={"trove-2.0.3.jar"},
+           baseURL="meandre://seasr.org/components/")
 
 public class AutoBin extends AutoBinOPT implements ExecutableComponent {
     @ComponentInput(description = "Read a table of examples. It is type of " +

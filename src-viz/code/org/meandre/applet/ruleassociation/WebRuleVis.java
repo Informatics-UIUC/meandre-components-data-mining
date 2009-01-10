@@ -140,8 +140,8 @@ import org.dom4j.Document;
            "in these cases are being discussed for a future release.",
            name="WebRuleVis",
            tags="rule association, frequent pattern mining, visualization",
-           mode=Mode.webui
-           )
+           mode=Mode.webui,
+           baseURL="meandre://seasr.org/components/")
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",

@@ -72,8 +72,9 @@ import org.meandre.tools.webdav.WebdavClient;
         creator = "Boris Capitanu",
         description = "Outputs the list of files in a WebDAV tree matching the specified criteria.",
         name = "Webdav Browser",
-        tags = "io, webdav, input"
-)
+        tags = "io, webdav, input",
+        baseURL="meandre://seasr.org/components/")
+        
 public class WebdavBrowser implements ExecutableComponent {
 
     @ComponentProperty(description = "The URL where to start looking for files",

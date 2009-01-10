@@ -93,7 +93,9 @@ import org.meandre.annotations.*;
 		+ "This module uses functionality from the Prefuse project. See http://prefuse.org."
 		+ "</p>",
 
-	name = "Jung To Prefuse", tags = "io, transform, file graph, prefuse, jung")
+	name = "Jung To Prefuse", tags = "io, transform, file graph, prefuse, jung",
+    baseURL="meandre://seasr.org/components/")
+    
 public class JungToPrefuse implements ExecutableComponent {
 
 	// ==============

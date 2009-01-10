@@ -90,7 +90,8 @@ import org.meandre.components.datatype.table.Table;
            description="Present a search box for user to input query.",
            name="SearchBox",
            tags="search, visualization",
-           mode=Mode.webui)
+           mode=Mode.webui,
+           baseURL="meandre://seasr.org/components/")
 
 public class SearchBox implements ExecutableComponent, WebUIFragmentCallback {
     @ComponentOutput(description="Output the query passed from the serach box.",

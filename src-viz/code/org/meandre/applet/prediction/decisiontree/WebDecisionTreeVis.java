@@ -100,7 +100,8 @@ import org.meandre.components.prediction.decisiontree.c45.support.DecisionTreeMo
            "For more information look up the help provided in the UI of the module",
            name="WebDecisionTreeVis",
            tags="decision tree, visualization",
-           mode=Mode.webui)
+           mode=Mode.webui,
+           baseURL="meandre://seasr.org/components/")
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",

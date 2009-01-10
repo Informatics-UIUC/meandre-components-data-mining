@@ -87,7 +87,8 @@ import org.meandre.core.ComponentContextProperties;
            "The new columns are filled in with values predicted by the " +
            "model based on the values of the input attributes.",
            name="ModelPredict",
-           tags="prediction")
+           tags="prediction",
+           baseURL="meandre://seasr.org/components/")
 
 public class ModelPredict implements ExecutableComponent {
     @ComponentInput(description="Read the table containing the examples that the model will be applied to. " +

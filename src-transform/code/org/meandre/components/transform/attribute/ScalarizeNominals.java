@@ -82,7 +82,8 @@ import org.meandre.annotations.Component.Mode;
                     "ones. In addition, columns with blank labels are assigned " +
                     "default ones.",
         name="ScalarizeNominals",
-        tags="table, conversion")
+        tags="table, conversion",
+        baseURL="meandre://seasr.org/components/")
 
 
 public class ScalarizeNominals implements ExecutableComponent {

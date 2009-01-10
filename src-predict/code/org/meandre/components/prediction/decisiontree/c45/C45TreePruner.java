@@ -108,7 +108,8 @@ import org.meandre.annotations.ComponentProperty;
            "at least once for each node of the tree.  This module will need " +
            "enough memory to hold those predictions.",
            name="C45TreePruner",
-           tags="decision tree, C4.5, pruner")
+           tags="decision tree, C4.5, pruner",
+           baseURL="meandre://seasr.org/components/")
 
 
 public class C45TreePruner implements ExecutableComponent {

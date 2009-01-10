@@ -145,7 +145,8 @@ import org.meandre.webui.*;
             name = "Dendrogram Vis",
             tags = "visualization, dendrogram, cluster",
             mode = Mode.webui,
-            dependency = { "DendrogramViz_001.jar" })
+            dependency = { "DendrogramViz_001.jar" },
+            baseURL="meandre://seasr.org/components/")
 
 public class DendrogramViz implements ExecutableComponent,
 		WebUIFragmentCallback {

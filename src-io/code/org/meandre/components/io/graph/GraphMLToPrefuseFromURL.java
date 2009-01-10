@@ -82,7 +82,9 @@ import org.meandre.annotations.*;
     + "<i>GraphMLToPrefuse</i>, extended to access the data through "
     + "<i>DataObjectProxy</i>.</p>",
 
-	name = "GraphML To Prefuse From URL", tags = "transform, io, file, graphml, prefuse, graph")
+	name = "GraphML To Prefuse From URL", tags = "transform, io, file, graphml, prefuse, graph",
+    baseURL="meandre://seasr.org/components/")
+    
 public class GraphMLToPrefuseFromURL implements ExecutableComponent {
 
 	private static Logger _logger = Logger.getLogger("GraphMLToPrefuseFromURL");

@@ -84,7 +84,8 @@ import org.meandre.core.ComponentContextProperties;
            "records per leaf can be specified. If a leaf is created that has less than " +
            "the minimum number of records per leaf, the parent will be turned into a leaf itself.",
            name="C45TreeBuilder",
-           tags="decision tree, c4.5, prediction")
+           tags="decision tree, c4.5, prediction",
+           baseURL="meandre://seasr.org/components/")
 
 public class C45TreeBuilder extends C45TreeBuilderOPT implements ExecutableComponent {
 

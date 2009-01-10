@@ -97,8 +97,9 @@ import org.meandre.annotations.Component.Mode;
 
         name = "Choose Attributes",
         tags = "transform",
-        mode = Mode.webui
-)
+        mode = Mode.webui,
+        baseURL="meandre://seasr.org/components/")
+        
 public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallback {
 
     @ComponentInput(description = "The Table to choose inputs and outputs from", name = "table")

@@ -24,8 +24,9 @@ import org.meandre.annotations.ComponentOutput;
 	@Component(creator = "Xavier Llora", 
 		description = "service call for output from webUI fragment", 
 		name = "ServiceTail", 
-		tags = "output webUI", 
-		firingPolicy = Component.FiringPolicy.all)
+		tags = "output, webUI", 
+		firingPolicy = Component.FiringPolicy.all,
+        baseURL="meandre://seasr.org/components/")
 
 	public class ServiceTail implements ExecutableComponent {
 

@@ -62,12 +62,12 @@ import org.meandre.core.ExecutableComponent;
  * @author D. Searsmith (Conversion to SEASR 6/08)
  */
 @Component(creator = "Duane Searsmith",
-
 description = "<p>Overview: Outputs a <i>TableFactory</i> suitable "
 		+ "for creating D2K Tables from the "
 		+ "org.meandre.components.datatype.table.sparse package.</p>",
+name = "Sparse Table Factory Injector", tags = "sparsetable, table, factory",
+baseURL="meandre://seasr.org/components/")
 
-name = "Sparse Table Factory Injector", tags = "sparsetable, table factory")
 public class SparseTableFactoryInjector implements ExecutableComponent {
 
 	static final long serialVersionUID = 1L;

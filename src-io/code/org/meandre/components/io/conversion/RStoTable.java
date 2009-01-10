@@ -82,8 +82,9 @@ import java.sql.Connection;
        description = "Given a resultset object from an SQL query, create a table for data-mining. The table is a D2K Table object",
 
        name = "RStoTable",
-       tags = "io, table, resultset, conversion"
-)
+       tags = "io, table, resultset, conversion",
+       baseURL="meandre://seasr.org/components/")
+
 public class RStoTable implements ExecutableComponent {
 
    @ComponentInput(description = "A query resultset to create a table from", name = "ResultSet")

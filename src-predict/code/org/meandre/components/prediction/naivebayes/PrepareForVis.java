@@ -77,7 +77,8 @@ import org.meandre.core.ComponentExecutionException;
                 "Scalability: This module will perform NxM predictions, " +
                 "where N is the number of inputs and M is the number of training examples.",
            name="PrepareForVis",
-           tags="naive bayes, visualization")
+           tags="naive bayes, visualization",
+           baseURL="meandre://seasr.org/components/")
 
 public class PrepareForVis implements ExecutableComponent {
     @ComponentInput(description="Read org.meandre.components.prediction.naivebayes.NaiveBayesModel as input.",

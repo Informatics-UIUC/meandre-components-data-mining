@@ -99,7 +99,8 @@ import java.io.File;
            description="Connect to database using WebUI input",
            name="ConnectDB",
            tags="database",
-           mode=Mode.webui)
+           mode=Mode.webui,
+           baseURL="meandre://seasr.org/components/")
 
 public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallback {
 

@@ -82,7 +82,8 @@ import org.meandre.core.ComponentContextProperties;
            "example in Example Table.  There must be sufficient " +
            "memory to hold these predictions.",
            name="CreateDTModel",
-           tags="decision tree, c4.5, prediction")
+           tags="decision tree, c4.5, prediction",
+           baseURL="meandre://seasr.org/components/")
 
 public class CreateDTModel implements ExecutableComponent {
     @ComponentInput(description = "Read the root of the decision tree. " +

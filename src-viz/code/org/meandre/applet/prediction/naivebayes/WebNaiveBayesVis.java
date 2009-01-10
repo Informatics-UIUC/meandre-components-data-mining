@@ -82,7 +82,8 @@ import org.meandre.components.prediction.naivebayes.support.NaiveBayesModel;
            "bins used in the discretization process.",
            name="WebNaiveBayesVis",
            tags="naive bayes, visualization",
-           mode=Mode.webui)
+           mode=Mode.webui,
+           baseURL="meandre://seasr.org/components/")
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",

@@ -80,8 +80,9 @@ import org.meandre.annotations.ComponentOutput;
 		+ "This module applies a Transformation to a MutableTable and outputs "
 		+ "the transformed table as a MutableTable. "
 		+ "</p><p>Data Handling: This module modifies the input Table</p>",
-		name = "Apply Transformation", tags = "transform, mutabletable"
-)
+		name = "Apply Transformation", tags = "transform, mutabletable",
+        baseURL="meandre://seasr.org/components/")
+
 public class ApplyTransformation implements ExecutableComponent {
 
 	@ComponentInput(description = "Transformation to apply to the input table", name = "transformation")

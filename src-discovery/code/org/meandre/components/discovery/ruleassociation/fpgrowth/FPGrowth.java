@@ -188,8 +188,9 @@ import org.meandre.core.ExecutableComponent;
         "prior to this components to reduce the number of Item Sets entries.  </p>",
 
         name = "FP Growth",
-        tags = "frequent pattern mining, rule association, discovery"
-)
+        tags = "frequent pattern mining, rule association, discovery",
+        baseURL="meandre://seasr.org/components/")
+
 public class FPGrowth implements ExecutableComponent {
 
     @ComponentInput(description = "An object produced by a <i>Table To Item Sets</i> component " +

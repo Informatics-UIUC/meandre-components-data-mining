@@ -67,7 +67,9 @@ import org.meandre.core.ComponentContextProperties;
 	    creator="Boris Capitanu",
 	    description="Pushes the string specified in the property to the output",
 	    name="Push String",
-	    tags="io, input, string")
+	    tags="io, input, string",
+        baseURL="meandre://seasr.org/components/")
+        
 public class PushString implements ExecutableComponent {
 
 	@ComponentProperty(description = "Input string", name = "string", defaultValue = "hello world")

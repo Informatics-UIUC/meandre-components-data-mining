@@ -32,7 +32,8 @@ import org.meandre.core.ExecutableComponent;
 
 @Component(creator="mikeh", description="Creates Item sets from .is formatted files", 
 		name="InputStreamToItemSets",
-		tags="io input itemsets")
+		tags="io, input, itemsets",
+        baseURL="meandre://seasr.org/components/")
 		
 public class InputStreamToItemSets implements ExecutableComponent {
 

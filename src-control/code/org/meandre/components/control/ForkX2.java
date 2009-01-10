@@ -84,7 +84,8 @@ import org.meandre.annotations.*;
            "or copy via custom method.</p>",
 
            name="Fork x2",
-           tags="clone, fork, copy")
+           tags="clone, fork, copy",
+           baseURL="meandre://seasr.org/components/")
 
 public class ForkX2 implements ExecutableComponent {
     @ComponentInput(description="Object to replicate",

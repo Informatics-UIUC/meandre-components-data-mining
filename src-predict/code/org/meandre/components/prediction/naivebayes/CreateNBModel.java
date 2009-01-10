@@ -105,7 +105,8 @@ import org.meandre.annotations.ComponentOutput;
              "Scalability: The module utilizes the counts in the BinTree, and " +
              "as such does not perform any significant computations.",
              name="CreateNBModel",
-             tags="naive bayes, prediction")
+             tags="naive bayes, prediction",
+             baseURL="meandre://seasr.org/components/")
 
 public class CreateNBModel implements ExecutableComponent {
     @ComponentInput(description="Read org.meandre.components.transform.binning.BinTree " +
