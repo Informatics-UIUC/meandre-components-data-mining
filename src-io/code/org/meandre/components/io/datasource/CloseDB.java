@@ -58,10 +58,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @Component(creator="Erik Johnson",
-        description="Close Database",
-        name="CloseDB",
-        tags="database, close",
-        baseURL="meandre://seasr.org/components/")
+        description="<p>Overview:<br>"
+        +"This component closes a connection object to a database."
+        +" After all components connecting to the databse"
+        +" have been executed, the connection should be closed.</p>",
+        name="Close Database Connection",
+        tags="database, close")
 
 /** A component to close the DB connection passed to it.
  *
@@ -72,7 +74,7 @@ public class CloseDB implements ExecutableComponent {
 	private Logger logger;
 	
 	@ComponentInput(
-	 		description = "Connection to close",
+	 		description = "Connection object to close",
 	 		name = "Connection")
 	 final static String DATA_INPUT = "Connection";
 	
