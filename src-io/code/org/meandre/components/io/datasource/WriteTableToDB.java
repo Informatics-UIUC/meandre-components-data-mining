@@ -47,8 +47,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 import java.sql.ResultSet;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.Semaphore;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +61,6 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.annotations.Component.FiringPolicy;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
@@ -77,14 +74,13 @@ import org.meandre.components.datatype.table.ColumnTypes;
 import org.meandre.components.datatype.table.Table;
 
 @Component(creator="Erik Johnson",
-        description="This component writes a D2K table into a databse. "+
+        description="<p>Overview:<br>"+
+        "This component writes a D2K table into a databse. "+
         "The user specifies the name of the database table. "+
         "The user sets createTable = true if the table needs to be created in the databse. "+
         "If createTable is false, it will append the d2k table to an existing database table.",
-        name="WriteTableToDB",
-        firingPolicy=FiringPolicy.any,
-        tags="database, io, table",
-        baseURL="meandre://seasr.org/components/")
+        name="Write D2kTable to Database",
+        tags="database, io, table")
 
 /** This component allows a user to enter and run an SQL query that produces a result set. The query can be entered as a property string or typed by the user at runtime.
  *
@@ -95,10 +91,17 @@ public class WriteTableToDB implements ExecutableComponent {
 
     /** The instance ID */
     private String sInstanceID = null;
-    private String tableName;    
+
+    private String tableString;
+    
+    private String tableName;
+    
     private Connection conn;
-    private boolean createTable;
-    private Queue<Table> _queueTables;
+    
+    private Statement stmt;
+
+    private Table writeTable;
+    
     private Logger logger;
     
     public String tableTypetoRSType (int tableType)
@@ -152,14 +155,14 @@ public class WriteTableToDB implements ExecutableComponent {
   //Table Input
     @ComponentInput(
 	 		description = "The input D2K table to write",
-	 		name = "TableIn")
-	final static String DATA_INPUT2 = "TableIn";
+	 		name = "Table")
+	final static String DATA_INPUT2 = "Table";
     
     //Connection output
     @ComponentOutput(
 	 		description = "Connection out",
-	 		name = "ConnectionOut")
-	final static String DATA_OUTPUT = "ConnectionOut";
+	 		name = "Connection")
+	final static String DATA_OUTPUT = "Connection";
 
     //comment
 	//The name of the table to create in the database
@@ -184,8 +187,6 @@ final static String DATA_PROPERTY2 = "Create_Table";
       * @param ccp The component context properties
       */
      public void initialize ( ComponentContextProperties ccp ) {
-    	 _queueTables = new LinkedList<Table>();
-         conn=null;
     	 logger = ccp.getLogger();
      }
 
@@ -204,60 +205,17 @@ final static String DATA_PROPERTY2 = "Create_Table";
      
      public void execute(ComponentContext cc)
      throws ComponentExecutionException, ComponentContextException {
-    	 
-    	Table writeTable;
-    	    
     	//query from property
      	tableName = cc.getProperty(DATA_PROPERTY);
      	//create table property
-     	createTable = Boolean.parseBoolean(cc.getProperty(DATA_PROPERTY2));
+     	boolean createTable = Boolean.parseBoolean(cc.getProperty(DATA_PROPERTY2));
      	//get input connection
-     	
-        // Get the source base URL, if available
-        if (cc.isInputAvailable(DATA_INPUT) && conn == null){
-            conn = (Connection) cc.getDataComponentFromInput(DATA_INPUT);
-            while (_queueTables != null) {
-            	
-            	Table tmp = _queueTables.remove();
-            	processTable(cc,tmp);
-            	//if (createTable)
-            	  //createTable = false;
-            }
-        }
-        // Queue any new table that arrived on the input port
-        if (cc.isInputAvailable(DATA_INPUT2) && conn == null)
-            _queueTables.add((Table) cc.getDataComponentFromInput(DATA_INPUT2));
-        else if (cc.isInputAvailable(DATA_INPUT2) && conn != null){
-        	writeTable = (Table)cc.getDataComponentFromInput(DATA_INPUT2);
-        	processTable (cc,writeTable);
-        	//if (createTable)
-          	  //createTable = false;
-        }
-        /* 
-         * MEH I commented this out so it would compile
-        else
-        	cc.getOutputConsole().println("should i be here?");
-        */
-        
-        /*if (cc.isInputAvailable(DATA_INPUT2)){
-        	writeTable = (Table)cc.getDataComponentFromInput(DATA_INPUT2);
-        	processTable (cc,writeTable);
-        }*/
-        	
-        //if ((conn != null) && (writeTable != null))
-        	//processTable (cc,writeTable);
-     	//conn = (Connection)cc.getDataComponentFromInput(DATA_INPUT);
+     	conn = (Connection)cc.getDataComponentFromInput(DATA_INPUT);
      	//get table to write
-     	//writeTable = (Table)cc.getDataComponentFromInput(DATA_INPUT2);
+     	writeTable = (Table)cc.getDataComponentFromInput(DATA_INPUT2);
      	
-        }
-        
-        void processTable(ComponentContext cc,Table writeTable) throws ComponentContextException
-        {
      	int numCols = writeTable.getNumColumns();
      	int numRows = writeTable.getNumRows();
-     	String tableString;
-     	Statement stmt;
      	
      	if (createTable){
      		//Begin to create SQL statement to create table
@@ -325,7 +283,7 @@ final static String DATA_PROPERTY2 = "Create_Table";
      		System.err.println("SQLException: " + ex.getMessage());
      	}
      	
-     	//output connection for future queries 
+     	//outut connection for future queries 
 		cc.pushDataComponentToOutput(DATA_OUTPUT, conn);
      }
 

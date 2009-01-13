@@ -70,11 +70,16 @@ import org.meandre.webui.WebUIException;
 import javax.servlet.http.*;
 
 @Component(creator="Erik Johnson",
-        description="List Database Tables using WebUI input",
-        name="ListDBTables",
+        description="<p>Overview:<br>"
+        	+"This component accepts a connection object"
+        	+" to a database and queries the database to"
+        	+" get a list of all databse tables. <br>"
+        	+"It then starts a WebUI to display all the tables"
+        	+" in the database to the user. It is best used"
+        	+" to test connections to databases.</p>",
+        name="List Database Tables",
         tags="database, table",
-        mode=Mode.webui,
-        baseURL="meandre://seasr.org/components/")
+        mode=Mode.webui)
 
 /** A component to discover and display the tables in a Database to the user via a WebUI. It accepts a connection input and passes it to the output.
  *
@@ -95,14 +100,14 @@ public class ListDBTables implements ExecutableComponent, WebUIFragmentCallback 
     private Logger logger;
 
 	@ComponentInput(
-	 		description = "Connection to open",
-	 		name = "ConnectionIn")
-	 final static String DATA_INPUT = "ConnectionIn";
+	 		description = "Connection to query",
+	 		name = "Connection")
+	 final static String DATA_INPUT = "Connection";
 
 	@ComponentOutput(
-	 		description = "Connection to close",
-	 		name = "ConnectionOut")
-	 final static String DATA_OUTPUT = "ConnectionOut";
+	 		description = "Connection to same database",
+	 		name = "Connection")
+	 final static String DATA_OUTPUT = "Connection";
 
 
 	 /** This method gets call when a request with no parameters is made to a

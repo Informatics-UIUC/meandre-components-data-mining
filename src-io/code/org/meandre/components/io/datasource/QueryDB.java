@@ -70,16 +70,17 @@ import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 
 @Component(creator="Erik Johnson",
-        description="This compnent executes a query and returns the resultset. " +
-        		"The user has three options. " +
+        description="<p>Overview:<br>"+
+        	    "This compnent executes a query and returns the resultset. " +
+        		"The user has three options. <br>" +
         		"First they may specify a path to a query file on the local filesystem using the Query_Path property. " +
-        		"If this property is not blank, the component will attempt to load from the path and execute the query stored in that file. " +
-        		"If the Query_Path property is blank, it will check the Query_Statement Property. " +
-        		"If this is not blank, it will attempt to execute the text in the Query_Statement property as an sql query. " +
-        		"Finally, if both properties are blank, it will present the user with a WebUI to enter a query manually",
-        name="QueryDB",
+        		"<br>If this property is not blank, the component will attempt to load from the path and execute the query stored in that file. " +
+        		"<br>If the Query_Path property is blank, it will check the Query_Statement Property. " +
+        		"<br>If this is not blank, it will attempt to execute the text in the Query_Statement property as an sql query. " +
+        		"<br>Finally, if both properties are blank, it will present the user with a WebUI to enter a query manually",
+        name="Query Database",
         tags="database",
-        baseURL="meandre://seasr.org/components/")
+        mode = Mode.webui)
 
 /** This component allows a user to enter and run an SQL query that produces a result set. The query can be entered as a property string or typed by the user at runtime.
  *
@@ -116,14 +117,14 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
     //Resultset Output
     @ComponentOutput(
 	 		description = "The result of the executed query",
-	 		name = "Result")
-	final static String DATA_OUTPUT1 = "Result";
+	 		name = "ResultSet")
+	final static String DATA_OUTPUT1 = "ResultSet";
     
     //Connection output
     @ComponentOutput(
-	 		description = "Connection out",
-	 		name = "ConnectionOut")
-	final static String DATA_OUTPUT2 = "ConnectionOut";
+	 		description = "A connection to the same database",
+	 		name = "Connection")
+	final static String DATA_OUTPUT2 = "Connection";
        
     //This component property points to an xml file chosen by the user to store and load JNDI objects
 	@ComponentProperty(description="Full path to a text file with an sql query (i.e. C:/myquery.sql). This file will be parsed for an sql query. Lines beginning with // will be ignored as comments. The first semicolon will be treated as the end of the file; this component does not support multiple simultaneous queries. If the value \"none\" is specified, a webUI will be started to allow the user to enter a query manually.",
