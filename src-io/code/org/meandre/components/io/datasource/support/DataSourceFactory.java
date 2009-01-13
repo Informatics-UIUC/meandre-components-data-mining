@@ -60,6 +60,8 @@ import java.net.MalformedURLException;
 
 import java.io.InputStream;
 
+import java.util.Hashtable;
+
 /*
  * <p>Title: DataSourceFactory</p>
  * <p>
@@ -86,6 +88,8 @@ public class DataSourceFactory {
 	
 	//vector of known vendors, vendor drivers, and vendor datasource classes
 	private static Vector<String> knownDatabaseVendors;
+	private static Vector<String> commonDatabaseVendors;
+	private static Hashtable knownDatabaseProperties;
 	
 	//class loader for external jars, allows users to add unknown vendors at runtime
 	public static ExternalJarLoader jdbcLoader = new ExternalJarLoader (new URL [] {});
@@ -103,7 +107,8 @@ public class DataSourceFactory {
 	public static void initDatabases()
 	{
 	knownDatabaseVendors=new Vector<String>();
-
+	commonDatabaseVendors=new Vector<String>();
+	
 	knownDatabaseVendors.add("Apache Derby Client");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.ClientDriver");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.ClientDataSource40");
@@ -123,6 +128,196 @@ public class DataSourceFactory {
 	knownDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedDriver");
 	knownDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource40");
 	knownDatabaseVendors.add("true");//vendor uses pooling
+	
+	commonDatabaseVendors.add("Apache Derby Client");
+	commonDatabaseVendors.add("org.apache.derby.jdbc.ClientDriver");
+	commonDatabaseVendors.add("org.apache.derby.jdbc.ClientDataSource40");
+	commonDatabaseVendors.add("false");
+
+	commonDatabaseVendors.add("Apache Derby Client- With Pooling");
+	commonDatabaseVendors.add("org.apache.derby.jdbc.ClientDriver");
+	commonDatabaseVendors.add("org.apache.derby.jdbc.ClientConnectionPoolDataSource40");
+	commonDatabaseVendors.add("true");//vendor uses pooling
+	
+	commonDatabaseVendors.add("Apache Derby Embedded");
+	commonDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedDriver");
+	commonDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedDataSource40");
+	commonDatabaseVendors.add("false");
+	
+	commonDatabaseVendors.add("Apache Derby Embedded- With Pooling");
+	commonDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedDriver");
+	commonDatabaseVendors.add("org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource40");
+	commonDatabaseVendors.add("true");//vendor uses pooling
+	
+	commonDatabaseVendors.add("Oracle DB");
+	commonDatabaseVendors.add("oracle.jdbc.driver.OracleDriver");
+	commonDatabaseVendors.add("oracle.jdbc.pool.OracleDataSource");
+	commonDatabaseVendors.add("false");
+	
+	commonDatabaseVendors.add("MySQL DB");
+	commonDatabaseVendors.add("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+	commonDatabaseVendors.add("com.mysql.jdbc.Driver");
+	commonDatabaseVendors.add("false");
+	
+	commonDatabaseVendors.add("Postgresql DB- no pooling");
+	commonDatabaseVendors.add("org.postgresql.jdbc2.optional.SimpleDataSource");
+	commonDatabaseVendors.add("org.postgresql.driver");
+	commonDatabaseVendors.add("false");
+	
+	commonDatabaseVendors.add("Postgresql DB- pooling");
+	commonDatabaseVendors.add("org.postgresql.jdbc2.optional.PoolingDataSource");
+	commonDatabaseVendors.add("org.postgresql.driver");
+	commonDatabaseVendors.add("true");//vendor uses pooling
+	
+	knownDatabaseProperties=new Hashtable();
+	
+	Vector<String> postGresProps=new Vector<String>() ;
+	postGresProps.add("ServerName");
+	postGresProps.add("Server Name");
+	postGresProps.add("String");
+	postGresProps.add("The hostname of the database server");
+	postGresProps.add("DatabaseName");
+	postGresProps.add("Database Name");
+	postGresProps.add("String");
+	postGresProps.add("The name of the database on database server");
+	postGresProps.add("PortNumber");
+	postGresProps.add("Port Number");
+	postGresProps.add("int");
+	postGresProps.add("The port on the database server");
+	postGresProps.add("User");
+	postGresProps.add("User");
+	postGresProps.add("String");
+	postGresProps.add("The user name for database");
+	postGresProps.add("Password");
+	postGresProps.add("Password");
+	postGresProps.add("String");
+	postGresProps.add("The password for this user");
+	postGresProps.add("DataSourceName");
+	postGresProps.add("Data Source Name");
+	postGresProps.add("String");
+	postGresProps.add("A unique identifier for this datasource object (i.e. \"My Database\"");
+	
+	knownDatabaseProperties.put("Postgresql DB- no pooling",postGresProps);
+	
+	Vector<String> postGresPooling=new Vector<String>() ;
+	postGresPooling.add("ServerName");
+	postGresPooling.add("Server Name");
+	postGresPooling.add("String");
+	postGresPooling.add("The hostname of the database server");
+	postGresPooling.add("DatabaseName");
+	postGresPooling.add("Database Name");
+	postGresPooling.add("String");
+	postGresPooling.add("The name of the database on database server");
+	postGresPooling.add("PortNumber");
+	postGresPooling.add("Port Number");
+	postGresPooling.add("int");
+	postGresPooling.add("The port on the database server");
+	postGresPooling.add("User");
+	postGresPooling.add("User");
+	postGresPooling.add("String");
+	postGresPooling.add("The user name for database");
+	postGresPooling.add("Password");
+	postGresPooling.add("Password");
+	postGresPooling.add("String");
+	postGresPooling.add("The password for this user");
+	postGresPooling.add("DataSourceName");
+	postGresPooling.add("Data Source Name");
+	postGresPooling.add("String");
+	postGresPooling.add("A unique identifier for this datasource object (i.e. \"My Database\"");
+	postGresPooling.add("MaxConnections");
+	postGresPooling.add("Maximum Number of Connections");
+	postGresPooling.add("int");
+	postGresPooling.add("Maximum number of connections for this pooling datasource");
+	
+	knownDatabaseProperties.put("Postgresql DB- pooling",postGresPooling);
+	
+	Vector<String> oracle=new Vector<String>() ;
+	oracle.add("ServerName");
+	oracle.add("Server Name");
+	oracle.add("String");
+	oracle.add("The hostname of the database server");
+	oracle.add("DatabaseName");
+	oracle.add("Database Name");
+	oracle.add("String");
+	oracle.add("The name of the database on database server");
+	oracle.add("PortNumber");
+	oracle.add("Port Number");
+	oracle.add("int");
+	oracle.add("The port on the database server");
+	oracle.add("User");
+	oracle.add("User");
+	oracle.add("String");
+	oracle.add("The user name for database");
+	oracle.add("Password");
+	oracle.add("Password");
+	oracle.add("String");
+	oracle.add("The password for this user");
+	oracle.add("DataSourceName");
+	oracle.add("Data Source Name");
+	oracle.add("String");
+	oracle.add("A unique identifier for this datasource object (i.e. \"My Database\"");
+	
+	knownDatabaseProperties.put("Oracle DB",oracle);
+	
+	Vector<String> mysql=new Vector<String>() ;
+	mysql.add("ServerName");
+	mysql.add("Server Name");
+	mysql.add("String");
+	mysql.add("The hostname of the database server");
+	mysql.add("DatabaseName");
+	mysql.add("Database Name");
+	mysql.add("String");
+	mysql.add("The name of the database on database server");
+	mysql.add("PortNumber");
+	mysql.add("Port Number");
+	mysql.add("int");
+	mysql.add("The port on the database server");
+	mysql.add("User");
+	mysql.add("User");
+	mysql.add("String");
+	mysql.add("The user name for database");
+	mysql.add("Password");
+	mysql.add("Password");
+	mysql.add("String");
+	mysql.add("The password for this user");
+	mysql.add("DataSourceName");
+	mysql.add("Data Source Name");
+	mysql.add("String");
+	mysql.add("A unique identifier for this datasource object (i.e. \"My Database\"");
+	
+	knownDatabaseProperties.put("MySQL DB",mysql);
+	
+	
+	Vector<String> derbyclient=new Vector<String>() ;
+	derbyclient.add("DatabaseName");
+	derbyclient.add("Database Name");
+	derbyclient.add("String");
+	derbyclient.add("The name of the database on database server");
+	derbyclient.add("User");
+	derbyclient.add("User");
+	derbyclient.add("String");
+	derbyclient.add("The user name for database");
+	derbyclient.add("Password");
+	derbyclient.add("Password");
+	derbyclient.add("String");
+	derbyclient.add("The password for this user");
+	derbyclient.add("DataSourceName");
+	derbyclient.add("Data Source Name");
+	derbyclient.add("String");
+	derbyclient.add("A unique identifier for this datasource object (i.e. \"My Database\"");
+	derbyclient.add("CreateDatabase");
+	derbyclient.add("Create Database");
+	derbyclient.add("String");
+	derbyclient.add("Create a New Derby Database, type \'create\' to create the database");
+	derbyclient.add("ShutdownDatabase");
+	derbyclient.add("Shutdown Database");
+	derbyclient.add("String");
+	derbyclient.add("Shutdown the Derby Database, type \'shutdown\' to shutdown the database");
+	
+	knownDatabaseProperties.put("Apache Derby Client",derbyclient);
+	knownDatabaseProperties.put("Apache Derby Embedded",derbyclient);
+	knownDatabaseProperties.put("Apache Derby Embedded- With Pooling",derbyclient);
+	knownDatabaseProperties.put("Apache Derby Client- With Pooling",derbyclient);
 	}
 
 
@@ -203,7 +398,71 @@ public class DataSourceFactory {
 		}
 		return driverNames;
 	}
+
+	//return known vendors from list
+    /** This method fills a vector with known vendor names
+    *
+    * @return vector of strings containing known vendor names
+    */
+	public static Vector<String> getCommonVendors()
+	{
+
+		Vector<String> commonNames= new Vector<String>();
+		for (int i=0; i<commonDatabaseVendors.size(); i+=4)
+		{
+			commonNames.add(commonDatabaseVendors.elementAt(i));
+		}
+		return commonNames;
+	}
 	
+	public static boolean isCommonVendor(String vendorName)
+	{
+		for (int i=0; i<commonDatabaseVendors.size(); i+=4)
+		{
+			if (commonDatabaseVendors.elementAt(i).equalsIgnoreCase(vendorName))
+				return true;
+		}
+		return false;
+	}
+	
+	public static String getCommonDriver(String vendorName)
+	{
+		for (int i=0; i<commonDatabaseVendors.size(); i+=4)
+		{
+			if(commonDatabaseVendors.elementAt(i).equalsIgnoreCase(vendorName)){
+				return commonDatabaseVendors.elementAt(i+1);
+			}
+		}
+		return null;
+	}
+
+	public static String getCommonDatasource(String vendorName)
+	{
+		for (int i=0; i<commonDatabaseVendors.size(); i+=4)
+		{
+			if(commonDatabaseVendors.elementAt(i).equalsIgnoreCase(vendorName)){
+				return commonDatabaseVendors.elementAt(i+2);
+			}
+		}
+		return null;
+	}
+	
+	public static String getCommonPooling(String vendorName)
+	{
+		for (int i=0; i<commonDatabaseVendors.size(); i+=4)
+		{
+			if(commonDatabaseVendors.elementAt(i).equalsIgnoreCase(vendorName)){
+				return commonDatabaseVendors.elementAt(i+3);
+			}
+		}
+		return null;
+	}
+	
+	public static Vector<String> getCommonProps(String vendorName)
+	{
+		Vector <String> tempVector = (Vector)knownDatabaseProperties.get(vendorName);
+		return tempVector;
+	}
 	//return known vendors from list
     /** This method fills a vector with known vendor names
     *
@@ -388,6 +647,8 @@ public class DataSourceFactory {
 		}
 		return true;
 	}
+
+
 	
 	//Add in new vendor from user's specified information
     /** This method adds a user specified vendor name, driver, and datasource to the list of known database vendors
