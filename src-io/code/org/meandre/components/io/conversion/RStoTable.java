@@ -78,26 +78,28 @@ import java.sql.Connection;
 */
 
 @Component(
-       creator = "E Johnson",
-       description = "Given a resultset object from an SQL query, create a table for data-mining. The table is a D2K Table object",
-
-       name = "RStoTable",
-       tags = "io, table, resultset, conversion",
-       baseURL="meandre://seasr.org/components/")
+       creator = "Erik Johnson",
+       description = "<p>Overview:<br>"+
+    	   "Given a resultset object from an SQL query,"+
+    	   "create a table for data-mining. The table is a D2K Table object."
+    	   +" Each column of the table is from a column in the resultset."
+    	   +" Each row of the table correspons to a row from the resultset.",
+       name = "Database Resultset to Table",
+       tags = "io, table, resultset, conversion")
 
 public class RStoTable implements ExecutableComponent {
 
    @ComponentInput(description = "A query resultset to create a table from", name = "ResultSet")
    final static String DATA_INPUT_PARSER = "ResultSet";
    
-   @ComponentInput(description = "Connection to Database", name = "ConnectionIn")
-   final static String DATA_INPUT_CONNECTION = "ConnectionIn";
+   @ComponentInput(description = "Connection to Database", name = "Connection")
+   final static String DATA_INPUT_CONNECTION = "Connection";
    
    @ComponentOutput(description = "A table created from the resultset data", name = "table")
    final static String DATA_OUTPUT_TABLE = "table";
 
-   @ComponentOutput(description = "Connection to Datbase", name = "ConnectionOut")
-   final static String DATA_OUTPUT_CONNECTION = "ConnectionOut";
+   @ComponentOutput(description = "Connection to Datbase", name = "Connection")
+   final static String DATA_OUTPUT_CONNECTION = "Connection";
    
    @ComponentProperty(description = "If this is set to true, this component will discard incomplete rows from the resultset." +
            "Incomplete rows have one or more blank columns.", name = "Discard_Incomplete_Rows", defaultValue = "false")
