@@ -80,7 +80,8 @@ import org.meandre.components.datatype.table.Table;
         "The user sets createTable = true if the table needs to be created in the databse. "+
         "If createTable is false, it will append the d2k table to an existing database table.",
         name="Write D2kTable to Database",
-        tags="database, io, table")
+        tags="database, io, table",
+        baseURL="meandre://seasr.org/components/")
 
 /** This component allows a user to enter and run an SQL query that produces a result set. The query can be entered as a property string or typed by the user at runtime.
  *

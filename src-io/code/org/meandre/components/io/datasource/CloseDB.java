@@ -63,7 +63,8 @@ import java.sql.SQLException;
         +" After all components connecting to the databse"
         +" have been executed, the connection should be closed.</p>",
         name="Close Database Connection",
-        tags="database, close")
+        tags="database, close",
+        baseURL="meandre://seasr.org/components/")
 
 /** A component to close the DB connection passed to it.
  *

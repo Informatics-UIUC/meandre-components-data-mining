@@ -74,7 +74,8 @@ import javax.servlet.http.*;
         	+" an enrty in the resultset.",
         name="List Database ResultSet",
         tags="database, table",
-        mode=Mode.webui)
+        mode=Mode.webui,
+        baseURL="meandre://seasr.org/components/")
 
 /** This components lists the contents of a resultset
  *

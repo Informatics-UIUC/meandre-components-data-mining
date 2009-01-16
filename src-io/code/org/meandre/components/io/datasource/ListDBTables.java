@@ -79,7 +79,8 @@ import javax.servlet.http.*;
         	+" to test connections to databases.</p>",
         name="List Database Tables",
         tags="database, table",
-        mode=Mode.webui)
+        mode=Mode.webui,
+        baseURL="meandre://seasr.org/components/")
 
 /** A component to discover and display the tables in a Database to the user via a WebUI. It accepts a connection input and passes it to the output.
  *

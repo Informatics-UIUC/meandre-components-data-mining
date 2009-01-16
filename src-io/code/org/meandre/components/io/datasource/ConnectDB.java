@@ -114,7 +114,8 @@ import java.io.File;
     		+ " persisted in a pair of xml files contained in the Meandre Server's published resources folder.",
            name="Connect to Database",
            tags="database",
-           mode=Mode.webui)
+           mode=Mode.webui,
+           baseURL="meandre://seasr.org/components/")
 
 public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallback {
 
@@ -335,13 +336,13 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         		
         		if (DataSourceFactory.isCommonVendor(selectedVendor) && basicProps)
         		{
-        			sb.append("<p>Vendor Name : </p><input type=\"text\" name=\"DBVendor Name\" value=\""+selectedVendor+"\" size=\"20\" disabled=\"disabled\">\n");
+        			sb.append("<p>Vendor Name : </p><input type=\"text\" name=\"DBVendor Name\" value=\""+selectedVendor+"\" size=\"20\">\n");
 					sb.append("<br />\n");
-					sb.append("<p>Vendor Driver : </p><input type=\"text\" name=\"DBVendor Driver\" value=\""+DataSourceFactory.getCurrentDriver(selectedVendor)+"\" size=\"20\" disabled=\"disabled\">\n");
+					sb.append("<p>Vendor Driver : </p><input type=\"text\" name=\"DBVendor Driver\" value=\""+DataSourceFactory.getCurrentDriver(selectedVendor)+"\" size=\"20\">\n");
 					sb.append("<br />\n");
-					sb.append("<p>Vendor DataSource : </p><input type=\"text\" name=\"DBVendor DataSource\" value=\""+DataSourceFactory.getCurrentDatasource(selectedVendor)+"\" size=\"20\" disabled=\"disabled\">\n");
+					sb.append("<p>Vendor DataSource : </p><input type=\"text\" name=\"DBVendor DataSource\" value=\""+DataSourceFactory.getCurrentDatasource(selectedVendor)+"\" size=\"20\">\n");
 					sb.append("<br />\n");
-					sb.append("<p>Connection Pooling : </p><input type=\"text\" name=\"DBConnection Pooling\" value=\""+DataSourceFactory.isPooled(selectedVendor)+"\" size=\"20\" disabled=\"disabled\">\n");
+					sb.append("<p>Connection Pooling : </p><input type=\"text\" name=\"DBConnection Pooling\" value=\""+DataSourceFactory.isPooled(selectedVendor)+"\" size=\"20\">\n");
 					sb.append("<br />\n");
         			Vector <String> commonProps= DataSourceFactory.getCommonProps(selectedVendor);
         			for (int i=0; i<commonProps.size(); i+=4)
@@ -359,22 +360,22 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
         				value= (String) selectedProperties.getProperty(key);
         				if (key.equalsIgnoreCase("Vendor Name"))
         				{
-        					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+selectedVendor+"\" size=\"20\" disabled=\"disabled\">\n");
+        					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+selectedVendor+"\" size=\"20\" >\n");
         					sb.append("<br />\n");
         				}
         				else if(key.equalsIgnoreCase("Vendor Driver"))
         				{
-        					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.getCurrentDriver(selectedVendor)+"\" size=\"20\" disabled=\"disabled\">\n");
+        					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.getCurrentDriver(selectedVendor)+"\" size=\"20\">\n");
         					sb.append("<br />\n");
         				}
         				else if(key.equalsIgnoreCase("Vendor DataSource"))
         				{
-        					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.getCurrentDatasource(selectedVendor)+"\" size=\"20\" disabled=\"disabled\">\n");
+        					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.getCurrentDatasource(selectedVendor)+"\" size=\"20\">\n");
         					sb.append("<br />\n");
         				}
         				else if (key.equalsIgnoreCase("Connection Pooling"))
         				{
-        					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.isPooled(selectedVendor)+"\" size=\"20\" disabled=\"disabled\">\n");
+        					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+DataSourceFactory.isPooled(selectedVendor)+"\" size=\"20\">\n");
         					sb.append("<br />\n");
         				}
         				else
@@ -622,6 +623,9 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
             {
             	key= (String) propNames.nextElement();
             	value= request.getParameter("DB"+key);
+            	if (value == null)
+            		value ="";
+            	logger.log(Level.INFO, key+value+"\n");
             	selectedProperties.setProperty(key, value);
             }
             //bind new datasource to JNDI namespace
@@ -695,7 +699,7 @@ public final class ConnectDB implements ExecutableComponent, WebUIFragmentCallba
     		selectedExistingDS=spersistentDS;
     	}
     	//User has selected a vendor to use to create a new datasource
-    	if (snewDS != null)
+    	if (snewDS != null && advancedProperties != null)
     	{
     		selectedVendor=snewDS;
     		selectedDriver=DataSourceFactory.getCurrentDriver(selectedVendor);
