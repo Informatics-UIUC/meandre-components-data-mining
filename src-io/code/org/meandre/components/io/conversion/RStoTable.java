@@ -85,7 +85,8 @@ import java.sql.Connection;
     	   +" Each column of the table is from a column in the resultset."
     	   +" Each row of the table correspons to a row from the resultset.",
        name = "Database Resultset to Table",
-       tags = "io, table, resultset, conversion")
+       tags = "io, table, resultset, conversion",
+       baseURL="meandre://seasr.org/components/")
 
 public class RStoTable implements ExecutableComponent {
 
