@@ -81,7 +81,7 @@ import org.meandre.annotations.Component.Mode;
         		"<br>Finally, if both properties are blank, it will present the user with a WebUI to enter a query manually",
         name="Query Database",
         tags="database",
-        mode=Mode.webui
+        mode=Mode.webui,
         baseURL="meandre://seasr.org/components/")
 
 /** This component allows a user to enter and run an SQL query that produces a result set. The query can be entered as a property string or typed by the user at runtime.
