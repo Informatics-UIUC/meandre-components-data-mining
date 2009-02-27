@@ -1285,8 +1285,10 @@ public class DataSourceFactory {
 	public static Connection getExistingConnection(DataSource DS) throws SQLException
 	{
 		logger.log(Level.INFO, "Datasource- attempting connection");
-		Connection dbConnection;
-		dbConnection = DS.getConnection("tgridreader","tgr1dr3ad3r");
+		Connection dbConnection = null;;
+		// TODO: Why was it necessay to include the hardcoded credentals in the getConnection() method below.  Normally, this should be parameterless invocation.		
+		// dbConnection = DS.getConnection("tgridreader","tgr1dr3ad3r");
+		dbConnection = DS.getConnection();
 		logger.log(Level.INFO, "Datasource- connected");
 		return dbConnection;
 		
@@ -1295,8 +1297,10 @@ public class DataSourceFactory {
 	public static Connection getExistingConnection(ConnectionPoolDataSource DS) throws SQLException
 	{
 		logger.log(Level.INFO, "Datasource- attempting connection");
-		PooledConnection dbConnection;
-		dbConnection = DS.getPooledConnection("tgridreader","tgr1dr3ad3r");
+		PooledConnection dbConnection = null;
+		// TODO: Why was it necessay to include the hardcoded credentals in the getConnection() method below.  Normally, this should be parameterless invocation.
+		// dbConnection = DS.getPooledConnection("tgridreader","tgr1dr3ad3r");
+		dbConnection = DS.getPooledConnection();
 		Connection dbConn = dbConnection.getConnection();
 		logger.log(Level.INFO, "Datasource- connected");
 		return dbConn;
