@@ -29,7 +29,10 @@
 
     <!-- Check whether Java 1.5 is being used -->
     <condition property="using.java.1.5">
-        <contains string="${java.version}" substring="1.5"/>
+        <or>
+            <equals arg1="${ant.java.version}" arg2="1.5"/>
+            <equals arg1="${ant.java.version}" arg2="1.6"/>
+        </or>
     </condition>
 
     <!-- Check whether Ant 1.7 is being used. 1.7 is needed for junit4 
@@ -54,9 +57,7 @@
     <property name="lib.devkit.dir" value="${basedir}/lib/devkit"/>
     <property name="build.dir" value="${basedir}/build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="src.gen.dir" value="${build.dir}/src-gen"/>
-    <property name="src.copy.dir" value="${build.dir}/src-copy"/>
-    <property name="dist.dir" value="${build.dir}/dist"/>
+    <property name="dist.dir" value="${basedir}/dist"/>
     <property name="descriptors.dir" value="${build.dir}/descriptors"/>
     <property name="scripts.gen.dir" value="${build.dir}/scripts"/>
     <property name="javadoc.dir" value="${build.dir}/javadoc"/>
@@ -144,8 +145,6 @@
         <mkdir dir="${classes.dir}"/>
         <mkdir dir="${dist.dir}"/>
         <mkdir dir="${descriptors.dir}"/>
-        <mkdir dir="${src.gen.dir}"/>
-        <mkdir dir="${src.copy.dir}"/>
         <mkdir dir="${javadoc.dir}"/>
         <mkdir dir="${scripts.gen.dir}"/>
         <mkdir dir="${test.root.dir}"/>
