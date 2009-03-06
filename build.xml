@@ -159,6 +159,7 @@
     <target name="clean" description="-> removes build artifacts">
         <delete dir="${build.dir}"/>
         <delete dir="${test.root.dir}"/>
+        <delete dir="${dist.dir}"/>
         <delete dir="./log"/>
     </target>
 
