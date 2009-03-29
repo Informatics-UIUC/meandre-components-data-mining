@@ -99,7 +99,7 @@ import org.meandre.tools.webdav.*;
 		+ "<p>An integer count of the total number of names output is pushed out at the end.</p>",
 		name = "Read File Names By Flag", tags = "io, read, file",
         baseURL="meandre://seasr.org/components/")
-        
+
 public class ReadFileNamesByFlag implements ExecutableComponent {
 
 	// ==============
@@ -300,10 +300,10 @@ public class ReadFileNamesByFlag implements ExecutableComponent {
 				result = "file://"+result;
 
 			ctx.pushDataComponentToOutput(DATA_OUTPUT_FILE_NAMES, result);
-			 
+
 			_docsProcessed++;
-			
-			if (_docsProcessed == _names.size()){
+
+			if (_names.size() == 0){
 				ctx.pushDataComponentToOutput(OUTPUT_LAST_ITEM, "true");
 				if (Boolean.parseBoolean((String)ctx.getProperty(DATA_PROPERTY_VERBOSE)))
 					   ctx.getOutputConsole().println("ReadFileNames" + ": pushing out file name and true-- : "+ result);
