@@ -50,6 +50,7 @@ import org.dom4j.io.OutputFormat;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
@@ -58,36 +59,42 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 
 @Component(creator="Lily Dong",
-           description="Saves the data complying with PMML(Predictive Model Markup Language) format as local file.",
+           description="Converts the doucment complying with " +
+           "PMML(Predictive Model Markup Language) format to " +
+           "string.",
            name="Push PMML",
            tags="frequent pattern mining, rule association, PMML")
 
 public class PushPMML  implements ExecutableComponent{
-	@ComponentProperty(description = "Local file name.",
-             		   name = "fileName",
-             		   defaultValue = " ")
-    final static String DATA_PROPERTY = "fileName";
-
 	@ComponentInput(description="Read data being of PMML format." +
 	    		"<br>TYPE: org.dom4j.Document",
 	                name= "document")
 	final static String DATA_INPUT = "document";
 
+	@ComponentOutput(description="Output PMML as string." +
+    		"<br>TYPE: java.lang.String",
+                     name="string")
+    public final static String DATA_OUTPUT = "string";
+
 	public void initialize(ComponentContextProperties ccp) {}
 	public void dispose(ComponentContextProperties ccp) {}
 
-	 public void execute(ComponentContext cc)
-     throws ComponentExecutionException, ComponentContextException {
-		 Document document = (Document)cc.getDataComponentFromInput(DATA_INPUT);
-		 try {
-			 XMLWriter writer = new XMLWriter(
-					 new FileWriter(cc.getProperty(DATA_PROPERTY)),
-	                 OutputFormat.createPrettyPrint());
-	         writer.write(document);
-	         writer.flush();
-	         writer.close();
-	     } catch (Exception e) {
-	    	 throw new ComponentExecutionException(e);
-	     }
+	public void execute(ComponentContext cc)
+    throws ComponentExecutionException, ComponentContextException {
+		Document document = (Document)cc.getDataComponentFromInput(DATA_INPUT);
+
+		/*try {
+			XMLWriter writer = new XMLWriter(
+					new FileWriter(fileName)), OutputFormat.createPrettyPrint());
+	        writer.write(document);
+	        writer.flush();
+	        writer.close();
+	    } catch (Exception e) {
+	    	throw new ComponentExecutionException(e);
+	    }*/
+
+		String str = document.asXML();
+		str = str.replaceAll("><", ">\n<");
+		cc.pushDataComponentToOutput(DATA_OUTPUT, str);
 	 }
 }
