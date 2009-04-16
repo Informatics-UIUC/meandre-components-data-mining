@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.discovery.ruleassociation;
 import java.io.*;
@@ -49,10 +49,6 @@ import org.meandre.components.discovery.ruleassociation.support.RulePMMLTags;
 import org.meandre.components.discovery.ruleassociation.support.RuleTable;
 
 import org.dom4j.*;
-import org.dom4j.io.*;
-
-//import org.meandre.tools.components.*;
-//import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
 
 import org.meandre.core.*;
 import org.meandre.annotations.*;
@@ -64,17 +60,18 @@ import org.meandre.annotations.*;
 
 @Component(creator="Lily Dong",
            description="Write a RuleAssociationModel out in PMML(Predictive Model Markup Language) format complying with the PMML 2.0 DTD.",
-           name="WriteRuleAssocPMML",
+           name="Write Rule Assoc PMML",
            tags="frequent pattern mining, rule association",
            baseURL="meandre://seasr.org/components/")
 
 public class WriteRuleAssocPMML  implements ExecutableComponent, RulePMMLTags {
-    @ComponentInput(description="A representaiton of association rules to be displayed. " +
-            "It is type of org.meandre.components.discovery.ruleassociation.RuleTable)",
+    @ComponentInput(description="Read a representaiton of association rules." +
+    		"<br>TYPE: org.meandre.components.discovery.ruleassociation.support.RuleTable",
                    name= "ruleTable")
     final static String DATA_INPUT = "ruleTable";
 
-    @ComponentOutput(description="Document for PMML(org.dom4j.Document)",
+    @ComponentOutput(description="Output document for PMML." +
+    		"<br>TYPE: org.dom4j.Document",
                      name="document")
     public final static String DATA_OUTPUT = "document";
 
@@ -90,12 +87,12 @@ public class WriteRuleAssocPMML  implements ExecutableComponent, RulePMMLTags {
     public static Document writePMML(RuleTable rt) {//, String fileName) {
 
         Document document = DocumentHelper.createDocument();
-        document.addDocType("PMML", "http://www.dmg.org/v2-0/pmml_v2_0.dtd",
-                            "http://www.dmg.org/v2-0/pmml_v2_0.dtd");
 
         // Root
         Element root = document.addElement("PMML");
-        root.addAttribute("version", "2.0");
+        root.addAttribute("version", "3.0");
+        root.addNamespace("", "http://www.dmg.org/PMML-3_0");
+        root.addNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
         // Header
         Element header = root.addElement("Header");
@@ -175,7 +172,7 @@ public class WriteRuleAssocPMML  implements ExecutableComponent, RulePMMLTags {
             assocRule.addAttribute(ANTECEDENT, Integer.toString(hd));
             assocRule.addAttribute(CONSEQUENT, Integer.toString(bd));
         }
-        
+
 
         /* try {
             XMLWriter writer = new XMLWriter(new FileWriter("/tmp/tmp.out"),
