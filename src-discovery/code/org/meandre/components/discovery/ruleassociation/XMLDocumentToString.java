@@ -65,11 +65,11 @@ import org.meandre.core.ExecutableComponent;
            name="Push PMML",
            tags="frequent pattern mining, rule association, PMML")
 
-public class PushPMML  implements ExecutableComponent{
+public class XMLDocumentToString  implements ExecutableComponent{
 	@ComponentInput(description="Read data being of PMML format." +
 	    		"<br>TYPE: org.dom4j.Document",
-	                name= "document")
-	final static String DATA_INPUT = "document";
+	                name= "XML_document")
+	final static String DATA_INPUT = "XML_document";
 
 	@ComponentOutput(description="Output PMML as string." +
     		"<br>TYPE: java.lang.String",
