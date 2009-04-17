@@ -59,14 +59,12 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 
 @Component(creator="Lily Dong",
-           description="Converts the doucment complying with " +
-           "PMML(Predictive Model Markup Language) format to " +
-           "string.",
-           name="Push PMML",
+           description="Converts XML doucment to string.",
+           name="XML Document To String",
            tags="frequent pattern mining, rule association, PMML")
 
 public class XMLDocumentToString  implements ExecutableComponent{
-	@ComponentInput(description="Read data being of PMML format." +
+	@ComponentInput(description="Read XML document." +
 	    		"<br>TYPE: org.dom4j.Document",
 	                name= "XML_document")
 	final static String DATA_INPUT = "XML_document";
