@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.discovery.ruleassociation.fpgrowth.support;
 
@@ -57,119 +57,75 @@ import java.util.List;
  */
 public class FeatureTableElement {
 
-   //~ Instance fields *********************************************************
+	//==============
+	  // Data Members
+	  //==============
+	  private int _lbl = -1;
+	  private ArrayList _ptrs = new ArrayList();
+	  private int _cnt = 0;
+	  private int _pos = -1;
 
-   /**
-    * The sum of the data of this feature in the original table.
-    */
-   private int _cnt = 0;
+	  //================
+	  // Constructor(s)
+	  //================
 
-   /** The feature's index if all features are ordered by frequency in the original table.*/
-   private int _lbl = -1;
+	  public FeatureTableElement(int lbl, int cnt, int pos){
+	    _lbl = lbl;
+	    _cnt = cnt;
+	    _pos = pos;
+	  }
 
-   /** The position of this feature column in the original table. */
-   private int _pos = -1;
+	  public FeatureTableElement(int lbl, int cnt, int pos, Collection nodes){
+	    _lbl = lbl;
+	    _cnt = cnt;
+	    _pos = pos;
+	    if (nodes != null){
+	      _ptrs = new ArrayList();
+	      _ptrs.addAll(nodes);
+	    }
+	  }
 
-   /**
-    * An arrya list of <code>
-    * ncsa.d2k.modules.core.discovery.ruleassociation.fpgrowth.FPTreeNode</code>
-    * objects.
-    */
-   private ArrayList _ptrs = new ArrayList();
+	  //================
+	  // Public Methods
+	  //================
 
-   //~ Constructors ************************************************************
+	  public boolean equals(Object obj){
+	    if (!(obj instanceof FeatureTableElement)){
+	      return false;
+	    }
+	    FeatureTableElement comp = (FeatureTableElement)obj;
+	    if ((this.getCnt() == comp.getCnt()) && (this.getLabel() == comp.getLabel())){
+	      return true;
+	    }
+	    return false;
+	  }
 
-   /**
-    * Constructs a FeatureTableElement object with label, count and original
-    * position.
-    *
-    * @param lbl int The feature's index if all features are ordered by frequency in the original table.
-    * @param cnt int The sum of the data of this feature in the original table.
-    * @param pos int Theoriginal position of this feature in the original table
-    */
-   public FeatureTableElement(int lbl, int cnt, int pos) {
-      _lbl = lbl;
-      _cnt = cnt;
-      _pos = pos;
-   }
+	  public void clearList(){
+	    _ptrs.clear();
+	    _ptrs = null;
+	  }
 
-   /**
-    * Constructs a FeatureTableElement object with label, count, original
-    * position and the data.
-    *
-    * @param lbl   int The feature's index if all features are ordered by frequency in the original table.
-    * @param cnt   int The sum of the data of this feature in the original table.
-    * @param pos   int Theoriginal position of this feature in the original
-    *              table
-    * @param nodes Collection The data elements. holds <code>
-    *              ncsa.d2k.modules.core.discovery.ruleassociation.fpgrowth.FPTreeNode</code>
-    *              objects
-    */
-   public FeatureTableElement(int lbl, int cnt, int pos, Collection nodes) {
-      _lbl = lbl;
-      _cnt = cnt;
-      _pos = pos;
+	  public int getCnt(){
+	    return _cnt;
+	  }
 
-      if (nodes != null) {
-         _ptrs = new ArrayList();
-         _ptrs.addAll(nodes);
-      }
-   }
+	  public List getPointers(){
+	    return _ptrs;
+	  }
 
-   //~ Methods *****************************************************************
+	  public Iterator getPointersIter(){
+	    return _ptrs.iterator();
+	  }
 
-   /**
-    * Adds <codE>node</code> to the list of data elements.
-    *
-    * @param node FPTreeNode A data elements to be added to the pointers list.
-    */
-   public void addPointer(FPTreeNode node) { _ptrs.add(node); }
+	  public int getLabel(){
+	    return _lbl;
+	  }
 
+	  public void addPointer(FPTreeNode node){
+	    _ptrs.add(node);
+	  }
 
-   /**
-    * Clears the array list with the data elements.
-    */
-   public void clearList() {
-      _ptrs.clear();
-      _ptrs = null;
-   }
-
-   /**
-    * Returns the sum of the data of this feature in the original table.
-    *
-    * @return int The sum of the data of this feature in the original table.
-    */
-   public int getCnt() { return _cnt; }
-
-
-   /**
-    * Returns the feature's index if all features are ordered by frequency in the original table.
-    *
-    * @return int The feature's index if all features are ordered by frequency in the original table.
-    */
-   public int getLabel() { return _lbl; }
-
-   /**
-    * Returns the collection with the data elements.
-    *
-    * @return List The data elements of this feature. Hlds <code>
-    *         ncsa.d2k.modules.core.discovery.ruleassociation.fpgrowth.FPTreeNode</code>
-    *         objects
-    */
-   public List getPointers() { return _ptrs; }
-
-
-   /**
-    * Returns an iterator over the list of the data elements.
-    *
-    * @return Iterator an iterator over the list of the data elements
-    */
-   public Iterator getPointersIter() { return _ptrs.iterator(); }
-
-   /**
-    * Returns the original index of this feature's column in the original table.
-    *
-    * @return int
-    */
-   public int getPosition() { return _pos; }
+	  public int getPosition(){
+	    return _pos;
+	  }
 } // end class FeatureTableElement

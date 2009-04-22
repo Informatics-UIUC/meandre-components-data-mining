@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.discovery.ruleassociation.fpgrowth.support;
 
@@ -55,167 +55,152 @@ import gnu.trove.TIntObjectHashMap;
  */
 public class FPPattern implements java.io.Serializable {
 
-   //~ Static fields/initializers **********************************************
+	  //==============
+    // Data Members
+    //==============
+    private int _support = 0;
+    private TIntHashSet _patternElts = new TIntHashSet();
+    private static TIntObjectHashMap _eltMap = new TIntObjectHashMap();
 
-   /** Use serialVersionUID for interoperability. */
-   static private final long serialVersionUID = 3553517370011965398L;
+    /**
+     * put your documentation comment here
+     */
+    public static void clearElementMapping () {
+        _eltMap.clear();
+    }
 
-   /**
-    * maps attribute index to attribute name. the keys are members of <code>
-    * _patternElts</code>.
-    */
-   static private TIntObjectHashMap _eltMap = new TIntObjectHashMap();
+    /**
+     * put your documentation comment here
+     * @param k
+     * @param v
+     */
+    public static void addElementMapping (int k, String v) {
+        _eltMap.put(k, v);
+    }
 
-   //~ Instance fields *********************************************************
+    /**
+     * put your documentation comment here
+     * @param i
+     * @return
+     */
+    public static String getElementLabel (int i) {
+        return  (String)_eltMap.get(i);
+    }
 
-   /** The features (column indices) that make this pattern, as a set. */
-   private TIntHashSet _patternElts = new TIntHashSet();
+    //================
+    // Constructor(s)
+    //================
+    public FPPattern () {
+    }
 
-   /** The support (expressed in percentage) of this pattern. */
-   private int _support = 0;
+    /**
+     * put your documentation comment here
+     * @param     int[] col
+     * @param     int supp
+     */
+    public FPPattern (int[] col, int supp) {
+        _support = supp;
+        if (col != null) {
+            _patternElts.addAll(col);
+        }
+    }
 
-   //~ Constructors ************************************************************
+    /**
+     * put your documentation comment here
+     * @param     int col
+     * @param     int supp
+     */
+    public FPPattern (int col, int supp) {
+        _support = supp;
+        //if (col != null){
+        _patternElts.add(col);
+        //}
+    }
 
-   /**
-    * Creates a new FPPattern object.
-    */
-   public FPPattern() { }
+    //================
+    // Public Methods
+    //================
 
-   /**
-    * Constructs an FPPAttern with the columns indices <code>col</codE> and the
-    * support level <code>supp.</code>
-    *
-    * @param col  int[] Columns indices that make this pattern
-    * @param supp int The support of this pattern.
-    */
-   public FPPattern(int[] col, int supp) {
-      _support = supp;
+//    public boolean equalsLabels(FPPattern o){
+//      int[] vals = this.getPatternArray();
+//      for (int i = 0, n = vals.length; i < n; i++){
+//        vals[i] = Integer.parseInt(FPPattern.getElementLabel(vals[i]));
+//      }
+//      FPPattern patt = new FPPattern(vals,0);
+//      return (patt.containsAll(o)/* && (patt.getSize() == o.getSize())*/);
+//    }
 
-      if (col != null) {
-         _patternElts.addAll(col);
-      }
-   }
+    public boolean containsAll(int[] iarr){
+      return _patternElts.containsAll(iarr);
+    }
 
-   /**
-    * Constructs an FPPattern with one column <codE>col</code> and the support
-    * level <codE>supp.</codE>
-    *
-    * @param col  int The index of the feature that makes this pattern
-    * @param supp int The support level of the pattern
-    */
-   public FPPattern(int col, int supp) {
-      _support = supp;
-      _patternElts.add(col);
-   }
+    public boolean containsAll(FPPattern patt){
+      return _patternElts.containsAll(patt.getPatternArray());
+    }
 
-   //~ Methods *****************************************************************
+    public int[] getPatternArray(){
+      return _patternElts.toArray();
+    }
 
-   /**
-    * Adds a mapping of index <codE>k</code> to attribute name <code>v<c/code>.</code>
-    *
-    * @param k int The index of the element named <code>v</codE>
-    * @param v String The name of attribute with index <codE>k</code>
-    */
-   static public void addElementMapping(int k, String v) { _eltMap.put(k, v); }
+    public FPPattern copy () {
+        FPPattern newpat = new FPPattern();
+        newpat._support = this._support;
+        newpat._patternElts.addAll(_patternElts.toArray());
+        return  newpat;
+    }
 
-   /**
-    * Clears the index to name map.
-    */
-   static public void clearElementMapping() { _eltMap.clear(); }
+    /**
+     * put your documentation comment here
+     * @return
+     */
+    public int getSize () {
+        return  _patternElts.size();
+    }
 
-   /**
-    * Returns the name of attribute index <code>i.</code>
-    *
-    * @param  i int The index of an attribute that is part of this pattern.
-    *
-    * @return String The name of attribute index <code>i</code>
-    */
-   static public String getElementLabel(int i) {
-      return (String) _eltMap.get(i);
-   }
+    /**
+     * put your documentation comment here
+     * @return
+     */
+    public TIntIterator getPattern () {
+        return  _patternElts.iterator();
+    }
 
-   /**
-    * Adds a feature index to the elements set.
-    *
-    * @param fte int An index of a feature that is part of this pattern
-    */
-   public void addPatternElt(int fte) { _patternElts.add(fte); }
+    /**
+     * put your documentation comment here
+     * @return
+     */
+    public int getSupport () {
+        return  _support;
+    }
 
-   /**
-    * Adds features indices to the elements set.
-    *
-    * @param col int[] feature indices that are part of this pattern.
-    */
-   public void addPatternElts(int[] col) { _patternElts.addAll(col); }
+    /**
+     * put your documentation comment here
+     * @param s
+     */
+    public void setSupport (int s) {
+        _support = s;
+    }
 
-   /**
-    * Clears the set of the elements.
-    */
-   public void clearPatterns() { _patternElts.clear(); }
+    /**
+     * put your documentation comment here
+     * @param fte
+     */
+    public void addPatternElt (int fte) {
+        _patternElts.add(fte);
+    }
 
-   /**
-    * Constructs a new FPPAttern object and copies the value in this pattern to
-    * it. Returns the newly constructed object.
-    *
-    * @return FPPattern a copy of this FPPAttenr object.
-    */
-   public FPPattern copy() {
-      FPPattern newpat = new FPPattern();
-      newpat._support = this._support;
-      newpat._patternElts.addAll(_patternElts.toArray());
+    /**
+     * put your documentation comment here
+     * @param col
+     */
+    public void addPatternElts (int[] col) {
+        _patternElts.addAll(col);
+    }
 
-      return newpat;
-   }
-
-   /**
-    * Returns an iterator to the pattern's elements.
-    *
-    * @return TIntIterator an iterator for the pattern's elements.
-    */
-   public TIntIterator getPattern() { return _patternElts.iterator(); }
-
-   /**
-    * Returns the size of the integers hash set - the number of attributes this
-    * pattenr contains.
-    *
-    * @return int The number of attributes this pattenr contains
-    */
-   public int getSize() { return _patternElts.size(); }
-
-   /**
-    * Returns the support for this pattenr.
-    *
-    * @return int The support for this pattenr.
-    */
-   public int getSupport() { return _support; }
-
-   /**
-    * Sets the support of this pattern.
-    *
-    * @param s int The value for the support of this pattern
-    */
-   public void setSupport(int s) { _support = s; }
-
-   /**
-    * A list like String representation of this pattern. For debug means
-    *
-    * @return String A list like String representation of this pattern.
-    */
-   public String toString() {
-      String retVal = "[ ";
-      TIntIterator it = this._patternElts.iterator();
-
-      while (it.hasNext()) {
-         int i = it.next();
-         retVal += i + ", ";
-      }
-
-      if (retVal.length() > 2) {
-         retVal = retVal.substring(0, retVal.length() - 2);
-      }
-
-      retVal += " ]";
-
-      return retVal;
-   }
+    /**
+     * put your documentation comment here
+     */
+    public void clearPatterns () {
+        _patternElts.clear();
+    }
 } // end class FPPattern
