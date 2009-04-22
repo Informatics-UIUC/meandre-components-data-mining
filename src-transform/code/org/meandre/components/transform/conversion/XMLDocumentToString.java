@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.discovery.ruleassociation;
+package org.meandre.components.transform.conversion;
 
 import java.io.FileWriter;
 
@@ -59,9 +59,10 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 
 @Component(creator="Lily Dong",
-           description="Converts XML doucment to string.",
+           description="Converts XML doucment to string. This component "+
+           "can be used to write PMML output to a string.",
            name="XML Document To String",
-           tags="frequent pattern mining, rule association, PMML")
+           tags="XML")
 
 public class XMLDocumentToString  implements ExecutableComponent{
 	@ComponentInput(description="Read XML document." +
@@ -69,7 +70,7 @@ public class XMLDocumentToString  implements ExecutableComponent{
 	                name= "XML_document")
 	final static String DATA_INPUT = "XML_document";
 
-	@ComponentOutput(description="Output PMML as string." +
+	@ComponentOutput(description="Output XML as string." +
     		"<br>TYPE: java.lang.String",
                      name="string")
     public final static String DATA_OUTPUT = "string";
@@ -80,16 +81,6 @@ public class XMLDocumentToString  implements ExecutableComponent{
 	public void execute(ComponentContext cc)
     throws ComponentExecutionException, ComponentContextException {
 		Document document = (Document)cc.getDataComponentFromInput(DATA_INPUT);
-
-		/*try {
-			XMLWriter writer = new XMLWriter(
-					new FileWriter(fileName)), OutputFormat.createPrettyPrint());
-	        writer.write(document);
-	        writer.flush();
-	        writer.close();
-	    } catch (Exception e) {
-	    	throw new ComponentExecutionException(e);
-	    }*/
 
 		String str = document.asXML();
 		str = str.replaceAll("><", ">\n<");
