@@ -126,7 +126,7 @@ public class CLOSET implements ExecutableComponent {
 
       long start = System.currentTimeMillis();
       try {
-          FPProb prob = (FPProb)cc.getDataComponentFromInput(DATA_INPUT);;
+          FPProb prob = (FPProb)cc.getDataComponentFromInput(DATA_INPUT);
           _patterns = new ArrayList();
           _problems = new ArrayList();
           _closhash = new TIntObjectHashMap();

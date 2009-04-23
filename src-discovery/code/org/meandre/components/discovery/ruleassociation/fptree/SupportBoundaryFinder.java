@@ -17,8 +17,6 @@ import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPTreeN
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPSparse;
 import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FeatureTableElement;
 
-import gnu.trove.*;
-
 @Component(creator="Lily Dong",
         description="<p>Overview: " +
     	"This module will scan the item sets in an <i>FPProb</i> object " +
