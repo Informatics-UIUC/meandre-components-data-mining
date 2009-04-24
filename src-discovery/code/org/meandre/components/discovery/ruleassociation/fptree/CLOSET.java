@@ -137,19 +137,19 @@ public class CLOSET implements ExecutableComponent {
           prob.setConditionalSupport(Integer.MAX_VALUE);
           FPProcess(prob);
           if (m_verbose) {
-              System.out.println("\n\n" + _patterns.size() + " patterns discovered.");
+              cc.getOutputConsole().println("\n\n" + _patterns.size() + " patterns discovered.");
               long stop = System.currentTimeMillis();
               System.out.println((stop - start)/1000 + " seconds");
 
               if (_printPatts) {
                 for (int i = 0, n = _patterns.size(); i < n; i++) {
                   FPPattern pat = (FPPattern) _patterns.get(i);
-                  System.out.print(pat.getSupport() + ":");
+                  cc.getOutputConsole().print(pat.getSupport() + ":");
                   for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext(); ) {
                     int fte = (int) it.next();
-                    System.out.print(" " + FPPattern.getElementLabel(fte));
+                    cc.getOutputConsole().print(" " + FPPattern.getElementLabel(fte));
                   }
-                  System.out.println();
+                  cc.getOutputConsole().println();
                 }
               }
 
@@ -173,8 +173,8 @@ public class CLOSET implements ExecutableComponent {
           cc.pushDataComponentToOutput(DATA_OUTPUT_FPPROB, _problems);
       } catch (Exception ex) {
           ex.printStackTrace();
-          System.out.println(ex.getMessage());
-          System.out.println("ERROR: FPTreeGrowth.doit()");
+          cc.getOutputConsole().println(ex.getMessage());
+          cc.getOutputConsole().println("ERROR: FPTreeGrowth.doit()");
           throw new ComponentExecutionException(ex);
       }
   }
