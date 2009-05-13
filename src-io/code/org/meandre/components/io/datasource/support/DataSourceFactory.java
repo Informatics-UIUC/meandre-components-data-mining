@@ -64,13 +64,21 @@ import java.util.Hashtable;
 
 /*
  * <p>Title: DataSourceFactory</p>
- * <p>
+ * 
  * This is a critical part of the code for meandre database lookups in webapps.
- * This class provides static services to load and store vendor names, datasource classes and driver classes.
+ * This class provides static services to load and store vendor names, datasource classes 
+ * and driver classes.
+ * 
  * From these names, it can create general datasources, discover the properties of a datasource,
- * get connections to datasources, get connection properties, and create new connections using new properties.
- * Using the ExternalJarLoader, functionality is provided to look for and load driver and datasource classes
- * All the properties are found dynamically using reflection. This should allow it to work for any datasource class.
+ * get connections to datasources, get connection properties, and create new connections using 
+ * new properties.
+ * 
+ * Using the ExternalJarLoader, functionality is provided to look for and load driver and 
+ * datasource classes
+ * 
+ * All the properties are found dynamically using reflection. 
+ * This should allow it to work for any datasource class.
+ * 
  *</p>
  *
  *<p>Company: NCSA, Automated Learning Group</p>
@@ -89,7 +97,7 @@ public class DataSourceFactory {
 	//vector of known vendors, vendor drivers, and vendor datasource classes
 	private static Vector<String> knownDatabaseVendors;
 	private static Vector<String> commonDatabaseVendors;
-	private static Hashtable knownDatabaseProperties;
+	private static Hashtable<String,Vector<String>> knownDatabaseProperties;
 	
 	//class loader for external jars, allows users to add unknown vendors at runtime
 	public static ExternalJarLoader jdbcLoader = new ExternalJarLoader (new URL [] {});
@@ -169,7 +177,7 @@ public class DataSourceFactory {
 	commonDatabaseVendors.add("org.postgresql.driver");
 	commonDatabaseVendors.add("true");//vendor uses pooling
 	
-	knownDatabaseProperties=new Hashtable();
+	knownDatabaseProperties=new Hashtable<String,Vector<String>>();
 	
 	Vector<String> postGresProps=new Vector<String>() ;
 	postGresProps.add("ServerName");
@@ -320,8 +328,10 @@ public class DataSourceFactory {
 	knownDatabaseProperties.put("Apache Derby Client- With Pooling",derbyclient);
 	}
 
-
-	//Wrapper for jdbcLoader, adds path to jarFile, the path should be a url, such as http://localhost:1714/published/resources/contexts/mycontext.jar
+	//
+	// Wrapper for jdbcLoader, adds path to jarFile, the path should be a url, 
+	// such as http://localhost:1714/published/resources/contexts/mycontext.jar
+	//
     /** This method adds a external jar file path to the class loader
      *
      * @param jarFile string representation of jar file location
@@ -361,7 +371,10 @@ public class DataSourceFactory {
 	{
 		try{
 			logger.log(Level.INFO,"Attempting to load class "+className);
-			Class c = jdbcLoader.loadClass (className); //ask jdbc loader to load class into virtual machine
+			
+			//ask jdbc loader to load class into JVM
+			Class<?> c = jdbcLoader.loadClass (className);
+			
 			logger.log(Level.INFO,"Class "+c.getName() +"has been loaded.");
 		}
 		catch (Exception e)
@@ -458,10 +471,10 @@ public class DataSourceFactory {
 		return null;
 	}
 	
-	public static Vector<String> getCommonProps(String vendorName)
+	public static Vector<?> getCommonProps(String vendorName)
 	{
-		Vector <String> tempVector = (Vector)knownDatabaseProperties.get(vendorName);
-		return tempVector;
+		Vector <?> tempVector = (Vector<?>)(knownDatabaseProperties.get(vendorName));
+		return (Vector<?>) tempVector;
 	}
 	//return known vendors from list
     /** This method fills a vector with known vendor names
@@ -694,9 +707,9 @@ public class DataSourceFactory {
 		//discover available datasource properties
 		try{
 			//use reflection to get class and available methods
-			Class c = Class.forName((String)getCurrentDatasource(vName), true, jdbcLoader);
+			Class<?> c = Class.forName((String)getCurrentDatasource(vName), true, jdbcLoader);
 			Method[] methods = c.getMethods();
-			Class [] params;
+			Class<?> [] params;
 			//serch for 'set' methods- such as setUser or setPort
 			for (int i = 0; i < methods.length; i++) {
 				if (methods[i].getName().startsWith("set"))
@@ -729,10 +742,10 @@ public class DataSourceFactory {
 		Properties dsProps = new Properties();
 		try{
 			//look up class methods for datasource
-			Class c = newds.getClass();
+			Class<?> c = newds.getClass();
 			Method[] methods = c.getMethods();
-			Class [] params;
-			Class returns;
+			Class<?> [] params;
+			Class<?> returns;
 			//sort through methods for set functions
 			for (int i = 0; i < methods.length; i++) {
 				if (methods[i].getName().startsWith("get"))
@@ -764,10 +777,10 @@ public class DataSourceFactory {
 		Properties dsProps = new Properties();
 		try{
 			//look up class methods for datasource
-			Class c = newds.getClass();
+			Class<?> c = newds.getClass();
 			Method[] methods = c.getMethods();
-			Class [] params;
-			Class returns;
+			Class<?> [] params;
+			Class<?> returns;
 			//sort through methods for set functions
 			for (int i = 0; i < methods.length; i++) {
 				if (methods[i].getName().startsWith("get"))
@@ -823,7 +836,7 @@ public class DataSourceFactory {
 		try{
 			//get class object for datasource class
 			logger.log(Level.INFO,"Creating Datasource.....");
-			Class cl = getClassForName(DBprops.getProperty("Vendor DataSource"));
+			Class<?> cl = getClassForName(DBprops.getProperty("Vendor DataSource"));
 
 			//	create datasource object using class constructor
 			ds = (DataSource) cl.newInstance();
@@ -836,7 +849,7 @@ public class DataSourceFactory {
 				if (methods[i].getName().startsWith("set"))
 				{
 					//get parameters for a given class
-					Class [] params = methods[i].getParameterTypes();
+					Class<?> [] params = methods[i].getParameterTypes();
 					
 					//the key names should match the method names after the 'set' prefix- use .substring(3)
 					value = DBprops.getProperty(methods[i].getName().substring(3));//The string after set should be used for properly configured DBprops object. See discoverProps above
@@ -951,7 +964,7 @@ public class DataSourceFactory {
 		try{
 			//get class object for datasource class
 			logger.log(Level.INFO,"Creating Pooled Datasource.....");
-			Class cl = getClassForName(DBprops.getProperty("Vendor DataSource"));
+			Class<?> cl = getClassForName(DBprops.getProperty("Vendor DataSource"));
 
 			//	create datasource object using class constructor
 			ds = (ConnectionPoolDataSource) cl.newInstance();
@@ -964,7 +977,7 @@ public class DataSourceFactory {
 				if (methods[i].getName().startsWith("set"))
 				{
 					//get parameters for a given class
-					Class [] params = methods[i].getParameterTypes();
+					Class<?> [] params = methods[i].getParameterTypes();
 					
 					logger.log(Level.INFO, "Looking for value for "+methods[i].getName());
 					

@@ -43,33 +43,20 @@
 package org.meandre.components.io.datasource.support;
 
 //java imports
-import javax.naming.*;
-
-import java.util.Vector;
-import java.util.Hashtable;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.net.URLClassLoader;
 import java.net.URL;
-
 import java.util.Enumeration;
-/*
- * <p>Title: JNDILookup</p>
- * <p>
- * This is the first version of code to provide Meandre WebApp JNDI lookups.
- * This class uses the JNDI API to look up Data sources on the server (such as Jetty). 
- * These existing data sources can be displayed to the user to allow them to choose a DB to connect to
- * It is essentially a handle or wrapper for JNDI lookup functions on the database
- * 
- * This is implemented in a general way, so Objects are bound and retrieved generally.
- * A DataSourceFactory object should be used to configure properties and connections of the datasource.
- *</p>
- *
- *<p>Company: NCSA, Automated Learning Group</p>
- * @author E. Johnson
- * @version 1.0
- */
+import java.util.Hashtable;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.RefAddr;
+import javax.naming.Reference;
 
 public class JNDILookup {
 	
@@ -83,7 +70,7 @@ public class JNDILookup {
 	
 	private Logger logger= Logger.getAnonymousLogger();
 	
-	private ExternalJarLoader objectClassLoader;
+//	private ExternalJarLoader objectClassLoader;
 	 //==============
     // Constructors
     //==============
@@ -95,21 +82,22 @@ public class JNDILookup {
 	public JNDILookup(){
 		//use no base url
 		baseURL="";
-		try{
-			//set up environment variables
-			Hashtable env = new Hashtable();
-			//use Jetty JNDI ICfactory at default JNDI location
-			env.put(Context.INITIAL_CONTEXT_FACTORY,
-					"org.mortbay.naming.InitialContextFactory");
-			//Class.forName("org.mortbay.naming.InitialContextFactory");
-			env.put(Context.PROVIDER_URL,
-			  "localhost:1099");
-			//use new context
-			 ctx = new InitialContext(env);
-		}
-		catch (Exception e){
-			logger.log(Level.SEVERE, "Error configuring initial context "+e);
-		}
+		new JNDILookup(baseURL.toString());
+//		try{
+//			//set up environment variables
+//			Hashtable env = new Hashtable();
+//			//use Jetty JNDI ICfactory at default JNDI location
+//			env.put(Context.INITIAL_CONTEXT_FACTORY,
+//					"org.mortbay.naming.InitialContextFactory");
+//			//Class.forName("org.mortbay.naming.InitialContextFactory");
+//			env.put(Context.PROVIDER_URL,
+//			  "localhost:1099");
+//			//use new context
+//			 ctx = new InitialContext(env);
+//		}
+//		catch (Exception e){
+//			logger.log(Level.SEVERE, "Error configuring initial context "+e);
+//		}
 	}
 	
     /** Constructor with base url specified (typically something like java:comp/env
@@ -122,13 +110,11 @@ public class JNDILookup {
 		baseURL=sURL;
 		try{
 			//set up environment variables
-			Hashtable env = new Hashtable();
+			Hashtable<String,String> env = new Hashtable<String,String>();
 			//use Jetty JNDI ICfactory at default JNDI location
-			env.put(Context.INITIAL_CONTEXT_FACTORY,
-					"org.mortbay.naming.InitialContextFactory");
+			env.put(Context.INITIAL_CONTEXT_FACTORY,"org.mortbay.naming.InitialContextFactory");
 			//Class.forName("org.mortbay.naming.InitialContextFactory");
-			env.put(Context.PROVIDER_URL,
-			  "localhost:1099");
+			env.put(Context.PROVIDER_URL, "localhost:1099");
 			//create same context as initial constructor- Jetty namespace is not configured properly
 			 ctx = new InitialContext(env);
 		}
@@ -155,10 +141,10 @@ public class JNDILookup {
 			NamingEnumeration<NameClassPair> list = ctx.list(sContext);
 
 			//turn enumeration into vector
-				while (list.hasMore()) {
-					NameClassPair nc = (NameClassPair)list.next();
-					names.add(nc.getName());
-				}
+			while (list.hasMore()) {
+				NameClassPair nc = (NameClassPair)list.next();
+				names.add(nc.getName());
+			}
 		} catch (NamingException e) {
 			logger.log(Level.SEVERE,"Problem looking up Objects in the "+baseURL+sContext+" namespace. Is the server namespace configured?: " + e +":"+ e.getMessage());
 			return new Vector<String>(0);
@@ -246,8 +232,8 @@ public class JNDILookup {
 				
 				javax.naming.Reference objRef = (javax.naming.Reference) obj;
 				
-				Class factoryClass = DataSourceFactory.getClassForName(objRef.getFactoryClassName());
-				Class objClass = DataSourceFactory.getClassForName(objRef.getClassName());
+				Class<?> factoryClass = DataSourceFactory.getClassForName(objRef.getFactoryClassName());
+				Class<?> objClass = DataSourceFactory.getClassForName(objRef.getClassName());
 				
 				
 				
@@ -272,7 +258,7 @@ public class JNDILookup {
 					
 				javax.naming.Reference newObjRef = new Reference (objClass.getName(), factoryClass.getName(), factoryURL);
 				
-				Enumeration addrEnum = objRef.getAll();
+				Enumeration<?> addrEnum = objRef.getAll();
 			
 				
 				while(addrEnum.hasMoreElements())

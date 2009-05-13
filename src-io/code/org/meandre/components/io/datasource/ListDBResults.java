@@ -126,21 +126,44 @@ public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback
     	//get everything from every existing table
     	ResultSetMetaData rsmd = results.getMetaData();
         sb.append("<h1>Resultset Values</h1>\n");
-        sb.append("<table border=\"0\" width=\"100%\" cellpadding=\"10\">\n");
-        sb.append("<tr>\n");
+        sb.append("<table border=\"1\" width=\"100%\" cellpadding=\"10\">\n");
+        
+    	sb.append("<tr>");
+    	for (int i=1; i<=rsmd.getColumnCount(); i++)
+    	{
+			sb.append("<th>"+rsmd.getColumnLabel(i)+"</th> \n");
+
+    	}
+    	sb.append("</tr>");
+        
+//        sb.append("<tr>\n");
+    	
         while (results.next())
         {
-        	sb.append("<td width=\"40%\" valign=\"top\">\n");
-        	Object testObj;
+//        	sb.append("<td width=\"40%\" valign=\"top\">\n");
+//        	sb.append("<td>\n");
+        	
+        	sb.append("<tr>\n");
+//        	Object testObj = null;
         	for (int i=1; i<=rsmd.getColumnCount(); i++)
         	{
-        		testObj=results.getObject(i);
-        		if (testObj != null)
-        			sb.append("<p>"+rsmd.getColumnLabel(i)+" : "+results.getObject(i).toString()+"</p><br />\n");
+        		sb.append("<td>\n");
+        		//
+        		//testObj=results.getObject(i);
+        		results.getObject(i);
+        		if(results.wasNull())
+        			sb.append("NULL");
         		else
-        			sb.append("<p>"+rsmd.getColumnLabel(i)+" : NULL</p><br /> \n");
+        			sb.append(results.getObject(i).toString());
+        		//
+        		sb.append("</td>\n");
+//        		if (testObj != null)
+//        			sb.append("<p>"+rsmd.getColumnLabel(i)+" : "+results.getObject(i).toString()+"</p><br />\n");
+//        		else
+//        			sb.append("<p>"+rsmd.getColumnLabel(i)+" : NULL</p><br /> \n");
         	}
-        	 sb.append("</td>\n");
+//        	sb.append("</td>\n");
+        	sb.append("</tr>\n");
         }
     	}
     	catch(SQLException e)
@@ -215,6 +238,8 @@ public class ListDBResults implements ExecutableComponent, WebUIFragmentCallback
     			sem.acquire();
     			sem.release();
     			logger.log(Level.INFO,">>>Done");
+    			
+    			cc.requestFlowAbortion();
 
     		}
     		catch ( Exception e ) {

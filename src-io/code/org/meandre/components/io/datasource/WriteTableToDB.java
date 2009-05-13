@@ -42,36 +42,23 @@
 
 package org.meandre.components.io.datasource;
 
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileReader;
-
-import java.sql.ResultSet;
-import java.util.concurrent.Semaphore;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.sql.*;
-
-import java.util.logging.Logger;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
-import org.meandre.webui.WebUIException;
-import org.meandre.webui.WebUIFragmentCallback;
-
-import org.meandre.components.datatype.table.Column;
 import org.meandre.components.datatype.table.ColumnTypes;
 import org.meandre.components.datatype.table.Table;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
 
 @Component(creator="Erik Johnson",
         description="<p>Overview:<br>"+
@@ -91,7 +78,7 @@ public class WriteTableToDB implements ExecutableComponent {
 
 
     /** The instance ID */
-    private String sInstanceID = null;
+//    private String sInstanceID = null;
 
     private String tableString;
     

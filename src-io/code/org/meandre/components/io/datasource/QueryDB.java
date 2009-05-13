@@ -42,33 +42,31 @@
 
 package org.meandre.components.io.datasource;
 
-import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
-
+import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.sql.*;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
 import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.core.ComponentContextProperties;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
-import org.meandre.annotations.Component.Mode;
 
 @Component(creator="Erik Johnson",
         description="<p>Overview:<br>"+
@@ -261,8 +259,10 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
     	//query from property
      	String sqlQueryPath = cc.getProperty(DATA_PROPERTY1);
      	String sqlQueryStatement= cc.getProperty(DATA_PROPERTY2);
+     	
      	//get input connection
      	conn = (Connection)cc.getDataComponentFromInput(DATA_INPUT);
+     	
      	//if the property was blank, start a webUI component to get properties
      	if (sqlQueryPath ==null || sqlQueryPath.equalsIgnoreCase("none"))
      	{
