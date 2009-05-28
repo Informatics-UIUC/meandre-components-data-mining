@@ -142,8 +142,16 @@ public class CLOSET implements ExecutableComponent {
               System.out.println((stop - start)/1000 + " seconds");
 
               if (_printPatts) {
-                for (int i = 0, n = _patterns.size(); i < n; i++) {
-                  FPPattern pat = (FPPattern) _patterns.get(i);
+            	  TreeSet<FPPattern> ts =
+            		  new TreeSet<FPPattern>(new FPPatternComparator());
+            	  for (int i = 0, n = _patterns.size(); i < n; i++) {
+            		  ts.add((FPPattern) _patterns.get(i));
+            	  }
+            	  Iterator<FPPattern> ti = ts.iterator();
+                //for (int i = 0, n = _patterns.size(); i < n; i++) {
+            	while(ti.hasNext()) { //add on May 28, 2009
+                  FPPattern pat = ti.next();
+                	  //(FPPattern)_patterns.get(i);
                   cc.getOutputConsole().print(pat.getSupport() + ":");
                   for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext(); ) {
                     int fte = (int) it.next();
@@ -846,7 +854,15 @@ public class CLOSET implements ExecutableComponent {
       }
   }
 
-
+  //compare two patterns based on support
+  //add on May 28, 2009
+  class FPPatternComparator implements Comparator<FPPattern>{
+	  public int compare(FPPattern p1, FPPattern p2) {
+		  int s1 = p1.getSupport(),
+		  	  s2 = p2.getSupport();
+		    return new Integer(s2).compareTo(new Integer(s1));
+		  }
+  }
 }
 
 
