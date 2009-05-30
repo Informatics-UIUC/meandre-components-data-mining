@@ -706,6 +706,29 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
  		}
     	 
      }
+     
+     public void dispose ( ComponentContextProperties ccp ) {
+ 		//now that execution is complete, write datasources to persistent file
+     	
+     	//
+ 		String xmlLoc = ccp.getProperty(DATA_PROPERTY);
+ 		JNDINamespaceWriter xmlWriter = new JNDINamespaceWriter();
+ 		
+// 		String fname = JarXMLLoader.getPublicResourcesURL();
+ 		String fdir = JarXMLLoader.getPublicResourcesDirectory();
+ 		if ((!(fdir.endsWith("/"))) && (!(fdir.endsWith("\\")))) {
+ 			fdir += File.separator;
+ 		}
+ 		//use xml location to write out new jar file properties
+ 		String xmlURL = fdir+jarXMLFile;
+ 		
+ 		jarLoader.writePropsFile(xmlURL);
+ 		//File jlfile = new File(Path).getAbsoluteFile();
+ 		//write out new properties for Datasources in JNDI namespace
+     	String dsPath = fdir + xmlLoc;
+     	File dsfile = new File(dsPath).getAbsoluteFile();
+     	xmlWriter.writeNamespace(dsfile.toString());
+     }
 
 
 }
