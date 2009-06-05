@@ -77,6 +77,11 @@ public class CLOSET implements ExecutableComponent {
             "<br>TYPE: java.util.List",
              		 name="FPProb")
     public final static String DATA_OUTPUT_FPPROB = "FPProb";
+    
+	@ComponentOutput(description="Report of the patterns found." +
+            "<br>TYPE: java.lang.String",
+             		 name="Pattern_Report")
+    public final static String DATA_OUTPUT_REPORT = "Pattern_Report";
 
   //==============
   // Data Members
@@ -137,7 +142,9 @@ public class CLOSET implements ExecutableComponent {
           prob.setConditionalSupport(Integer.MAX_VALUE);
           FPProcess(prob);
           if (m_verbose) {
-              cc.getOutputConsole().println("\n\n" + _patterns.size() + " patterns discovered.");
+        	  StringBuffer patternRpt = new StringBuffer();
+        	  patternRpt.append(_patterns.size() + " patterns discovered.");
+          	  cc.getOutputConsole().println("\n\n" + _patterns.size() + " patterns discovered.");
               long stop = System.currentTimeMillis();
               System.out.println((stop - start)/1000 + " seconds");
 
@@ -153,12 +160,16 @@ public class CLOSET implements ExecutableComponent {
                   FPPattern pat = ti.next();
                 	  //(FPPattern)_patterns.get(i);
                   cc.getOutputConsole().print(pat.getSupport() + ":");
+                  patternRpt.append(pat.getSupport() + ":");
                   for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext(); ) {
                     int fte = (int) it.next();
                     cc.getOutputConsole().print(" " + FPPattern.getElementLabel(fte));
+                    patternRpt.append(" " + FPPattern.getElementLabel(fte));
                   }
                   cc.getOutputConsole().println();
+                  patternRpt.append("\n");
                 }
+            	cc.pushDataComponentToOutput(DATA_OUTPUT_REPORT, patternRpt);
               }
 
               gnu.trove.TIntIntHashMap tiihm = new gnu.trove.TIntIntHashMap();
