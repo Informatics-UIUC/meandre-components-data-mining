@@ -143,7 +143,7 @@ public class CLOSET implements ExecutableComponent {
           FPProcess(prob);
           if (m_verbose) {
         	  StringBuffer patternRpt = new StringBuffer();
-        	  patternRpt.append(_patterns.size() + " patterns discovered.");
+        	  patternRpt.append(_patterns.size() + " patterns discovered.\n\n");
           	  cc.getOutputConsole().println("\n\n" + _patterns.size() + " patterns discovered.");
               long stop = System.currentTimeMillis();
               System.out.println((stop - start)/1000 + " seconds");
