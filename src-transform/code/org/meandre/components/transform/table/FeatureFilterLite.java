@@ -6,27 +6,22 @@ package org.meandre.components.transform.table;
 // Java Imports
 //==============
 
-import java.util.*;
-//===============
-// Other Imports
-//===============
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TObjectIntHashMap;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-
-import org.meandre.components.datatype.table.Table;
-import org.meandre.components.datatype.table.Sparse;
 import org.meandre.components.datatype.table.ExampleTable;
-import org.meandre.components.datatype.table.MutableTable;
-
+import org.meandre.components.datatype.table.Sparse;
+import org.meandre.components.datatype.table.Table;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import gnu.trove.*;
 
 @Component(creator="Loretta Auvil",
         description="<p>Overview: " +
@@ -49,26 +44,32 @@ import gnu.trove.*;
         name="FeatureFilterLite",
         tags="feature filter",
         baseURL="meandre://seasr.org/components/")
-        
+
 public class FeatureFilterLite implements ExecutableComponent {
+
 	@ComponentProperty(description = "Verbose output.", defaultValue = "false", name = "verbose")
 	public final static String DATA_PROPERTY_VERBOSE = "verbose";
+
 	@ComponentProperty(description = "Remove Columns With Only One Entry: "
 			+ "If a columnn in a sparse table has only one entry then remove that column. "
 			+ "NOTE: if lower bound is set to a positive value this property is ignored.", defaultValue = "true", name = "removeColumnsWithOnlyOneEntry")
 	public final static String DATA_PROPERTY_ONLYONEENTRY = "removeColumnsWithOnlyOneEntry";
+
 	@ComponentProperty(description = "Remove Columns with All Entries Present: "
 			+ "If a columnn in a sparse table has every entry possible then remove that column. "
 			+ "NOTE: if upper bound is set to a positive value this property is ignored.", defaultValue = "true", name = "removeColumnsWithAllEntries")
 	public final static String DATA_PROPERTY_ALLENTRIES = "removeColumnsWithAllEntries";
+
 	@ComponentProperty(description = "Percent Support for Lower Bounds Cutoff: "
 			+ "The percent of support below which a given feature (column) will be removed. "
 			+ "NOTE: If this value is set to a positive value the \"removeColumnsWithOnlyOneEntry\" property is ignored.", defaultValue = "0", name = "lowerBoundSupport")
 	public final static String DATA_PROPERTY_LOWERBOUNDSUPPORT = "lowerBoundSupport";
+
 	@ComponentProperty(description = "Percent Support for Upper Bounds Cutoff: "
 			+ "The percent of support above which a given feature (column) will be removed. "
 			+ "NOTE: If this value is set to a positive value the \"removeColumnsWithAllEntries\" property is ignored.", defaultValue = "100", name = "upperBoundSupport")
 	public final static String DATA_PROPERTY_UPPERBOUNDSUPPORT = "upperBoundSupport";
+
 	@ComponentInput(description = "The input data table for transformation."
 			+ "<br>TYPE: org.meandre.components.datatype.table.sparse.SparseTable", name = "sparseTable")
 	public final static String DATA_INPUT = "sparseTable";
@@ -107,10 +108,24 @@ public class FeatureFilterLite implements ExecutableComponent {
    */
   public void execute(ComponentContext cc) throws ComponentExecutionException,
 	ComponentContextException {
-	   
+
     try{
-       ExampleTable table = (ExampleTable)cc.getDataComponentFromInput(DATA_INPUT);
-      
+       Object input = cc.getDataComponentFromInput(DATA_INPUT);
+       System.out.println("Received an " + input.getClass().getSimpleName());
+
+       ExampleTable table;
+
+       if (!(input instanceof ExampleTable)) {
+           table = ((Table)input).toExampleTable();
+           int maxCols = table.getNumColumns();
+           int[] iind = new int[maxCols];
+           for (int i = 0 ; i < maxCols; i++)
+               iind[i] = i;
+           table.setInputFeatures(iind);
+       }
+       else
+           table = (ExampleTable)input;
+
       //HashSet colset = new HashSet(); //indices of input features
       int[] iinds = table.getInputFeatures();
       TIntHashSet colset = new TIntHashSet(iinds.length);
@@ -133,7 +148,7 @@ public class FeatureFilterLite implements ExecutableComponent {
       }
 
 
-      ExampleTable copy = (ExampleTable)table.createTable().toExampleTable();
+      ExampleTable copy = table.createTable().toExampleTable();
       //add empty columns for each column.
 
       // Hash the column names of the output table to indices
@@ -146,14 +161,14 @@ public class FeatureFilterLite implements ExecutableComponent {
 
       double lbs = this.getLowerBoundSupport();
       if ((lbs > 0) && (lbs <= 100)){
-        minsupp = Math.round((lbs/100)*((double)numrows));
+        minsupp = Math.round((lbs/100)*(numrows));
       } else if (this.getRemoveColumnsWithOnlyOneEntry()){
         minsupp = 2;
       }
       System.out.println("Feature Support Filter min support set to: " + minsupp);
       double ubs = this.getUpperBoundSupport();
       if ((ubs > 0) && (ubs <= 100)){
-        maxsupp = Math.round((ubs/100)*((double)numrows));
+        maxsupp = Math.round((ubs/100)*(numrows));
       } else if (this.getRemoveColumnsWithAllEntries()){
         maxsupp = numrows-1;
       }
@@ -192,12 +207,14 @@ public class FeatureFilterLite implements ExecutableComponent {
             list2.add(j);
           }
           j++;
-        }else if(this._verbose){
-  //        if ( colindices.length < minsupp)
-//          System.out.println("column indexed " + i + " is below the min support. labeled " + colstr);
-        if ( colindices.length > maxsupp)
-          System.out.println("column indexed " + i + " is above the max support. labeled " + colstr);
         }
+        else
+            if (this._verbose) {
+                if ( colindices.length < minsupp)
+                    System.out.println("column indexed " + i + " is below the min support. labeled " + colstr);
+                if ( colindices.length > maxsupp)
+                    System.out.println("column indexed " + i + " is above the max support. labeled " + colstr);
+            }
       }
 
       //setting the input features into the output table
@@ -276,6 +293,7 @@ public class FeatureFilterLite implements ExecutableComponent {
       }
     }
 
+    @Override
     public boolean equals(Object o) {
       return this.equals(o);
     }
@@ -285,7 +303,7 @@ public class FeatureFilterLite implements ExecutableComponent {
 public void dispose(ComponentContextProperties arg0)
 		throws ComponentExecutionException, ComponentContextException {
 	// TODO Auto-generated method stub
-	
+
 }
 
 public void initialize(ComponentContextProperties cc)
