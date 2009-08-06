@@ -44,9 +44,6 @@ package org.meandre.components.discovery.ruleassociation;
 import java.io.*;
 import java.util.*;
 
-import org.meandre.components.discovery.ruleassociation.support.FreqItemSet;
-import org.meandre.components.discovery.ruleassociation.support.RulePMMLTags;
-import org.meandre.components.discovery.ruleassociation.support.RuleTable;
 
 import org.dom4j.*;
 

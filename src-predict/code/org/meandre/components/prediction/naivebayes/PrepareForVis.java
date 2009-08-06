@@ -46,7 +46,6 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentInput;
 
-import org.meandre.components.prediction.naivebayes.support.NaiveBayesModel;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentContext;

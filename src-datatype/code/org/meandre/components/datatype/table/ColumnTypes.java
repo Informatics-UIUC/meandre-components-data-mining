@@ -42,7 +42,7 @@
 
 package org.meandre.components.datatype.table;
 
-import org.meandre.components.io.file.input.support.FlatFileParser;
+import org.meandre.components.io.file.input.FlatFileParser;
 
 
 /**

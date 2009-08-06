@@ -46,8 +46,6 @@ import java.beans.PropertyVetoException;
 
 
 import org.meandre.components.datatype.table.ExampleTable;
-import org.meandre.components.prediction.decisiontree.c45.support.C45TreeBuilderOPT;
-import org.meandre.components.prediction.decisiontree.c45.support.DecisionTreeNode;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;

@@ -43,8 +43,7 @@
 package org.meandre.components.prediction.naivebayes;
 
 import org.meandre.components.datatype.table.ExampleTable;
-import org.meandre.components.prediction.naivebayes.support.NaiveBayesModel;
-import org.meandre.components.transform.binning.support.BinTree;
+import org.meandre.components.transform.binning.BinTree;
 
 import org.meandre.core.ExecutableComponent;
 import org.meandre.core.ComponentContextProperties;

@@ -110,7 +110,7 @@ import org.meandre.core.ComponentContextException;
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.support.PredApplet.class
+        extClass=org.meandre.applet.PredApplet.class
 )})
 
 public class PredictionTableReport  implements ExecutableComponent, WebUIFragmentCallback {

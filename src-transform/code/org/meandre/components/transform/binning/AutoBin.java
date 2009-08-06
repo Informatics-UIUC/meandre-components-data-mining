@@ -44,8 +44,6 @@ package org.meandre.components.transform.binning;
 
 import org.meandre.components.datatype.table.ExampleTable;
 import org.meandre.components.datatype.table.transformations.BinTransform;
-import org.meandre.components.transform.binning.support.AutoBinOPT;
-import org.meandre.components.transform.binning.support.BinDescriptor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,7 +65,6 @@ import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 
-import  org.meandre.components.transform.binning.support.AutoBinOPT;
 /**
  * Automatically discretize scalar data for the Naive Bayesian classification
  * model. This module requires a ParameterPoint to determine the method of

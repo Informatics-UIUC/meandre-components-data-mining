@@ -65,8 +65,8 @@ import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.Component.Mode;
 
-import org.meandre.components.prediction.decisiontree.support.ViewableDTModel;
-import org.meandre.components.prediction.decisiontree.c45.support.DecisionTreeModel;
+import org.meandre.components.prediction.decisiontree.ViewableDTModel;
+import org.meandre.components.prediction.decisiontree.c45.DecisionTreeModel;
 
 /**
  * <p>Title: Communication Module</p>
@@ -105,7 +105,7 @@ import org.meandre.components.prediction.decisiontree.c45.support.DecisionTreeMo
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.prediction.decisiontree.support.WebDecisionTreeVisApplet.class,
+        extClass=org.meandre.applet.prediction.decisiontree.WebDecisionTreeVisApplet.class,
         dependency={"icons.jar"}
 )})
 

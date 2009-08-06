@@ -52,7 +52,6 @@ import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 
 import org.meandre.components.datatype.table.*;
-import org.meandre.components.discovery.ruleassociation.support.ItemSets;
 
 /**
  *

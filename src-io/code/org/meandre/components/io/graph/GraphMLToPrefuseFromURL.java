@@ -56,7 +56,7 @@ import java.util.logging.Logger;
 import prefuse.data.Graph;
 import prefuse.data.io.GraphMLReader;
 
-import org.meandre.components.io.support.proxy.DataObjectProxy;
+import org.meandre.components.io.DataObjectProxy;
 
 import org.meandre.core.*;
 import org.meandre.annotations.*;

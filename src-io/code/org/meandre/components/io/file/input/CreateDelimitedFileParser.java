@@ -45,7 +45,6 @@ package org.meandre.components.io.file.input;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.meandre.components.io.file.input.support.DelimitedFileParserFromURL;
 
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;

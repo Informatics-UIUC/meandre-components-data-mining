@@ -58,9 +58,6 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.components.transform.metadatastore.support.IRdfStatementProcessor;
-import org.meandre.components.transform.metadatastore.support.XmlException;
-import org.meandre.components.transform.metadatastore.support.XmlToRdfConverter;
 
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;

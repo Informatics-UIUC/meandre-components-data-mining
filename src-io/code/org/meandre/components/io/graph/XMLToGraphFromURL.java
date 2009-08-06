@@ -56,8 +56,7 @@ import java.util.logging.Logger;
 import org.meandre.core.*;
 import org.meandre.annotations.*;
 
-import org.meandre.components.io.support.proxy.DataObjectProxy;
-import org.meandre.components.io.graph.support.jung_piccolo.PGraphML;
+import org.meandre.components.io.DataObjectProxy;
 
 
 /**

@@ -70,6 +70,8 @@ import gnu.formj.html.table.Table;
 import gnu.formj.html.Div;
 import gnu.formj.html.style.Style;
 
+import org.meandre.components.discovery.cluster.ClusterModel;
+import org.meandre.components.discovery.cluster.TableCluster;
 import org.meandre.components.discovery.cluster.support.*;
 import org.json.JSONObject;
 

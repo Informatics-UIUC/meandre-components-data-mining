@@ -58,11 +58,7 @@ import org.meandre.components.datatype.table.basic.DoubleColumn;
 import org.meandre.components.datatype.table.basic.IntColumn;
 import org.meandre.components.datatype.table.basic.MutableTableImpl;
 import org.meandre.components.datatype.table.basic.TableImpl;
-import org.meandre.components.discovery.ruleassociation.support.FreqItemSet;
-import org.meandre.components.discovery.ruleassociation.support.ItemSets;
-import org.meandre.components.discovery.ruleassociation.support.ItemSetInterface;
 
-import org.meandre.components.discovery.ruleassociation.support.RuleTable;
 
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;

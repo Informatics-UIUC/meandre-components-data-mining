@@ -58,7 +58,7 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.concurrent.Semaphore;
 
-import org.meandre.components.discovery.ruleassociation.support.RuleTable;
+import org.meandre.components.discovery.ruleassociation.RuleTable;
 
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.Component;
@@ -145,7 +145,7 @@ import org.dom4j.Document;
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.ruleassociation.support.WebRuleVisApplet.class,
+        extClass=org.meandre.applet.ruleassociation.WebRuleVisApplet.class,
         dependency={"icons.jar"}
 )})
 

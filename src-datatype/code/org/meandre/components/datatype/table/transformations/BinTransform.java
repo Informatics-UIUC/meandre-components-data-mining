@@ -46,8 +46,6 @@ import org.meandre.components.datatype.table.*;
 import org.meandre.components.datatype.table.basic.*;
 import java.util.*;
 import org.meandre.components.transform.binning.*;
-import org.meandre.components.transform.binning.support.BinDescriptor;
-import org.meandre.components.transform.binning.support.BinningUtils;
 
 /**
  * BinTransform encapsulates a binning transformation on a Table.

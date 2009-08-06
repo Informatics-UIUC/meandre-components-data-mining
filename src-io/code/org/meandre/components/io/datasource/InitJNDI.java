@@ -69,11 +69,6 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.Component.Mode;
-import org.meandre.components.io.datasource.support.DataSourceFactory;
-import org.meandre.components.io.datasource.support.JNDILookup;
-import org.meandre.components.io.datasource.support.JNDINamespaceBuilder;
-import org.meandre.components.io.datasource.support.JNDINamespaceWriter;
-import org.meandre.components.io.datasource.support.JarXMLLoader;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
@@ -102,7 +97,7 @@ public class InitJNDI implements ExecutableComponent {
     protected JNDINamespaceBuilder nB;
     
     //Jar loader to load an xml file with jar location and jar class data
-    protected org.meandre.components.io.datasource.support.JarXMLLoader jarLoader;
+    protected org.meandre.components.io.datasource.JarXMLLoader jarLoader;
     
     //default xml file location for jar location data. If it does not exist, it will be written at the end of use
     protected String jarXMLFile = "JarProps.xml";

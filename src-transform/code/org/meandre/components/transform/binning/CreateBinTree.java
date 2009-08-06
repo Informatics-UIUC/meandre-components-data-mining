@@ -57,10 +57,6 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentExecutionException;
 
-import org.meandre.components.transform.binning.support.BinDescriptor;
-import org.meandre.components.transform.binning.support.BinTree;
-import org.meandre.components.transform.binning.support.NumericBinDescriptor;
-import org.meandre.components.transform.binning.support.TextualBinDescriptor;
 import org.meandre.core.ComponentContextProperties;
 /**
  * <p>Overview:

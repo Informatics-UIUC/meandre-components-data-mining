@@ -44,8 +44,6 @@ package org.meandre.components.prediction.decisiontree.c45;
 
 import org.meandre.components.datatype.table.ExampleTable;
 
-import org.meandre.components.prediction.decisiontree.c45.support.DecisionTreeModel;
-import org.meandre.components.prediction.decisiontree.c45.support.DecisionTreeNode;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;

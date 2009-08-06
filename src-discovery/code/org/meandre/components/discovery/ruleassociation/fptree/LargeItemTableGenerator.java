@@ -18,9 +18,9 @@ import org.meandre.components.datatype.table.Sparse;
 import org.meandre.components.datatype.table.ExampleTable;
 import org.meandre.components.datatype.table.MutableTable;
 
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPSparse;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPPattern;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPProb;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FPPattern;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FPProb;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FPSparse;
 
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;

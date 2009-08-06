@@ -1,6 +1,6 @@
 package org.meandre.components.io.datasource.featurelens;
 
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPPattern;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FPPattern;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;

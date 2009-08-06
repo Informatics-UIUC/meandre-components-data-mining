@@ -10,9 +10,6 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.components.discovery.ruleassociation.support.ItemSetTool;
-import org.meandre.components.discovery.ruleassociation.support.ItemSetInterface;
-import org.meandre.components.discovery.ruleassociation.support.ItemSetParser;
 
 
 import org.meandre.core.ComponentContext;

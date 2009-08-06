@@ -15,11 +15,11 @@ import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPProb;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPTreeNode;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPPattern;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPSparse;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.support.FeatureTableElement;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FPPattern;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FPProb;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FPSparse;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FPTreeNode;
+import org.meandre.components.discovery.ruleassociation.fpgrowth.FeatureTableElement;
 
 //===============
 //Other Imports

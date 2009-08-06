@@ -59,7 +59,6 @@ import org.meandre.core.*;
 import org.meandre.annotations.*;
 
 import org.meandre.components.datatype.table.Table;
-import org.meandre.components.discovery.cluster.hac.support.HACWork;
 
 /**
  * <p>Title: </p>

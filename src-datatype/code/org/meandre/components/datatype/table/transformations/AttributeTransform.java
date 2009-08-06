@@ -45,7 +45,6 @@ package org.meandre.components.datatype.table.transformations;
 import org.meandre.components.datatype.table.*;
 import org.meandre.components.datatype.table.basic.*;
 import org.meandre.components.transform.attribute.*;
-import org.meandre.components.transform.attribute.support.ColumnExpression;
 
 /**
  * <code>AttributeTransform</code> is a <code>Transformation</code> which uses

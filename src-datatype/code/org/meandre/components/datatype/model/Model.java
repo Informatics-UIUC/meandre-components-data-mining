@@ -42,7 +42,7 @@
 
 package org.meandre.components.datatype.model;
 
-import org.meandre.components.prediction.support.PredictionModelModule;
+import org.meandre.components.prediction.PredictionModelModule;
 
 import org.meandre.components.datatype.table.ExampleTable;
 import org.meandre.components.datatype.table.PredictionTable;

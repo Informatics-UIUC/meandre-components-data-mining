@@ -51,8 +51,6 @@ import org.meandre.components.datatype.table.MutableTable;
 import org.meandre.components.datatype.table.Table;
 import org.meandre.components.datatype.table.TableFactory;
 import org.meandre.components.datatype.table.basic.BasicTableFactory;
-import org.meandre.components.io.file.input.support.FlatFileParser;
-import org.meandre.components.io.file.input.support.ParsedLine;
 
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
@@ -85,6 +83,8 @@ public class ParseFileToTable implements ExecutableComponent {
 
     @ComponentInput(description = "A FlatFileParser to read data from", name = "parser")
     final static String DATA_INPUT_PARSER = "parser";
+    @ComponentInput(description = "Inputs a new TableFactory instance", name = "table_factory")
+	public final static String DATA_INPUT_TABLE_FACTORY = "table_factory";
 
     @ComponentOutput(description = "A Table with the data from the file reader", name = "table")
     final static String DATA_OUTPUT_TABLE = "table";
@@ -289,8 +289,8 @@ public class ParseFileToTable implements ExecutableComponent {
      */
 	public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
 	    FlatFileParser fle = (FlatFileParser) context.getDataComponentFromInput(DATA_INPUT_PARSER);
-	
-	    TableFactory tf = new BasicTableFactory();
+	    TableFactory tf = (TableFactory) context.getDataComponentFromInput(DATA_INPUT_TABLE_FACTORY);
+	    //TableFactory tf = new BasicTableFactory();
 	    Table table = createTable(fle, tf);
 	
 	    context.pushDataComponentToOutput(DATA_OUTPUT_TABLE, table);

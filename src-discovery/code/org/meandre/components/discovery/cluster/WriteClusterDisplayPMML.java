@@ -47,8 +47,6 @@ import java.util.logging.*;
 
 //import org.meandre.components.discovery.ruleassociation.support.FreqItemSet;
 import org.meandre.components.discovery.cluster.ClusterPMMLTags;
-import org.meandre.components.discovery.cluster.support.ClusterModel;
-import org.meandre.components.discovery.cluster.support.TableCluster;
 
 import org.dom4j.*;
 import org.dom4j.io.*;
@@ -59,7 +57,7 @@ import org.dom4j.io.*;
 import org.meandre.core.*;
 import org.meandre.annotations.*;
 
-import org.meandre.components.discovery.cluster.hac.support.HACWork;
+import org.meandre.components.discovery.cluster.hac.HACWork;
 import org.meandre.components.datatype.table.Column;
 import org.meandre.components.datatype.table.Table;
 import org.meandre.components.datatype.table.ExampleTable;

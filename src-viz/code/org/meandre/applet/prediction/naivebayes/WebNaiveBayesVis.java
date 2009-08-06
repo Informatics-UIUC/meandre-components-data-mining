@@ -64,7 +64,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIFragmentCallback;
 
-import org.meandre.components.prediction.naivebayes.support.NaiveBayesModel;
+import org.meandre.components.prediction.naivebayes.NaiveBayesModel;
 
 @Component(creator="Lily Dong",
            description="Overview: An evidence visualization for a NaiveBayesModel. " +
@@ -87,7 +87,7 @@ import org.meandre.components.prediction.naivebayes.support.NaiveBayesModel;
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.prediction.naivebayes.support.NBApplet.class,
+        extClass=org.meandre.applet.prediction.naivebayes.NBApplet.class,
         dependency={"icons.jar"}
 )})
 
