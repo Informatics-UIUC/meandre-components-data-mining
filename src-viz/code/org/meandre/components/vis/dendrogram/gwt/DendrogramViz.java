@@ -72,7 +72,7 @@ import gnu.formj.html.style.Style;
 
 import org.meandre.components.discovery.cluster.ClusterModel;
 import org.meandre.components.discovery.cluster.TableCluster;
-import org.meandre.components.discovery.cluster.support.*;
+import org.meandre.components.discovery.cluster.*;
 import org.json.JSONObject;
 
 import org.meandre.components.datatype.table.sparse.SparseTable;

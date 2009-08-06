@@ -61,7 +61,7 @@ import edu.uci.ics.jung.utils.*;
  * TODO: testing
  * @author D. Searsmith (conversion to SEASR 6/08)
  */
-import org.meandre.components.io.graph.support.jung_piccolo.node.*;
+import org.meandre.components.io.graph.*;
 
 public class PGraphFileHandler extends GraphMLFileHandler {
 

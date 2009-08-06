@@ -59,7 +59,7 @@ import edu.uci.ics.jung.graph.*;
 import edu.uci.ics.jung.graph.decorators.*;
 import edu.uci.ics.jung.utils.*;
 
-import org.meandre.components.io.graph.support.jung_piccolo.node.*;
+import org.meandre.components.io.graph.*;
 
 import org.xml.sax.*;
 
