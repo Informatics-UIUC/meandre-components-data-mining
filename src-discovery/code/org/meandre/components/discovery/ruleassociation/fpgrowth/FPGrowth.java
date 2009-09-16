@@ -54,12 +54,17 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.components.discovery.ruleassociation.ItemSetInterface;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSetInterface;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPTreeNode;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FeatureTableElement;
 
 
 /**
@@ -656,9 +661,9 @@ public class FPGrowth implements ExecutableComponent {
 
         try {
 
-            _cutoff = (int) ((double) numExamples * (_support / 100.0));
+            _cutoff = (int) (numExamples * (_support / 100.0));
 
-            if (((double) numExamples * (_support / 100.0)) > (double) _cutoff) {
+            if ((numExamples * (_support / 100.0)) > _cutoff) {
                 _cutoff++;
             }
 
@@ -744,7 +749,7 @@ public class FPGrowth implements ExecutableComponent {
                 int cnter = 0;
 
                 for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext();) {
-                    fp[cnter++] = (int) it.next();
+                    fp[cnter++] = it.next();
                 }
 
                 fp[cnter] = pat.getSupport();
@@ -839,6 +844,7 @@ public class FPGrowth implements ExecutableComponent {
          * @return true if <codE>o</code> is this comparator, otherwise returns
          *         false.
          */
+        @Override
         public boolean equals(Object o) { return this.equals(o); }
     } // end class Feature_Comparator
 

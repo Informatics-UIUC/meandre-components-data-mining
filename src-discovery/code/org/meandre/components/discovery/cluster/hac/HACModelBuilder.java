@@ -55,10 +55,17 @@ package org.meandre.components.discovery.cluster.hac;
 
 import java.util.logging.Level;
 
-import org.meandre.core.*;
-import org.meandre.annotations.*;
-
-import org.meandre.components.datatype.table.Table;
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.seasr.datatypes.table.Table;
+import org.seasr.meandre.support.components.discovery.cluster.hac.HACWork;
 
 /**
  * <p>Title: </p>

@@ -50,7 +50,7 @@ import javax.swing.*;
 
 import org.meandre.applet.Constrain;
 
-import org.meandre.components.datatype.*;
+import org.seasr.datatypes.*;
 
 /**
  * <code>ExpressionGUI</code> encapsulates some functionality common to a

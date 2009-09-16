@@ -42,7 +42,7 @@
 
 package org.meandre.applet.prediction.decisiontree.widgets;
 
-import org.meandre.components.prediction.decisiontree.ViewableDTModel;
+import org.seasr.meandre.support.components.prediction.decisiontree.ViewableDTModel;
 
 import javax.swing.*;
 

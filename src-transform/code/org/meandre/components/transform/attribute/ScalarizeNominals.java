@@ -42,10 +42,10 @@
 
 package org.meandre.components.transform.attribute;
 
-import org.meandre.components.datatype.table.Column;
-import org.meandre.components.datatype.table.ExampleTable;
-import org.meandre.components.datatype.table.MutableTable;
-import org.meandre.components.datatype.table.basic.ColumnUtilities;
+import org.seasr.datatypes.table.Column;
+import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.table.MutableTable;
+import org.seasr.datatypes.table.basic.ColumnUtilities;
 import org.meandre.core.ExecutableComponent;
 
 import java.util.Arrays;

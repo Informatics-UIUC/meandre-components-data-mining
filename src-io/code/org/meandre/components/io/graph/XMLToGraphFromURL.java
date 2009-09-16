@@ -49,14 +49,16 @@ package org.meandre.components.io.graph;
 import java.io.File;
 import java.util.logging.Logger;
 
-// ===============
-// Other Imports
-// ===============
-
-import org.meandre.core.*;
-import org.meandre.annotations.*;
-
-import org.meandre.components.io.DataObjectProxy;
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.support.components.io.DataObjectProxy;
+import org.seasr.meandre.support.components.io.graph.PGraphML;
 
 
 /**
@@ -81,7 +83,7 @@ import org.meandre.components.io.DataObjectProxy;
 			+ "http://jung.sourceforge.net.</p>",
 		name = "XML To Graph From URL", tags = "io, file, transform, jung, xml, graphml, graph",
         baseURL="meandre://seasr.org/components/")
-        
+
 public class XMLToGraphFromURL implements ExecutableComponent {
 
 	private static Logger _logger = Logger.getLogger("XMLToGraphFromURL");

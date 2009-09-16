@@ -42,7 +42,7 @@
 
 package org.meandre.applet;
 
-import org.meandre.components.datatype.table.*;
+import org.seasr.datatypes.table.*;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
@@ -114,7 +114,7 @@ import org.meandre.core.ComponentContextException;
 )})
 
 public class PredictionTableReport  implements ExecutableComponent, WebUIFragmentCallback {
-    @ComponentInput(description="Read org.meandre.components.datatype.table.PredictionTable " +
+    @ComponentInput(description="Read org.seasr.datatypes.table.PredictionTable " +
                     "with both the actual values and predictions as input.",
                     name= "predictionTable")
     public final static String DATA_INPUT = "predictionTable";

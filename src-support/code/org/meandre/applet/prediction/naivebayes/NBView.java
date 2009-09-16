@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,24 +38,68 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.applet.prediction.naivebayes;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.awt.event.*;
-import java.text.*;
-import java.util.*;
-
-import java.io.InputStream;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.MediaTracker;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JColorChooser;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import org.meandre.applet.Constrain;
-import org.meandre.components.prediction.naivebayes.NaiveBayesModel;
-import org.meandre.components.prediction.naivebayes.NaiveBayesPieChartData;
+import org.seasr.datatypes.table.Column.SortMode;
+import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel;
+import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesPieChartData;
 
 class NBView extends JPanel implements ActionListener {
     /** the model */
@@ -922,6 +966,7 @@ class NBView extends JPanel implements ActionListener {
          * Paint all the pie charts/bar charts
          * @param g graphics context
          */
+        @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
@@ -982,6 +1027,7 @@ class NBView extends JPanel implements ActionListener {
          * @param h the new <code>height</code> of this
          *               component
          */
+        @Override
         public void setBounds(int x, int y, int w, int h) {
             if (numCols != 0)
                 gridwidth = w / numCols;
@@ -1001,15 +1047,15 @@ class NBView extends JPanel implements ActionListener {
 
                 // cache these calculations for later
             }
-            grid1 = (float) (.1f * gridwidth);
-            grid75 = (float) (.75f * gridwidth);
-            grid05 = (float) (.05f * gridwidth);
-            grid5 = (float) (.5f * gridwidth);
-            grid85 = (float) (.85f * gridwidth);
-            grid15 = (float) (.15f * gridwidth);
-            grid2 = (float) (.2f * gridwidth);
-            grid6 = (float) (.6f * gridwidth);
-            grid25 = (float) (.25f * gridwidth);
+            grid1 = (.1f * gridwidth);
+            grid75 = (.75f * gridwidth);
+            grid05 = (.05f * gridwidth);
+            grid5 = (.5f * gridwidth);
+            grid85 = (.85f * gridwidth);
+            grid15 = (.15f * gridwidth);
+            grid2 = (.2f * gridwidth);
+            grid6 = (.6f * gridwidth);
+            grid25 = (.25f * gridwidth);
             padding = (float) (.03 * gridwidth);
             super.setBounds(x, y, w, h);
         }
@@ -1155,7 +1201,7 @@ class NBView extends JPanel implements ActionListener {
                                                  y + (int) (grid25),
                                                  (int) (grid5), (int) (grid5),
                                                  angle,
-                                                 (int) (360 - angle), Arc2D.PIE));
+                                                 (360 - angle), Arc2D.PIE));
                     } else {
                         g2.fill(new Arc2D.Double(x + (int) (grid25),
                                                  y + (int) (grid25),
@@ -1382,6 +1428,7 @@ class NBView extends JPanel implements ActionListener {
          * Paint the composite as a big pie chart or bar chart.
          * @param g graphics context
          */
+        @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
@@ -1426,7 +1473,7 @@ class NBView extends JPanel implements ActionListener {
                 if (count == class_names.length - 1) {
                     g2.fill(new Arc2D.Double(x + (int) (sq1), y + (int) (sq1),
                                              (int) (sq8), (int) (sq8), angle,
-                                             (int) (360 - angle), Arc2D.PIE));
+                                             (360 - angle), Arc2D.PIE));
                 } else {
                     g2.fill(new Arc2D.Double(x + (int) (sq1), y + (int) (sq1),
                                              (int) (sq8), (int) (sq8), angle,
@@ -1456,7 +1503,7 @@ class NBView extends JPanel implements ActionListener {
                                       y + (int) (sq1), x + (int) (sq1),
                                       y + (int) (sq8)));
 
-            float barWidth = sq7 / (float) class_names.length;
+            float barWidth = sq7 / class_names.length;
             double startX = x + (int) (sq1) + 1;
 
             // draw the bars
@@ -1485,6 +1532,7 @@ class NBView extends JPanel implements ActionListener {
          * @param h the new <code>height</code> of this
          *               component
          */
+        @Override
         public void setBounds(int x, int y, int w, int h) {
             sq1 = (float) (.1 * w);
             sq8 = (float) (.8 * w);
@@ -1516,6 +1564,7 @@ class NBView extends JPanel implements ActionListener {
          * is checked
          * @param g graphics context
          */
+        @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
@@ -1621,7 +1670,7 @@ class NBView extends JPanel implements ActionListener {
 
             }
             try {
-                ev_data.sortByColumn(2);
+                ev_data.sortByColumn(2, SortMode.ASCENDING);
             } catch (Exception e) {
             }
             int ct = 0;
@@ -1664,6 +1713,7 @@ class NBView extends JPanel implements ActionListener {
          * Make all text anti-aliased for beauty
          * @param g graphics context
          */
+        @Override
         public void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -1740,6 +1790,7 @@ class NBView extends JPanel implements ActionListener {
          * The preferred size is 12x12
          * @return preferred size
          */
+        @Override
         public Dimension getPreferredSize() {
             return new Dimension(DIM, DIM);
         }
@@ -1748,6 +1799,7 @@ class NBView extends JPanel implements ActionListener {
          * The minimum size is 12x12
          * @return minimum size
          */
+        @Override
         public Dimension getMinimumSize() {
             return new Dimension(DIM, DIM);
         }
@@ -1756,6 +1808,7 @@ class NBView extends JPanel implements ActionListener {
          * Fill with the color and then draw a one pixel black border
          * @param g graphics context
          */
+        @Override
         public void paint(Graphics g) {
             g.setColor(bkgrd);
             g.fillRect(0, 0, DIM - 1, DIM - 1);
@@ -1795,6 +1848,7 @@ class NBView extends JPanel implements ActionListener {
          * Return preferred size
          * @return preferred size
          */
+        @Override
         public Dimension getPreferredSize() {
             return p;
         }
@@ -1803,6 +1857,7 @@ class NBView extends JPanel implements ActionListener {
          * Return minimum size
          * @return minimum size
          */
+        @Override
         public Dimension getMinimumSize() {
             return p;
         }
@@ -1811,6 +1866,7 @@ class NBView extends JPanel implements ActionListener {
          * Return maximum size
          * @return maximum size
          */
+        @Override
         public Dimension getMaximumSize() {
             return p;
         }
@@ -1846,6 +1902,7 @@ class NBView extends JPanel implements ActionListener {
          * Draw text anti-aliased.
          * @param g graphics context
          */
+        @Override
         public void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -1879,6 +1936,7 @@ class NBView extends JPanel implements ActionListener {
          * @param width  the width of the painted border
          * @param height the height of the painted border
          */
+        @Override
         public void paintBorder(Component c, Graphics g, int x,
                                 int y, int width, int height) {
 
@@ -1913,6 +1971,7 @@ class NBView extends JPanel implements ActionListener {
          * @param width  the width of the painted border
          * @param height the height of the painted border
          */
+        @Override
         public void paintBorder(Component c, Graphics g, int x,
                                 int y, int width, int height) {
 

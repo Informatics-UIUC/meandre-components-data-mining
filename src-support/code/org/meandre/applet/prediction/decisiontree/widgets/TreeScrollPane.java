@@ -42,13 +42,13 @@
 
 package org.meandre.applet.prediction.decisiontree.widgets;
 
-import org.meandre.components.prediction.decisiontree.ViewableDTModel;
-import org.meandre.components.prediction.decisiontree.ViewableDTNode;
+import org.seasr.meandre.support.components.prediction.decisiontree.ViewableDTModel;
+import org.seasr.meandre.support.components.prediction.decisiontree.ViewableDTNode;
 
 //-------
-import org.meandre.components.prediction.decisiontree.c45.CategoricalDecisionTreeNode;
-import org.meandre.components.prediction.decisiontree.c45.DecisionTreeNode;
-import org.meandre.components.prediction.decisiontree.c45.NumericDecisionTreeNode;
+import org.seasr.meandre.support.components.prediction.decisiontree.c45.CategoricalDecisionTreeNode;
+import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode;
+import org.seasr.meandre.support.components.prediction.decisiontree.c45.NumericDecisionTreeNode;
 //-------
 
 import javax.swing.*;

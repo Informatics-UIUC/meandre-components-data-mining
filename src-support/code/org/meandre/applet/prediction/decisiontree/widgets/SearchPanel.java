@@ -42,7 +42,7 @@
 
 package org.meandre.applet.prediction.decisiontree.widgets;
 
-import org.meandre.components.prediction.decisiontree.NominalViewableDTModel;
+import org.seasr.meandre.support.components.prediction.decisiontree.NominalViewableDTModel;
 
 import org.meandre.applet.Constrain;
 import org.meandre.applet.prediction.decisiontree.widgets.Viewport;

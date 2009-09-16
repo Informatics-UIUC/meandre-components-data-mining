@@ -58,7 +58,7 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.concurrent.Semaphore;
 
-import org.meandre.components.discovery.ruleassociation.RuleTable;
+import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.Component;

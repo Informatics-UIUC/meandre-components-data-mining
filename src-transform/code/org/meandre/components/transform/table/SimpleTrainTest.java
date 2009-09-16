@@ -44,8 +44,8 @@ package org.meandre.components.transform.table;
 
 import java.util.Random;
 
-import org.meandre.components.datatype.table.ExampleTable;
-import org.meandre.components.datatype.table.Table;
+import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.table.Table;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
@@ -94,16 +94,16 @@ import org.meandre.core.ExecutableComponent;
            baseURL="meandre://seasr.org/components/")
 
 public class SimpleTrainTest implements ExecutableComponent {
-    @ComponentInput(description="Read org.meandre.components.datatype.table.Table " +
+    @ComponentInput(description="Read org.seasr.datatypes.table.Table " +
                     "containing the data that will be split into training and testing examples as input.",
                     name= "originalTable")
     public final static String DATA_INPUT = "originalTable";
 
-    @ComponentOutput(description="Output org.meandre.components.datatype.table.Table " +
+    @ComponentOutput(description="Output org.seasr.datatypes.table.Table " +
                      "containing the training data",
                      name="trainTable")
     public final static String DATA_OUTPUT_1 = "trainTable";
-    @ComponentOutput(description="Output org.meandre.components.datatype.table.Table " +
+    @ComponentOutput(description="Output org.seasr.datatypes.table.Table " +
                      "containing the test data",
                      name="testTable")
     public final static String DATA_OUTPUT_2 = "testTable";

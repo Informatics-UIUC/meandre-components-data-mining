@@ -64,7 +64,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIFragmentCallback;
 
-import org.meandre.components.prediction.naivebayes.NaiveBayesModel;
+import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel;
 
 @Component(creator="Lily Dong",
            description="Overview: An evidence visualization for a NaiveBayesModel. " +
@@ -97,7 +97,7 @@ import org.meandre.components.prediction.naivebayes.NaiveBayesModel;
  * @author  Lily Dong
  */
 public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmentCallback{
-    @ComponentInput(description="Read org.meandre.components.prediction.naivebayes.NaiveBayesModel to visualize.",
+    @ComponentInput(description="Read org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel to visualize.",
                        name= "nbModel")
     public final static String DATA_INPUT = "nbModel";
 

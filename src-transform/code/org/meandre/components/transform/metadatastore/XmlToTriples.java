@@ -49,15 +49,18 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentInput;
-import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.ComponentProperty;
+import org.seasr.meandre.support.components.transform.metadatastore.IRdfStatementProcessor;
+import org.seasr.meandre.support.components.transform.metadatastore.XmlException;
+import org.seasr.meandre.support.components.transform.metadatastore.XmlToRdfConverter;
 
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;

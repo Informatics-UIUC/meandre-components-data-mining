@@ -59,15 +59,15 @@ import org.dom4j.Attribute;
 
 import gnu.trove.TIntArrayList;
 
-import org.meandre.components.datatype.table.basic.DoubleColumn;
-import org.meandre.components.datatype.table.basic.MutableTableImpl;
-import org.meandre.components.datatype.table.Column;
-import org.meandre.components.datatype.table.basic.IntColumn;
-import org.meandre.components.datatype.table.basic.TableImpl;
+import org.seasr.datatypes.table.basic.DoubleColumn;
+import org.seasr.datatypes.table.basic.MutableTableImpl;
+import org.seasr.datatypes.table.Column;
+import org.seasr.datatypes.table.basic.IntColumn;
+import org.seasr.datatypes.table.basic.TableImpl;
 
-import org.meandre.components.discovery.ruleassociation.FreqItemSet;
-import org.meandre.components.discovery.ruleassociation.RulePMMLTags;
-import org.meandre.components.discovery.ruleassociation.RuleTable;
+import org.seasr.meandre.support.components.discovery.ruleassociation.FreqItemSet;
+import org.seasr.meandre.support.components.discovery.ruleassociation.RulePMMLTags;
+import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 /**
 * <p>Title: Rule Association Visualization</p>

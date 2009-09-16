@@ -42,16 +42,16 @@
 
 package org.meandre.components.discovery.ruleassociation;
 
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentInput;
-import org.meandre.annotations.ComponentOutput;
-
-import org.meandre.components.datatype.table.*;
+import org.seasr.datatypes.table.Table;
+import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSets;
 
 /**
  *
@@ -118,7 +118,7 @@ import org.meandre.components.datatype.table.*;
         name = "Table To Item Sets",
         tags = "rule association, converter, itemsets, table, discovery",
         baseURL="meandre://seasr.org/components/")
-        
+
 public class TableToItemSets implements ExecutableComponent {
 
     @ComponentInput(description = "The table that items and sets will be extracted from", name = "table")

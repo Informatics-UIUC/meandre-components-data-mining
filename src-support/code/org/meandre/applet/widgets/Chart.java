@@ -45,7 +45,7 @@ package org.meandre.applet.widgets;
 import javax.swing.JPanel;
 import java.awt.*;
 
-import org.meandre.components.datatype.table.*;
+import org.seasr.datatypes.table.*;
 
 /**
 	A Chart is similar to a Graph, but it does not plot

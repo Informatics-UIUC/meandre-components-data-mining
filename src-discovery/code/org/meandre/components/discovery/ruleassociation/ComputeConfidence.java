@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.discovery.ruleassociation;
 
@@ -53,22 +53,23 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.meandre.components.datatype.table.Column;
-import org.meandre.components.datatype.table.basic.DoubleColumn;
-import org.meandre.components.datatype.table.basic.IntColumn;
-import org.meandre.components.datatype.table.basic.MutableTableImpl;
-import org.meandre.components.datatype.table.basic.TableImpl;
-
-
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentInput;
-import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.ComponentProperty;
+import org.seasr.datatypes.table.Column;
+import org.seasr.datatypes.table.basic.DoubleColumn;
+import org.seasr.datatypes.table.basic.IntColumn;
+import org.seasr.datatypes.table.basic.MutableTableImpl;
+import org.seasr.datatypes.table.basic.TableImpl;
+import org.seasr.meandre.support.components.discovery.ruleassociation.FreqItemSet;
+import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSetInterface;
+import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 /**
  * <p>Title:</p>
@@ -104,7 +105,7 @@ import org.meandre.annotations.ComponentProperty;
  * @author Boris Capitanu
  *
  * BC: Imported from d2k (ncsa.d2k.modules.core.discovery.ruleassociation.apriori.ComputeConfidence)
- * 
+ *
  */
 
 @Component(creator = "Boris Capitanu", description = "<p>This module works in conjunction with other modules implementing the Apriori "
@@ -140,7 +141,7 @@ import org.meandre.annotations.ComponentProperty;
 
 	name = "Compute Confidence", tags = "rule association,confidence,discovery",
     baseURL="meandre://seasr.org/components/")
-    
+
 	public class ComputeConfidence implements ExecutableComponent,
 	java.io.Serializable {
 
@@ -290,7 +291,7 @@ import org.meandre.annotations.ComponentProperty;
 			_logger.log(Level.SEVERE, "Initialization error: ", e);
 			throw new RuntimeException(e);
 		}
-		
+
 		// System.out.println("debug " + debug + " showProgress " + showProgress);
 	}
 
@@ -306,9 +307,9 @@ import org.meandre.annotations.ComponentProperty;
 
 		// pull the inputs.
 		// ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
-		ItemSetInterface iss = 
+		ItemSetInterface iss =
 		   (ItemSetInterface) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
-		
+
 		int[][] fis = (int[][]) context.getDataComponentFromInput(DATA_INPUT_FREQ_ITEM_SETS);
 
 		String[] items = iss.getItemsOrderedByFrequency();
@@ -356,13 +357,13 @@ import org.meandre.annotations.ComponentProperty;
 		// boolean[][] itemFlags = iss.getItemFlags();
 		Vector finalRules = new Vector();
 		//     MutableIntegerArray[] documentMap = (MutableIntegerArray[]) iss.userData;
-		
+
 
 		if (debug) {
 			_logger.fine("ComputeConfidence-> number of items: " + numItems);
 			_logger.fine("ComputeConfidence-> number of frequent item sets: " + numFis);
 			_logger.fine("ComputeConfidence-> number of examples: " + numExamples);
-			
+
 			System.out.println("ComputeConfidence-> number of items: " + numItems);
          System.out.println("ComputeConfidence-> number of frequent item sets: " + numFis);
          System.out.println("ComputeConfidence-> number of examples: " + numExamples);
@@ -519,7 +520,8 @@ import org.meandre.annotations.ComponentProperty;
 			thenstmt[0] = rule[rule.length - 3];
 
 			TIntArrayList ifitem = new TIntArrayList(ifstmt) {
-				public int hashCode() {
+				@Override
+                public int hashCode() {
 					StringBuffer sb = new StringBuffer();
 					int[] ar = toNativeArray();
 					Arrays.sort(ar);
@@ -537,7 +539,8 @@ import org.meandre.annotations.ComponentProperty;
 			};
 
 			TIntArrayList thenitem = new TIntArrayList(thenstmt) {
-				public int hashCode() {
+				@Override
+                public int hashCode() {
 					StringBuffer sb = new StringBuffer();
 					int[] ar = toNativeArray();
 					Arrays.sort(ar);
@@ -576,7 +579,7 @@ import org.meandre.annotations.ComponentProperty;
 
 			// in rule table both confidence and support are represented
 			// as fractions.
-			double conf = (double) rule[rule.length - 1];
+			double conf = rule[rule.length - 1];
 			conf /= 10000.0; // adjust decimal as earlier it was saved as int
 
 			double supp = rule[rule.length - 2];

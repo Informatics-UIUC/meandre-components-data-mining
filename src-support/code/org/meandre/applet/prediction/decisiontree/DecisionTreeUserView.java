@@ -77,8 +77,8 @@ import javax.swing.JPanel;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 
-import org.meandre.components.prediction.decisiontree.NominalViewableDTModel;
-import org.meandre.components.prediction.decisiontree.ViewableDTModel;
+import org.seasr.meandre.support.components.prediction.decisiontree.NominalViewableDTModel;
+import org.seasr.meandre.support.components.prediction.decisiontree.ViewableDTModel;
 
 import org.meandre.applet.Constrain;
 import org.meandre.applet.prediction.decisiontree.widgets.BrushPanel;
@@ -403,7 +403,7 @@ class DecisionTreeUserView extends JPanel implements ActionListener {
      * @param index The index of the module input that been received.
      */
     public void setInput(Object object, int index) {
-        model = (org.meandre.components.prediction.decisiontree.ViewableDTModel)
+        model = (org.seasr.meandre.support.components.prediction.decisiontree.ViewableDTModel)
                 object;
 
         // Menu

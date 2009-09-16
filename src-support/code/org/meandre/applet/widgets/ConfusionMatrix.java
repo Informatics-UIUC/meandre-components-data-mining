@@ -49,7 +49,7 @@ import java.util.*;
 import java.text.*;
 import java.awt.image.*;
 
-import org.meandre.components.datatype.table.*;
+import org.seasr.datatypes.table.*;
 
 /**
 	A simple ConfusionMatrix.  Implemented as a JTable inside a JScrollPane.

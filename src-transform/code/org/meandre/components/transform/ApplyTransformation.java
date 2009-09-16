@@ -44,8 +44,8 @@ package org.meandre.components.transform;
 
 import java.util.logging.Logger;
 
-import org.meandre.components.datatype.table.MutableTable;
-import org.meandre.components.datatype.table.Transformation;
+import org.seasr.datatypes.table.MutableTable;
+import org.seasr.datatypes.table.Transformation;
 
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;

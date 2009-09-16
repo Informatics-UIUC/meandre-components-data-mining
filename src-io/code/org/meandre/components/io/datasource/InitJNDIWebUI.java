@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,43 +38,35 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.meandre.components.io.datasource;
 
 //Import statements
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.DriverPropertyInfo;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.ConnectionPoolDataSource;
-import javax.sql.DataSource;
 
 import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
+import org.seasr.meandre.support.components.io.datasource.DataSourceFactory;
+import org.seasr.meandre.support.components.io.datasource.JNDILookup;
+import org.seasr.meandre.support.components.io.datasource.JNDINamespaceWriter;
+import org.seasr.meandre.support.components.io.datasource.JarXMLLoader;
 
 @Component(creator="Erik Johnson",
         description="<p>Overview:<br>"
@@ -88,7 +80,7 @@ import org.meandre.webui.WebUIFragmentCallback;
         baseURL="meandre://seasr.org/components/")
 
 /** This component will load information from two xml files and construct a JNDI context with datasource objects.
- * To do this, it 
+ * To do this, it
  *
  * @author Erik Johnson
  */
@@ -99,36 +91,36 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
 
     /** The instance ID for Web UI component*/
     private String sInstanceID = null;
-    
+
     //vector of known datasources
 	private Vector <String> existingDS= new Vector<String>();
-	
+
 	//User Selected known datasource
-	private String selectedExistingDS="";
-	
+	private final String selectedExistingDS="";
+
 	//Vendors with known driver and datasource class names- these have not necessarily been loaded
 	private Vector <String> knownVendors= new Vector<String>();
-	
+
 	//selected vendor, driver and datasource
     private String selectedVendor="";
     private String selectedDatasource="";
     private String selectedDriver="";
     private Properties selectedProperties=new Properties();
-    
+
     //control variables
     private boolean configuringDataSource=false;
     private boolean configuringVendor=false;
 //    private boolean knownVendor=true;
     private boolean basicProps=true;
-    
+
     //Driver property info to allow user configuration
     private DriverPropertyInfo[] driverProperties;
-    
+
     //Class to access JNDI namespace
-    private JNDILookup databaseNamespace= new JNDILookup();
-    
+    private final JNDILookup databaseNamespace= new JNDILookup();
+
     //flag set to true in order to display properties
-    private boolean viewProps=false;
+    private final boolean viewProps=false;
 
     /** This method gets call when a request with no parameters is made to a
      * component WebUI fragment.
@@ -156,21 +148,21 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     	//look in Datasource Factory for known vendors
     	knownVendors=DataSourceFactory.getKnownVendors();
     	String key,value;
-    	
+
     	//check to see if a vendor has been selected
     	if (selectedVendor!= "" && selectedVendor != null)
     	{
     		//find vendor props
     		selectedProperties=DataSourceFactory.discoverProps(selectedVendor);
     	}
-    	
+
         StringBuffer sb = new StringBuffer();
         sb.append("<html>\n");
         sb.append("<body>\n");
 
         sb.append("<table border=\"0\" width=\"100%\" cellpadding=\"10\">\n");
         sb.append("<tr>\n");
-        
+
         /**Do Not allow the InitJNDI component to generate a connection
         sb.append("<td width=\"40%\" valign=\"top\">\n");
         sb.append("<h1>Select JNDI Datasource to Load</h1>\n");
@@ -185,7 +177,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         sb.append("<input type=\"submit\" value=\"Load Datasource\">\n");
         sb.append("</form>\n");
       	*/
-        
+
         /**If the user has selected an existing datasource from the JNDI namespace...
         if (selectedExistingDS != null && selectedExistingDS !="" )
         {
@@ -250,7 +242,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         }
         //sb.append("</td>\n");
         sb.append("</tr>\n");*/
-        
+
         if (configuringDataSource){
         	//Second coloumn for creation of new datasources
         	//present user with known vendors
@@ -267,7 +259,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         	sb.append("<input type=\"radio\" name=\"advancedProps\" value=\"basic\"> Basic Properties   \n");
         	sb.append("<input type=\"submit\" value=\"Use this Vendor\">\n");
         	sb.append("</form>\n");
-        
+
         	//if a vendor has already been selected
         	if (selectedVendor!=null && selectedVendor!="")
         	{
@@ -275,10 +267,10 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         		sb.append("<form action=\"/" +
         				sInstanceID+" method=\"post\">\n");
         		sb.append("<p>Configure New Datasource</p><br />\n");
-        
+
         		sb.append("<p>JNDI Location: </p><input type=\"text\" name=\"DBJNDILoc\" value=\"\" size=\"20\">\n");
         		sb.append("<p>The JNDI location is a logical name for this datasource (for example, \"myPostgresDB\"). This name will be used to look up the datasource in the JNDI namespace.</p>\n");
-        		
+
         		if (DataSourceFactory.isCommonVendor(selectedVendor) && basicProps)
         		{
         			sb.append("<p>Vendor Name : </p><input type=\"text\" name=\"DBVendor Name\" value=\""+selectedVendor+"\" size=\"20\">\n");
@@ -302,7 +294,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         			{
         				//list out properties with necessary parameters
         				key= (String) propNames.nextElement();
-        				value= (String) selectedProperties.getProperty(key);
+        				value= selectedProperties.getProperty(key);
         				if (key.equalsIgnoreCase("Vendor Name"))
         				{
         					sb.append("<p>"+key+" ("+value+"): </p><input type=\"text\" name=\"DB"+key+"\" value=\""+selectedVendor+"\" size=\"20\" >\n");
@@ -333,11 +325,11 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         		//check to see if datasource class and driver class are in the classpath
         		if (!DataSourceFactory.isKnownDriver(selectedDriver))
         		{
-        			sb.append("<p>WARNING!: Vendor driver cannot be loaded! Check your installation </p><br />");	
+        			sb.append("<p>WARNING!: Vendor driver cannot be loaded! Check your installation </p><br />");
         		}
         		if (!DataSourceFactory.isKnownDataSource(selectedDatasource))
         		{
-        			sb.append("<p>WARNING!: Vendor Datasource Class cannot be loaded! Check your installation </p><br />");	
+        			sb.append("<p>WARNING!: Vendor Datasource Class cannot be loaded! Check your installation </p><br />");
         		}
         		sb.append("<input type=\"submit\" value=\"Create Datasource\">\n");
         		sb.append("</form>\n");
@@ -349,20 +341,20 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         	logger.log(Level.INFO,"Configuring Vendor");
         	//Final column, select new vendor and driver info to load from external jar file
         	Vector<String>commonNames = DataSourceFactory.getCommonVendors();
-        	
+
         	//sb.append("<td width=\"20%\" valign=\"top\">\n");
         	sb.append("<tr>\n");
         	sb.append("<form action=\"/" +
         			sInstanceID+" method=\"post\">\n");
         	sb.append("<p>Add New Database Vendor Information</p><br />\n");
         	//allow user to specify vendor name, driver, datasource
-        	
+
         	sb.append("<select name=\"vendorName\">\n");
         	for (int i=0; i<commonNames.size(); i++)
         		sb.append("<option value=\""+commonNames.elementAt(i)+"\">"+commonNames.elementAt(i)+"</option>\n");
         		sb.append("<option value=\"Other\">Other</option>\n");
         	sb.append("</select>\n");
-        	
+
         	sb.append("<p>If Other, please provide Vendor Name: </p><input type=\"text\" name=\"otherName\" value=\"My Other Vendor\" size=\"20\">\n");
         	sb.append("<br />\n");
         	sb.append("<p>If Other, please provide Vendor Driver: </p><input type=\"text\" name=\"vDriver\" value=\"org.myJDBCpackage.myDriver\" size=\"20\">\n");
@@ -417,13 +409,13 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     	//get parameters
     	//user has hit done button
     	String sDone = request.getParameter("done"); //done button eliminated, user must create a connection to exit component
-    	
+
     	//user has selected DS from JNDI namespace
     	//String spersistentDS = request.getParameter("persistentDS");
-    	
+
     	//user has requested to connect to existing datasource
     	String snewDS = request.getParameter("ConnectDS");
-    	
+
     	//user has chosen a new vendor to add
     	String snewDriver = request.getParameter("vDriver");
     	String snewDatasource = request.getParameter("vDatasource");
@@ -436,9 +428,9 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     	String pooledConnection = request.getParameter("PooledConn");
     	String advancedProperties = request.getParameter("advancedProps");
     	String configString = request.getParameter("configuring");
-    	
-    	
-    	
+
+
+
     	if (configString!=null){
     		if (configString.equalsIgnoreCase("DataSource"))
     		{
@@ -449,15 +441,15 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     			configuringVendor=true;
     		}
     	}
-    	
-    	
-    	
+
+
+
     	String dbVendorName = request.getParameter("DBVendor Name");
-    	
+
     	String key,value;
     	//User has given a location to bind a new datasource object in the JNDI namespace
     	String sJNDILoc= request.getParameter("DBJNDILoc");
-    	
+
     	/** //User has chosen to input properties and reconnect to database existing in JNDI namespace
     	if (viewProps)
     	{
@@ -482,7 +474,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     		}
     		sDone="Done";
     	}*/
-    	
+
     	/**
     	//User has selected to view properties, connect to, or remove a datasource from the JNDI namespace
     	if (sDSconnection != null && sDSconnection != "")
@@ -500,12 +492,12 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     	    		else{
     	    			databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
     	    		}
-        
+
         			}
         			catch (Exception e)
         			{
         				logger.log(Level.SEVERE,"Problem connecting to datasource "+databaseConnection.toString()+" :"+e +":"+ e.getMessage());
-        		
+
         			}
     			logger.log(Level.INFO, "Connected to DB");
     			logger.log(Level.INFO, "Reading Properties");
@@ -516,7 +508,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
 	    		else{
 	    			driverProperties= DataSourceFactory.getConnectionProperties(databaseConnection, (DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
 	    		}
-    		
+
     			logger.log(Level.INFO, "Properties Read");
     		}
     		//User wants to connect to existing datasource without modifying properties
@@ -527,10 +519,10 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     				if (DataSourceFactory.isPooled(selectedExistingDS))
     	    		{
     					logger.log(Level.INFO, "Connection is Pooled for "+selectedExistingDS);
-  
+
     	    			ConnectionPoolDataSource cpds = (ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS);
     	    			logger.log(Level.INFO, "Got DataSource");
-    	    		
+
     	    			Connection conn;
     	    			conn = cpds.getPooledConnection().getConnection();
     	    			logger.log(Level.INFO,"Connected   ");
@@ -555,7 +547,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     			catch (Exception e)
     			{
     				logger.log(Level.SEVERE,"Problem connecting to datasource "+databaseConnection.toString()+" :"+e +":"+ e.getMessage());
-    			
+
     			}
     			sDone="Done";
     		}
@@ -636,7 +628,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     			}
     			//use xml location to write out new jar file properties
     			String xmlURL = fdir+jarXMLFile;
-    			
+
     			jarLoader.writePropsFile(xmlURL);
     		}
     		catch (Exception e)
@@ -658,7 +650,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
 //    		pooled = DataSourceFactory.isPooled(selectedVendor);
     		if (advancedProperties.equalsIgnoreCase("advanced"))
 				basicProps=false;
-			else 
+			else
 				basicProps=true;
     	}
     	//user has pressed done button or created a connection- release semaphore
@@ -670,7 +662,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
 			emptyRequest(response);
     }
 
-     /** This Method is invoked when the component is executed. It will initialize and 
+     /** This Method is invoked when the component is executed. It will initialize and
       *
       * @throws ComponentExecutionException If a fatal condition arises during
       *         the execution of a component, a ComponentExecutionException
@@ -678,7 +670,8 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
       * @throws ComponentContextException A violation of the component context
       *         access was detected
       */
-     public void execute(ComponentContext cc)
+     @Override
+    public void execute(ComponentContext cc)
      throws ComponentExecutionException, ComponentContextException {
 
     	//start the web UI
@@ -694,21 +687,22 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
  			sem.acquire();
  			sem.release();
  			logger.log(Level.INFO,">>>Done");
- 		
+
  		}
  		catch ( Exception e ) {
  			throw new ComponentExecutionException(e);
  		}
-    	 
+
      }
-     
-     public void dispose ( ComponentContextProperties ccp ) {
+
+     @Override
+    public void dispose ( ComponentContextProperties ccp ) {
  		//now that execution is complete, write datasources to persistent file
-     	
+
      	//
  		String xmlLoc = ccp.getProperty(DATA_PROPERTY);
  		JNDINamespaceWriter xmlWriter = new JNDINamespaceWriter();
- 		
+
 // 		String fname = JarXMLLoader.getPublicResourcesURL();
  		String fdir = JarXMLLoader.getPublicResourcesDirectory();
  		if ((!(fdir.endsWith("/"))) && (!(fdir.endsWith("\\")))) {
@@ -716,7 +710,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
  		}
  		//use xml location to write out new jar file properties
  		String xmlURL = fdir+jarXMLFile;
- 		
+
  		jarLoader.writePropsFile(xmlURL);
  		//File jlfile = new File(Path).getAbsoluteFile();
  		//write out new properties for Datasources in JNDI namespace

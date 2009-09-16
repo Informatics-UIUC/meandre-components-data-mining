@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,27 +38,25 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
-package  org.meandre.components.prediction.decisiontree.c45;
-
-import org.meandre.components.datatype.table.Table;
-import org.meandre.components.datatype.table.ExampleTable;
-
-
+package org.meandre.components.prediction.decisiontree.c45;
 
 import java.util.HashSet;
-
-import org.meandre.core.ExecutableComponent;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
-import org.meandre.core.ComponentContextProperties;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.meandre.support.components.prediction.decisiontree.c45.CategoricalDecisionTreeNode;
+import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeModel;
+import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode;
 
 
 /**
@@ -112,13 +110,13 @@ import org.meandre.annotations.ComponentProperty;
 public class C45TreePruner implements ExecutableComponent {
     @ComponentInput(description =
             "Read the root node of the unpruned decision tree. " +
-            "The root node is of type org.meandre.components.prediction.decisiontree.c45.DecisionTreeNode.",
+            "The root node is of type org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode.",
                     name = "treeNode")
     final static String DATA_INPUT_1 = "treeNode";
 
     @ComponentInput(description =
             "Read the training data that was used to build the decision tree. " +
-            "The training data is of type org.meandre.components.datatype.table.ExampleTable.",
+            "The training data is of type org.seasr.datatypes.table.ExampleTable.",
                     name = "exampleTable")
     final static String DATA_INPUT_2 = "exampleTable";
 
@@ -153,7 +151,7 @@ public class C45TreePruner implements ExecutableComponent {
     private HashSet white;
 
     /** Z */
-    private double Z = 0.69;
+    private final double Z = 0.69;
 
     /**
      * Called when a flow is started.

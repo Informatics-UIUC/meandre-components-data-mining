@@ -13,14 +13,14 @@ import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 
-import org.meandre.components.datatype.table.Table;
-import org.meandre.components.datatype.table.Sparse;
-import org.meandre.components.datatype.table.ExampleTable;
-import org.meandre.components.datatype.table.MutableTable;
+import org.seasr.datatypes.table.Table;
+import org.seasr.datatypes.table.Sparse;
+import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.table.MutableTable;
 
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPPattern;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPProb;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPSparse;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
 
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
@@ -74,12 +74,12 @@ public class LargeItemTableGenerator implements ExecutableComponent {
     public final static String DATA_PROPERTY_REMSATFEATS = "removeSaturatedFeatures";
 
 	@ComponentInput(description="The input data table for pattern mining." +
-			"<br>TYPE: org.meandre.components.datatype.table.sparse.SparseTable",
+			"<br>TYPE: org.seasr.datatypes.table.sparse.SparseTable",
              		name= "sparseTable")
     public final static String DATA_INPUT = "sparseTable";
 
 	@ComponentOutput(description="An FPProb object representing." +
-            "<br>TYPE: org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPProb",
+            "<br>TYPE: org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.support.FPProb",
              		 name="FPProb")
     public final static String DATA_OUTPUT = "FPProb";
 

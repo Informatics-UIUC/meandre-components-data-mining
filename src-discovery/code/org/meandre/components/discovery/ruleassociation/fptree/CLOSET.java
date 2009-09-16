@@ -3,7 +3,15 @@ package org.meandre.components.discovery.ruleassociation.fptree;
 //==============
 //Java Imports
 //==============
-import  java.util.*;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIntHashMap;
+import gnu.trove.TIntObjectHashMap;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
@@ -14,17 +22,11 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPPattern;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPProb;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPSparse;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPTreeNode;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FeatureTableElement;
-
-//===============
-//Other Imports
-//===============
-import gnu.trove.*;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPTreeNode;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FeatureTableElement;
 
 @Component(creator="Lily Dong",
            description="<p>Overview: " +
@@ -65,7 +67,7 @@ public class CLOSET implements ExecutableComponent {
     public final static String DATA_PROPERTY_PRINTPATTERNS = "printPatterns";
 
 	@ComponentInput(description="The input parameters encapsulated in an FPProb object." +
-			"<br>TYPE: org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPProb",
+			"<br>TYPE: org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.support.FPProb",
              		name= "FPProb")
     public final static String DATA_INPUT = "FPProb";
 
@@ -77,7 +79,7 @@ public class CLOSET implements ExecutableComponent {
             "<br>TYPE: java.util.List",
              		 name="FPProb")
     public final static String DATA_OUTPUT_FPPROB = "FPProb";
-    
+
 	@ComponentOutput(description="Report of the patterns found." +
             "<br>TYPE: java.lang.String",
              		 name="Pattern_Report")
@@ -88,7 +90,7 @@ public class CLOSET implements ExecutableComponent {
   //==============
   private ArrayList _patterns = null;
   private ArrayList _problems = null;
-  private boolean DEBUG = true;
+  private final boolean DEBUG = true;
 
   private TIntObjectHashMap _closhash = null;
   private TIntIntHashMap _supports = null;
@@ -162,7 +164,7 @@ public class CLOSET implements ExecutableComponent {
                   cc.getOutputConsole().print(pat.getSupport() + ":");
                   patternRpt.append(pat.getSupport() + ":");
                   for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext(); ) {
-                    int fte = (int) it.next();
+                    int fte = it.next();
                     cc.getOutputConsole().print(" " + FPPattern.getElementLabel(fte));
                     patternRpt.append(" " + FPPattern.getElementLabel(fte));
                   }
@@ -286,7 +288,7 @@ public class CLOSET implements ExecutableComponent {
     int patsupp = patt.getSupport();
     TreeSet tfeats = new TreeSet(new Feature_Comparator());
     for (gnu.trove.TIntIterator it = patt.getPattern(); it.hasNext(); ) {
-      int fte = (int) it.next();
+      int fte = it.next();
       tfeats.add(new FeatureTableElement(fte, _supports.get(fte), 0));
     }
 
@@ -607,7 +609,7 @@ public class CLOSET implements ExecutableComponent {
         if (ptrs.size() == 1){
           FPTreeNode nd = (FPTreeNode)ptrs.get(0);
           if ((nd.getNumChildren() == 0) || (nd.getNumChildren() > 1) ||
-              (((FPTreeNode)((Object[])nd.getChildren().getValues())[0]).getCount() < nd.getCount())){
+              (((FPTreeNode)(nd.getChildren().getValues())[0]).getCount() < nd.getCount())){
             boolean okay = true;
             FPTreeNode nnd = nd;
             FPPattern newpatt = new FPPattern(alpha, nd.getCount()/*0*/);
@@ -860,7 +862,8 @@ public class CLOSET implements ExecutableComponent {
        * @param o
        * @return
        */
-      public boolean equals (Object o) {
+      @Override
+    public boolean equals (Object o) {
           return  this.equals(o);
       }
   }

@@ -56,11 +56,11 @@ import org.meandre.applet.Constrain;
 import org.meandre.applet.widgets.ExpressionGUI;
 import org.meandre.applet.ruleassociation.LabelCellRenderer;
 
-import org.meandre.components.discovery.ruleassociation.RuleTable;
+import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
-import org.meandre.components.datatype.Expression;
-import org.meandre.components.datatype.ExpressionException;
-import org.meandre.components.datatype.ExpressionListener;
+import org.seasr.datatypes.Expression;
+import org.seasr.datatypes.ExpressionException;
+import org.seasr.datatypes.ExpressionListener;
 
 /**
  * <p>Title: RuleVisView</p>

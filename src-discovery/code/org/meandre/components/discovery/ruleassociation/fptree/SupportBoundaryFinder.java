@@ -12,10 +12,10 @@ import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPProb;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPSparse;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FPTreeNode;
-import org.meandre.components.discovery.ruleassociation.fpgrowth.FeatureTableElement;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPTreeNode;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FeatureTableElement;
 
 @Component(creator="Lily Dong",
         description="<p>Overview: " +
@@ -42,12 +42,12 @@ public class SupportBoundaryFinder implements ExecutableComponent {
 	public final static String DATA_PROPERTY_DISCOVERMAXSUPPORT = "discoverMaxSupport";
 
 	@ComponentInput(description="The output parameters encapsulated in an FPProb object." +
-			"<br>TYPE: org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPProb",
+			"<br>TYPE: org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.support.FPProb",
              		name= "FPProb")
     public final static String DATA_INPUT = "FPProb";
 
 	@ComponentOutput(description="The output parameters encapsulated in an FPProb object." +
-            "<br>TYPE: org.meandre.components.discovery.ruleassociation.fpgrowth.support.FPProb",
+            "<br>TYPE: org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.support.FPProb",
              		 name="FPProb")
     public final static String DATA_OUTPUT = "FPProb";
 

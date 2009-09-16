@@ -46,47 +46,42 @@ package org.meandre.components.vis.dendrogram.gwt;
 // Java Imports
 // ==============
 
+import gnu.formj.html.A;
+import gnu.formj.html.Div;
+import gnu.formj.html.Label;
+import gnu.formj.html.style.Style;
+import gnu.formj.html.table.Table;
+
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Comparator;
 
-// ===============
-// Other Imports
-// ===============
-
-import gnu.formj.html.Label;
-import gnu.formj.html.A;
-import gnu.formj.html.table.Table;
-import gnu.formj.html.Div;
-import gnu.formj.html.style.Style;
-
-import org.meandre.components.discovery.cluster.ClusterModel;
-import org.meandre.components.discovery.cluster.TableCluster;
-import org.meandre.components.discovery.cluster.*;
 import org.json.JSONObject;
-
-import org.meandre.components.datatype.table.sparse.SparseTable;
-
-import org.meandre.annotations.*;
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.Component.Mode;
-
-import org.meandre.core.ExecutableComponent;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentContextException;
 import org.meandre.components.util.Unzipper;
-import org.meandre.webui.*;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.meandre.webui.WebUIException;
+import org.meandre.webui.WebUIFragmentCallback;
+import org.seasr.datatypes.table.sparse.SparseTable;
+import org.seasr.meandre.support.components.discovery.cluster.ClusterModel;
+import org.seasr.meandre.support.components.discovery.cluster.TableCluster;
 
 // import org.meandre.tools.components.*;
 // import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
@@ -178,7 +173,7 @@ public class DendrogramViz implements ExecutableComponent,
 	private static Vector<Semaphore> sems = new Vector<Semaphore>();
 
 	/** The blocking semaphore */
-	private Semaphore sem = new Semaphore(1, true);
+	private final Semaphore sem = new Semaphore(1, true);
 
 	/** The instance ID */
 	private String sInstanceID = null;
@@ -188,7 +183,7 @@ public class DendrogramViz implements ExecutableComponent,
 
 	private ComponentContext _ctx = null;
 
-	private Map<Integer, DendrogramViz.ClusterNode> _clustMap = new HashMap<Integer, DendrogramViz.ClusterNode>();
+	private final Map<Integer, DendrogramViz.ClusterNode> _clustMap = new HashMap<Integer, DendrogramViz.ClusterNode>();
 
 	private final String _resName = "DendrogramViz_001";
 
@@ -418,7 +413,7 @@ public class DendrogramViz implements ExecutableComponent,
 		String getrows = request.getParameter("getrows");
 		if (sDone != null) {
 			for (int i = 0; i < sems.size(); i++) {
-				((Semaphore) sems.elementAt(i)).release();
+				(sems.elementAt(i)).release();
 			}
 			sems.clear();
 		} else if (getmod != null) {
@@ -437,7 +432,7 @@ public class DendrogramViz implements ExecutableComponent,
 	private void getRowsForCluster(HttpServletResponse response, String cid)
 			throws WebUIException {
 		try {
-			ClusterNode cn = (ClusterNode) this._clustMap.get(Integer
+			ClusterNode cn = this._clustMap.get(Integer
 					.valueOf(Integer.parseInt(cid)));
 			if (cn == null) {
 				response.getWriter().println(
@@ -599,7 +594,7 @@ public class DendrogramViz implements ExecutableComponent,
 		return s2;
 	}
 
-	private String getTabViz(org.meandre.components.datatype.table.Table tab,
+	private String getTabViz(org.seasr.datatypes.table.Table tab,
 			int[] mems) {
 		int nr_instances = tab.getNumRows();
 		_logger.fine("\nthe number of rows  = " + nr_instances);
@@ -833,7 +828,8 @@ public class DendrogramViz implements ExecutableComponent,
 			}
 		} // end method compare
 
-		public boolean equals(Object o) {
+		@Override
+        public boolean equals(Object o) {
 			return false;
 		}
 	} // end class cRank_Comparator
@@ -857,7 +853,8 @@ public class DendrogramViz implements ExecutableComponent,
 			}
 		} // end method compare
 
-		public boolean equals(Object o) {
+		@Override
+        public boolean equals(Object o) {
 			return false;
 		}
 	} // end class cRank_Comparator

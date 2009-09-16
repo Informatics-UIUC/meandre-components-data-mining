@@ -64,7 +64,7 @@ import org.meandre.core.ExecutableComponent;
 @Component(creator = "Duane Searsmith",
 description = "<p>Overview: Outputs a <i>TableFactory</i> suitable "
 		+ "for creating D2K Tables from the "
-		+ "org.meandre.components.datatype.table.sparse package.</p>",
+		+ "org.seasr.datatypes.table.sparse package.</p>",
 name = "Sparse Table Factory Injector", tags = "sparsetable, table, factory",
 baseURL="meandre://seasr.org/components/")
 
@@ -104,7 +104,7 @@ public class SparseTableFactoryInjector implements ExecutableComponent {
 		try {
 
 		ctx.pushDataComponentToOutput(DATA_OUTPUT_SPARSE_TABLE_FACTORY,
-		        new org.meandre.components.datatype.table.sparse.SparseTableFactory());
+		        new org.seasr.datatypes.table.sparse.SparseTableFactory());
 
 
 		} catch (Exception ex) {

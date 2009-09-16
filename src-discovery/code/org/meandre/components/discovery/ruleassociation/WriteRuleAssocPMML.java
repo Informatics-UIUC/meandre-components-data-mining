@@ -41,14 +41,22 @@
  */
 
 package org.meandre.components.discovery.ruleassociation;
-import java.io.*;
-import java.util.*;
+import java.util.List;
 
-
-import org.dom4j.*;
-
-import org.meandre.core.*;
-import org.meandre.annotations.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.support.components.discovery.ruleassociation.FreqItemSet;
+import org.seasr.meandre.support.components.discovery.ruleassociation.RulePMMLTags;
+import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 
 /**
@@ -63,7 +71,7 @@ import org.meandre.annotations.*;
 
 public class WriteRuleAssocPMML  implements ExecutableComponent, RulePMMLTags {
     @ComponentInput(description="Read a representaiton of association rules." +
-    		"<br>TYPE: org.meandre.components.discovery.ruleassociation.support.RuleTable",
+    		"<br>TYPE: org.seasr.meandre.support.components.discovery.ruleassociation.support.RuleTable",
                    name= "ruleTable")
     final static String DATA_INPUT = "ruleTable";
 

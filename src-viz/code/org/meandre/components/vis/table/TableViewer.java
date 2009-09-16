@@ -53,16 +53,14 @@ import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.Component.Mode;
-
 import org.meandre.components.abstracts.AbstractExecutableComponent;
-import org.meandre.components.datatype.table.Table;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
+import org.seasr.datatypes.table.Table;
 
 @Component(creator="Lily Dong",
            description="This component provides a table viewer for a data set. " +
@@ -104,7 +102,7 @@ implements WebUIFragmentCallback {
     @ComponentInput(description="This input contains the file content stored as a vector with "+
     		"each attribute (column) stored as an object array, or stored as a table." +
     		"<br>TYPE: java.util.Vector<java.lang.Object[]>" +
-    		"<br>      or org.meandre.components.datatype.table.Table",
+    		"<br>      or org.seasr.datatypes.table.Table",
                     name= "Content")
     public final static String DATA_INPUT = "Content";
 
@@ -160,7 +158,7 @@ implements WebUIFragmentCallback {
     /**
      * The blocking semaphore
      */
-    private Semaphore sem = new Semaphore(1,true);
+    private final Semaphore sem = new Semaphore(1,true);
 
     /**
      * The instance ID

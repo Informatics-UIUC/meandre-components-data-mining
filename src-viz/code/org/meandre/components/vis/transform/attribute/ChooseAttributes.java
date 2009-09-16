@@ -53,8 +53,8 @@ import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.meandre.components.datatype.table.ExampleTable;
-import org.meandre.components.datatype.table.Table;
+import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.table.Table;
 
 
 import org.meandre.core.ComponentContext;

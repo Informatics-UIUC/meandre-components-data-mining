@@ -49,11 +49,11 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 
-import org.meandre.components.datatype.table.Table;
-import org.meandre.components.datatype.table.Column;
-import org.meandre.components.datatype.table.basic.DoubleColumn;
-import org.meandre.components.datatype.table.basic.MutableTableImpl;
-import org.meandre.components.datatype.table.basic.ObjectColumn;
+import org.seasr.datatypes.table.Table;
+import org.seasr.datatypes.table.Column;
+import org.seasr.datatypes.table.basic.DoubleColumn;
+import org.seasr.datatypes.table.basic.MutableTableImpl;
+import org.seasr.datatypes.table.basic.ObjectColumn;
 
 /**
    A simple pie chart.  The data must be in a VerticalTable.  The x value
