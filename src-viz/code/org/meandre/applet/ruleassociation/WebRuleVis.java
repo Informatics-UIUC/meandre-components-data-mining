@@ -42,32 +42,27 @@
 
 package org.meandre.applet.ruleassociation;
 
-import org.meandre.core.ExecutableComponent;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
-import org.meandre.core.ComponentContextProperties;
-
-import org.meandre.webui.WebUIException;
-import org.meandre.webui.WebUIFragmentCallback;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.URL;
 import java.util.concurrent.Semaphore;
 
-import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.meandre.annotations.ComponentInput;
+import org.dom4j.Document;
 import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentNature;
 import org.meandre.annotations.ComponentNatures;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.Component.Mode;
-
-import org.dom4j.Document;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.meandre.webui.WebUIException;
+import org.meandre.webui.WebUIFragmentCallback;
 
 /**
  * <p>Title: Communication Module</p>
@@ -160,7 +155,7 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
     final static String DATA_PROPERTY = "verbose";
 
     /** The blocking semaphore */
-    private Semaphore sem = new Semaphore(1, true);
+    private final Semaphore sem = new Semaphore(1, true);
 
     /** The instance ID */
     private String sInstanceID = null;
@@ -211,10 +206,10 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
         sb.append("<body> ");
         sb.append("<p ALIGN='center'> ");
         sb.append("<APPLET ");
-        sb.append("ARCHIVE='org.meandre.applet.ruleassociation.support.webrulevisapplet.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
+        sb.append("ARCHIVE='org.meandre.applet.ruleassociation.webrulevisapplet.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
 
         sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
-        sb.append("CODE='org.meandre.applet.ruleassociation.support.WebRuleVisApplet.class'> ");
+        sb.append("CODE='org.meandre.applet.ruleassociation.WebRuleVisApplet.class'> ");
         sb.append("<PARAM name='servletURL' value='" + webUIUrl).append(sInstanceID).append("'> ");
         sb.append("</APPLET> ");
         sb.append("</p> ");
@@ -266,7 +261,7 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
             ComponentContextException {
         verbose = Boolean.valueOf(cc.getProperty(DATA_PROPERTY));
 
-        Object theOb = (Object) cc.getDataComponentFromInput(DATA_INPUT);
+        Object theOb = cc.getDataComponentFromInput(DATA_INPUT);
 
         //ruleTable = (RuleTable) theOb;
         document = (Document)theOb;

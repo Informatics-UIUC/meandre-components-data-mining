@@ -42,28 +42,25 @@
 
 package org.meandre.applet.prediction.naivebayes;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.concurrent.Semaphore;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentNature;
 import org.meandre.annotations.ComponentNatures;
 import org.meandre.annotations.Component.Mode;
-
-import java.util.concurrent.Semaphore;
-import java.io.IOException;
-import javax.servlet.http.HttpServletResponse;
-
-import org.meandre.webui.WebUIException;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.ObjectOutputStream;
-
-import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
+import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
-
 import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel;
 
 @Component(creator="Lily Dong",
@@ -102,7 +99,7 @@ public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmen
     public final static String DATA_INPUT = "nbModel";
 
     /** The blocking semaphore */
-    private Semaphore sem = new Semaphore(1, true);
+    private final Semaphore sem = new Semaphore(1, true);
 
     /** The instance ID */
     private String sInstanceID = null;
@@ -135,10 +132,10 @@ public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmen
         sb.append("<body>\n");
         sb.append("<p ALIGN='center' >\n");
         sb.append("<APPLET ");
-        sb.append("ARCHIVE='org.meandre.applet.prediction.naivebayes.support.nbapplet.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
+        sb.append("ARCHIVE='org.meandre.applet.prediction.naivebayes.nbapplet.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
 
         sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
-        sb.append("CODE='org.meandre.applet.prediction.naivebayes.support.NBApplet.class'> ");
+        sb.append("CODE='org.meandre.applet.prediction.naivebayes.NBApplet.class'> ");
         sb.append("<PARAM name='servletURL' value='" + webUIUrl).append(sInstanceID).append("'> ");
         sb.append("</APPLET>\n");
         sb.append("</p>\n");
@@ -188,7 +185,7 @@ public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmen
      */
     public void execute(ComponentContext cc) throws ComponentExecutionException,
             ComponentContextException {
-        Object theOb = (Object) cc.getDataComponentFromInput(DATA_INPUT);
+        Object theOb = cc.getDataComponentFromInput(DATA_INPUT);
         model = (NaiveBayesModel) theOb;
 
         sInstanceID = cc.getExecutionInstanceID();

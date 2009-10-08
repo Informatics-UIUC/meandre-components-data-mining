@@ -42,28 +42,26 @@
 
 package org.meandre.applet;
 
-import org.seasr.datatypes.table.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.concurrent.Semaphore;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentNature;
 import org.meandre.annotations.ComponentNatures;
 import org.meandre.annotations.Component.Mode;
-
-import java.util.concurrent.Semaphore;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
-import org.meandre.webui.WebUIFragmentCallback;
-import org.meandre.webui.WebUIException;
-
-import org.meandre.core.ExecutableComponent;
-import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.meandre.webui.WebUIException;
+import org.meandre.webui.WebUIFragmentCallback;
+import org.seasr.datatypes.table.PredictionTable;
 
 /**
  * Displays statistics about any PredictionTable.  The number of correct
@@ -120,7 +118,7 @@ public class PredictionTableReport  implements ExecutableComponent, WebUIFragmen
     public final static String DATA_INPUT = "predictionTable";
 
     /** The blocking semaphore */
-    private Semaphore sem = new Semaphore(1, true);
+    private final Semaphore sem = new Semaphore(1, true);
 
     /** The instance ID */
     private String sInstanceID = null;
@@ -153,10 +151,10 @@ public class PredictionTableReport  implements ExecutableComponent, WebUIFragmen
         sb.append("<p ALIGN=center >\n");
         sb.append("<APPLET\n");
         sb.append(
-                "ARCHIVE=\"org.meandre.applet.support.predapplet.jar\" WIDTH=\"800\"HEIGHT=\"600\"\n");
+                "ARCHIVE=\"org.meandre.applet.predapplet.jar\" WIDTH=\"800\"HEIGHT=\"600\"\n");
         sb.append("CODEBASE=\"public/resources/contexts/java\"\n");
         sb.append(
-                "CODE=\"org.meandre.applet.support.PredApplet.class\">\n");
+                "CODE=\"org.meandre.applet.PredApplet.class\">\n");
         sb.append("<PARAM name=\"servletURL\" value=\"").append(sInstanceID).
                 append("\">\n");
         sb.append("</APPLET>\n");
@@ -206,7 +204,7 @@ public class PredictionTableReport  implements ExecutableComponent, WebUIFragmen
      */
     public void execute(ComponentContext cc) throws ComponentExecutionException,
             ComponentContextException {
-        Object theOb = (Object) cc.getDataComponentFromInput(DATA_INPUT);
+        Object theOb = cc.getDataComponentFromInput(DATA_INPUT);
         pt = (PredictionTable) theOb;
 
         sInstanceID = cc.getExecutionInstanceID();
