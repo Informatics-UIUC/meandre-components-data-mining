@@ -69,12 +69,12 @@ import org.seasr.datatypes.table.Table;
                "each element of Object array is mapped into a cell in table." +
                "This component can be used with the " +
                "'CSV Reader' or Map2Table components.",
-           name="Table Viewer",
+           name="Table Viewer Old",
            tags="table viewer",
            mode=Mode.webui,
            baseURL="meandre://seasr.org/components/")
 
-public class TableViewer extends AbstractExecutableComponent
+public class TableViewerOld extends AbstractExecutableComponent
 implements WebUIFragmentCallback {
     @ComponentProperty(defaultValue="true",
                        description="This property indicates whether a header exists " +
@@ -373,6 +373,7 @@ implements WebUIFragmentCallback {
     * @throws ComponentExecutionException An exeception occurred during execution
     * @throws ComponentContextException Illigal access to context
     */
+    @Override
     @SuppressWarnings("unchecked")
     public void executeCallBack(ComponentContext cc)
     throws Exception {
@@ -480,6 +481,7 @@ implements WebUIFragmentCallback {
     /**
      * Call at the end of an execution flow.
      */
+    @Override
     public void initializeCallBack(ComponentContextProperties ccp)
     throws Exception {
     }
@@ -487,6 +489,7 @@ implements WebUIFragmentCallback {
     /**
      * Called when a flow is started.
      */
+    @Override
     public void disposeCallBack(ComponentContextProperties ccp)
     throws Exception {
     }
