@@ -80,12 +80,12 @@ import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesMode
            name="WebNaiveBayesVis",
            tags="naive bayes, visualization",
            mode=Mode.webui,
+           dependency={ "icons.jar", "foundry-datatypes.jar", "foundry-support.jar" },
            baseURL="meandre://seasr.org/components/")
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.prediction.naivebayes.NBApplet.class,
-        dependency={"icons.jar"}
+        extClass=org.meandre.applet.prediction.naivebayes.NBApplet.class
 )})
 
 /**
@@ -132,7 +132,7 @@ public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmen
         sb.append("<body>\n");
         sb.append("<p ALIGN='center' >\n");
         sb.append("<APPLET ");
-        sb.append("ARCHIVE='org.meandre.applet.prediction.naivebayes.nbapplet.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
+        sb.append("ARCHIVE='org.meandre.applet.prediction.naivebayes.nbapplet.jar, icons.jar, foundry-datatypes.jar, foundry-support.jar' WIDTH='800' HEIGHT='600' ");
 
         sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
         sb.append("CODE='org.meandre.applet.prediction.naivebayes.NBApplet.class'> ");
