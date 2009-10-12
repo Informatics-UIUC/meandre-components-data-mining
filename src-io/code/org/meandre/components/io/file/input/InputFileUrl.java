@@ -47,21 +47,17 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.ComponentProperty;
-
 import org.meandre.tools.webdav.WebdavClient;
-
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.Credentials;
-
-import java.io.*;
 
 /**
  * InputFileURL allows the user to input the url to a local or remote resource.
@@ -103,7 +99,7 @@ import java.io.*;
         "in the file name string.",
         name = "Input URL Or Path",
         tags = "io, input",
-        dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar", "meandre-webdav-1.4.0.jar" },
+        dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar", "meandre-webdav-1.4.7.jar" },
         baseURL="meandre://seasr.org/components/")
 
 public class InputFileUrl implements ExecutableComponent {
