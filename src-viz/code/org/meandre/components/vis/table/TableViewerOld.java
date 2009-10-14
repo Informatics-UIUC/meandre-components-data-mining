@@ -406,8 +406,10 @@ implements WebUIFragmentCallback {
             int totalRows = (inputContentVector != null) ? inputContentVector.size() : inputContentTable.getNumRows();
             int totalColumns = (inputContentVector != null) ? inputContentVector.elementAt(0).length : inputContentTable.getNumColumns();
 
-            totalRows = (isHeader)? totalRows-1: totalRows; //exclude header row
-            totalRows = (isType)? totalRows-1: totalRows; //exclude type row
+            if (inputContentVector != null) {
+                totalRows = (isHeader)? totalRows-1: totalRows; //exclude header row
+                totalRows = (isType)? totalRows-1: totalRows; //exclude type row
+            }
 
             thePage = 0;
             theBar = 0;
