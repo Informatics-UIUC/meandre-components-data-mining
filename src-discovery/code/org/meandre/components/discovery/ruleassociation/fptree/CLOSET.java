@@ -9,6 +9,7 @@ import gnu.trove.TIntIterator;
 import gnu.trove.TIntObjectHashMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -156,13 +157,9 @@ public class CLOSET implements ExecutableComponent {
               cc.getOutputConsole().println((stop - start)/1000 + " seconds");
 
               if (_printPatts) {
-            	  TreeSet<FPPattern> ts = new TreeSet<FPPattern>(new FPPatternComparator());
-            	  ts.addAll(_patterns);
+                  Collections.sort(_patterns, new FPPatternComparator());
 
-            	  if (ts.size() != _patterns.size())
-            	      cc.getOutputConsole().println("TreeSet size is not the same as the number of patterns discovered!");
-
-            	  for (FPPattern pattern : ts) {
+            	  for (FPPattern pattern : _patterns) {
             	      cc.getOutputConsole().print(pattern.getSupport() + ":");
             	      patternRpt.append(pattern.getSupport() + ":");
 
