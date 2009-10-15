@@ -5,6 +5,7 @@ package org.meandre.components.discovery.ruleassociation.fptree;
 //==============
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIntHashMap;
+import gnu.trove.TIntIterator;
 import gnu.trove.TIntObjectHashMap;
 
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class CLOSET implements ExecutableComponent {
   //==============
   // Data Members
   //==============
-  private ArrayList _patterns = null;
+  private ArrayList<FPPattern> _patterns = null;
   private ArrayList _problems = null;
   private final boolean DEBUG = true;
 
@@ -138,7 +139,7 @@ public class CLOSET implements ExecutableComponent {
           if (input instanceof StreamDelimiter) return;
 
         FPProb prob = (FPProb)input;
-          _patterns = new ArrayList();
+          _patterns = new ArrayList<FPPattern>();
           _problems = new ArrayList();
           _closhash = new TIntObjectHashMap();
 
@@ -152,35 +153,37 @@ public class CLOSET implements ExecutableComponent {
         	  patternRpt.append(_patterns.size() + " patterns discovered.\n\n");
           	  cc.getOutputConsole().println("\n\n" + _patterns.size() + " patterns discovered.");
               long stop = System.currentTimeMillis();
-              System.out.println((stop - start)/1000 + " seconds");
+              cc.getOutputConsole().println((stop - start)/1000 + " seconds");
 
               if (_printPatts) {
-            	  TreeSet<FPPattern> ts =
-            		  new TreeSet<FPPattern>(new FPPatternComparator());
-            	  for (int i = 0, n = _patterns.size(); i < n; i++) {
-            		  ts.add((FPPattern) _patterns.get(i));
+            	  TreeSet<FPPattern> ts = new TreeSet<FPPattern>(new FPPatternComparator());
+            	  ts.addAll(_patterns);
+
+            	  if (ts.size() != _patterns.size())
+            	      cc.getOutputConsole().println("TreeSet size is not the same as the number of patterns discovered!");
+
+            	  for (FPPattern pattern : ts) {
+            	      cc.getOutputConsole().print(pattern.getSupport() + ":");
+            	      patternRpt.append(pattern.getSupport() + ":");
+
+            	      TIntIterator iter = pattern.getPattern();
+            	      while (iter.hasNext()) {
+            	          int fte = iter.next();
+
+            	          cc.getOutputConsole().print(" " + FPPattern.getElementLabel(fte));
+                          patternRpt.append(" " + FPPattern.getElementLabel(fte));
+            	      }
+
+            	      cc.getOutputConsole().println();
+                      patternRpt.append("\n");
             	  }
-            	  Iterator<FPPattern> ti = ts.iterator();
-                //for (int i = 0, n = _patterns.size(); i < n; i++) {
-            	while(ti.hasNext()) { //add on May 28, 2009
-                  FPPattern pat = ti.next();
-                	  //(FPPattern)_patterns.get(i);
-                  cc.getOutputConsole().print(pat.getSupport() + ":");
-                  patternRpt.append(pat.getSupport() + ":");
-                  for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext(); ) {
-                    int fte = it.next();
-                    cc.getOutputConsole().print(" " + FPPattern.getElementLabel(fte));
-                    patternRpt.append(" " + FPPattern.getElementLabel(fte));
-                  }
-                  cc.getOutputConsole().println();
-                  patternRpt.append("\n");
-                }
-            	cc.pushDataComponentToOutput(DATA_OUTPUT_REPORT, patternRpt);
+
+            	  cc.pushDataComponentToOutput(DATA_OUTPUT_REPORT, patternRpt);
               }
 
               gnu.trove.TIntIntHashMap tiihm = new gnu.trove.TIntIntHashMap();
               for (int i = 0, n = _patterns.size(); i < n; i++) {
-                  FPPattern pat = (FPPattern)_patterns.get(i);
+                  FPPattern pat = _patterns.get(i);
                   int sz = pat.getSize();
                   int val = tiihm.get(sz);
                   val++;
