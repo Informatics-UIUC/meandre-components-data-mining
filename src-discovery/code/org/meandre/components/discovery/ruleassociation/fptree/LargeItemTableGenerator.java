@@ -3,30 +3,27 @@ package org.meandre.components.discovery.ruleassociation.fptree;
 //==============
 //Java Imports
 //==============
-import  java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TreeSet;
 
-//===============
-//Other Imports
-//===============
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-
-import org.seasr.datatypes.table.Table;
-import org.seasr.datatypes.table.Sparse;
-import org.seasr.datatypes.table.ExampleTable;
-import org.seasr.datatypes.table.MutableTable;
-
-import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
-import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
-import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
-
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
+import org.meandre.core.system.components.ext.StreamDelimiter;
+import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.table.MutableTable;
+import org.seasr.datatypes.table.Sparse;
+import org.seasr.datatypes.table.Table;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
 
 @Component(creator="Lily Dong",
            description="<p>Overview: " +
@@ -87,7 +84,7 @@ public class LargeItemTableGenerator implements ExecutableComponent {
   // Data Members
   //==============
   private int[] _ifeatures = null;
-  private boolean DEBUG = true;
+  private final boolean DEBUG = true;
   long start = 0;
   long stop = 0;
   //============
@@ -113,6 +110,7 @@ public class LargeItemTableGenerator implements ExecutableComponent {
     int index;
     int count;
 
+    @Override
     public boolean equals(Object o) {
       Datum other = (Datum)o;
       return this.index == other.index && this.count == other.count;
@@ -131,7 +129,11 @@ public class LargeItemTableGenerator implements ExecutableComponent {
 	  _remSatFeats = Boolean.parseBoolean(cc.getProperty(DATA_PROPERTY_REMSATFEATS));
 
       try {
-          Table tab = (Table)cc.getDataComponentFromInput(DATA_INPUT);
+
+          Object input = cc.getDataComponentFromInput(DATA_INPUT);
+          if (input instanceof StreamDelimiter) return;
+
+        Table tab = (Table)input;
           if (!(tab instanceof Sparse)) {
               throw  new ComponentExecutionException(
             		  "LargeItemTableGenerator: Only SpareTable is valid for this module.");
@@ -264,7 +266,7 @@ public class LargeItemTableGenerator implements ExecutableComponent {
               for (int i = 0, n = suparr.length; i < n; i++) {
                   System.out.println("SUPPORT: " + (i + 1) + " / " + "TRANS REMOVED: "
                           + scnt + " / " + "COVERAGE: %" + (((double)numrows
-                          - scnt)/((double)numrows)*100));
+                          - scnt)/(numrows)*100));
                   scnt += suparr[i];
               }
           }
@@ -379,7 +381,8 @@ public class LargeItemTableGenerator implements ExecutableComponent {
        * @param o
        * @return
        */
-      public boolean equals (Object o) {
+      @Override
+    public boolean equals (Object o) {
           return  this.equals(o);
       }
   }

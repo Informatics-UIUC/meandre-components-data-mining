@@ -1,6 +1,9 @@
 package org.meandre.components.discovery.ruleassociation.fptree;
 
-import  java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
@@ -11,7 +14,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-
+import org.meandre.core.system.components.ext.StreamDelimiter;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPTreeNode;
@@ -54,7 +57,7 @@ public class SupportBoundaryFinder implements ExecutableComponent {
   //==============
   // Data Members
   //==============
-  private boolean DEBUG = false;
+  private final boolean DEBUG = false;
 
   //============
   // Properties
@@ -75,7 +78,10 @@ public class SupportBoundaryFinder implements ExecutableComponent {
 
       long start = System.currentTimeMillis();
       try {
-    	  FPProb prob = (FPProb)cc.getDataComponentFromInput(DATA_INPUT);;
+    	  Object input = cc.getDataComponentFromInput(DATA_INPUT);
+    	  if (input instanceof StreamDelimiter) return;
+
+        FPProb prob = (FPProb)input;
 
           prob.setSupport(0);
           prob = FPProcess(prob);
@@ -237,6 +243,7 @@ public class SupportBoundaryFinder implements ExecutableComponent {
      * @param o
      * @return
      */
+    @Override
     public boolean equals(Object o) {
       return this.equals(o);
     }

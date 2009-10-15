@@ -22,6 +22,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
+import org.meandre.core.system.components.ext.StreamDelimiter;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
@@ -133,7 +134,10 @@ public class CLOSET implements ExecutableComponent {
 
       long start = System.currentTimeMillis();
       try {
-          FPProb prob = (FPProb)cc.getDataComponentFromInput(DATA_INPUT);
+          Object input = cc.getDataComponentFromInput(DATA_INPUT);
+          if (input instanceof StreamDelimiter) return;
+
+        FPProb prob = (FPProb)input;
           _patterns = new ArrayList();
           _problems = new ArrayList();
           _closhash = new TIntObjectHashMap();
