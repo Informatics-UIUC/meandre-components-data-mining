@@ -1,22 +1,59 @@
+/**
+ * University of Illinois/NCSA
+ * Open Source License
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
+ * All rights reserved.
+ *
+ * Developed by:
+ *
+ * Automated Learning Group
+ * National Center for Supercomputing Applications
+ * http://www.seasr.org
+ *
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal with the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ *  * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimers.
+ *
+ *  * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ *  * Neither the names of Automated Learning Group, The National Center for
+ *    Supercomputing Applications, or University of Illinois, nor the names of
+ *    its contributors may be used to endorse or promote products derived from
+ *    this Software without specific prior written permission.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ * CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * WITH THE SOFTWARE.
+ */
+
 package org.meandre.components.discovery.ruleassociation.fptree;
 
-//==============
-//Java Imports
-//==============
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.TreeSet;
+import java.util.Collections;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
+import org.meandre.annotations.Component.Licenses;
+import org.meandre.components.abstracts.AbstractExecutableComponent;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
-import org.meandre.core.system.components.ext.StreamDelimiter;
 import org.seasr.datatypes.table.ExampleTable;
 import org.seasr.datatypes.table.MutableTable;
 import org.seasr.datatypes.table.Sparse;
@@ -24,368 +61,211 @@ import org.seasr.datatypes.table.Table;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
+import org.seasr.meandre.support.components.exceptions.UnsupportedDataTypeException;
 
-@Component(creator="Lily Dong",
-           description="<p>Overview: " +
-           "This module transforms a <i>SparseExampleTable</i> containing term frequency values " +
-           "into a data structure, <i>FPProb</i>, that efficiently represents item " +
-           "occurrences within user supplied support constraints.</p>" +
-           "<p> NOTE: All non-zero values for term frequency are treated alike -- they " +
-           "are counted as a positive occurrence for that row.</p>" +
-           "<p>References: " +
-           "N/A." +
-           "</p>" +
-           "<p>Data Type Restrictions: " +
-           "The input table must be a <i>SparseExampleTable</i> containing term frequency information." +
-           "</p>" +
-           "<p>Data Handling: " +
-           "This module does not modify the input <i>SparseExampleTable</i>" +
-           "</p>" +
-           "<p>Scalability: " +
-           "This module make a constant number of passes over the tabel data. " +
-           "Memory usage is proportional to the size of the input <i>SparseExampleTable</i>" +
-           "</p>" +
-           "<p>Trigger Criteria: " +
-           "Standard." +
-           "</p>",
-           name="LargeItemTableGenerator",
-           tags="large item generator",
-           baseURL="meandre://seasr.org/components/")
+/**
+ * @author Lily Dong
+ * @author Boris Capitanu
+ */
 
-public class LargeItemTableGenerator implements ExecutableComponent {
-	@ComponentProperty(description = "Verbose output.",
-					   defaultValue = "false",
-					   name = "verbose")
-	public final static String DATA_PROPERTY_VERBOSE = "verbose";
-	@ComponentProperty(description = "Query the input table to make sure there are no missing values.",
-			   		   defaultValue = "false",
-			   		   name = "checkMissingValues")
-    public final static String DATA_PROPERTY_MVCHECK = "checkMissingValues";
-	@ComponentProperty(description = "The minimum support vlaue for attributes in this data set.",
-			    	   defaultValue = "1",
-			    	   name = "support")
-    public final static String DATA_PROPERTY_SUPPORT = "support";
-	@ComponentProperty(description = "Remove any attributes that appear in all rows.",
-			   		   defaultValue = "true",
-			   		   name = "removeSaturatedFeatures")
-    public final static String DATA_PROPERTY_REMSATFEATS = "removeSaturatedFeatures";
+@Component(
+        creator = "Lily Dong",
+        description = "<p>Overview: " +
+                      "This module transforms a <i>SparseExampleTable</i> containing term frequency values " +
+                      "into a data structure, <i>FPProb</i>, that efficiently represents item " +
+                      "occurrences within user supplied support constraints.</p>" +
+                      "<p> NOTE: All non-zero values for term frequency are treated alike -- they " +
+                      "are counted as a positive occurrence for that row.</p>" +
+                      "<p>References: " +
+                      "N/A." +
+                      "</p>" +
+                      "<p>Data Type Restrictions: " +
+                      "The input table must be a <i>SparseExampleTable</i> containing term frequency information." +
+                      "</p>" +
+                      "<p>Data Handling: " +
+                      "This module does not modify the input <i>SparseExampleTable</i>" +
+                      "</p>" +
+                      "<p>Scalability: " +
+                      "This module makes a constant number of passes over the table data. " +
+                      "Memory usage is proportional to the size of the input <i>SparseExampleTable</i>" +
+                      "</p>",
+        name = "Large Item Table Generator",
+        tags = "sparse table, fpprob, transform",
+        rights = Licenses.UofINCSA,
+        baseURL = "meandre://seasr.org/components/"
+)
+public class LargeItemTableGenerator extends AbstractExecutableComponent {
 
-	@ComponentInput(description="The input data table for pattern mining." +
-			"<br>TYPE: org.seasr.datatypes.table.sparse.SparseTable",
-             		name= "sparseTable")
-    public final static String DATA_INPUT = "sparseTable";
+    //------------------------------ INPUTS ------------------------------------------------------
 
-	@ComponentOutput(description="An FPProb object representing." +
-            "<br>TYPE: org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.support.FPProb",
-             		 name="FPProb")
-    public final static String DATA_OUTPUT = "FPProb";
+	@ComponentInput(
+	        description = "The input data table for pattern mining.",
+            name = "sparse_table"
+	)
+    protected static final String IN_TABLE = "sparse_table";
 
-  //==============
-  // Data Members
-  //==============
-  private int[] _ifeatures = null;
-  private final boolean DEBUG = true;
-  long start = 0;
-  long stop = 0;
-  //============
-  // Properties
-  //============
-  private boolean m_verbose = false;
-  private int _support = 1;
-  private boolean _mvCheck = false;
-  private boolean _remSatFeats = true;
+    //------------------------------ OUTPUTS -----------------------------------------------------
 
-  public void initialize(ComponentContextProperties ccp) {
-      _ifeatures = null;
-      start = System.currentTimeMillis();
-  }
+	@ComponentOutput(
+	        description = "An FPProb object representing.",
+	        name = "fp_prob"
+	)
+    protected static final String OUT_FPPROB = "fp_prob";
 
-  public void dispose(ComponentContextProperties ccp) {
-      _ifeatures = null;
-      stop = System.currentTimeMillis();
-      System.out.println((stop - start)/1000 + " seconds");
-  }
+    //------------------------------ PROPERTIES --------------------------------------------------
 
-  class Datum {
-    int index;
-    int count;
+	@ComponentProperty(
+	        description = "Query the input table to make sure there are no missing values.",
+	        defaultValue = "false",
+	        name = "check_missing_values"
+	)
+    protected static final String PROP_CHECKMV = "check_missing_values";
 
+	@ComponentProperty(
+	        description = "The minimum support value for attributes in this data set.",
+	        defaultValue = "1",
+	        name = "support"
+	)
+    protected static final String PROP_SUPPORT = "support";
+
+	@ComponentProperty(
+	        description = "Remove any attributes that appear in all rows.",
+	        defaultValue = "true",
+	        name = "remove_saturated_features"
+	)
+    protected static final String PROP_REMOVE_SAT_FEATS = "remove_saturated_features";
+
+    // Inherited PROP_IGNORE_ERRORS from AbstractExecutableComponent
+
+    //--------------------------------------------------------------------------------------------
+
+
+	private int _support;
+	private boolean _checkMissingValues;
+	private boolean _removeSatFeats;
+
+	private int[] _ifeatures = null;
+
+
+    //--------------------------------------------------------------------------------------------
+
+	@Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+	    _support = Integer.parseInt(ccp.getProperty(PROP_SUPPORT));
+        _checkMissingValues = Boolean.parseBoolean(ccp.getProperty(PROP_CHECKMV));
+        _removeSatFeats = Boolean.parseBoolean(ccp.getProperty(PROP_REMOVE_SAT_FEATS));
+
+        _ifeatures = null;
+	}
+
+    /*
+     * In frequency include all occurrences of a term even if it only matches the POS tag criteria
+     * for a subset of occurrences.
+     */
     @Override
-    public boolean equals(Object o) {
-      Datum other = (Datum)o;
-      return this.index == other.index && this.count == other.count;
-    }
-  }
+    public void executeCallBack(ComponentContext cc) throws Exception {
+        Object input = cc.getDataComponentFromInput(IN_TABLE);
+        if (!(input instanceof Sparse))
+            throw new UnsupportedDataTypeException("Input can only be a SparseTable");
 
-  /**
-   * In frequency include all occurrences of a term even if it only matches the POS tag criteria
-   * for a subset of occurrences.
-   */
-  public void execute(ComponentContext cc)
-  throws ComponentExecutionException, ComponentContextException {
-	  m_verbose = Boolean.parseBoolean(cc.getProperty(DATA_PROPERTY_VERBOSE));
-	  _support = Integer.parseInt(cc.getProperty(DATA_PROPERTY_SUPPORT));
-	  _mvCheck = Boolean.parseBoolean(cc.getProperty(DATA_PROPERTY_MVCHECK));
-	  _remSatFeats = Boolean.parseBoolean(cc.getProperty(DATA_PROPERTY_REMSATFEATS));
+        Table in_table = (Table)input;
+        if (_checkMissingValues)
+            if (in_table.hasMissingValues())
+                throw new ComponentExecutionException("Please replace or filter out missing values in your data.");
 
-      try {
+        if (in_table.getNumRows() < 1)
+            throw new ComponentExecutionException("Input table has no rows.");
 
-          Object input = cc.getDataComponentFromInput(DATA_INPUT);
-          if (input instanceof StreamDelimiter) return;
-
-        Table tab = (Table)input;
-          if (!(tab instanceof Sparse)) {
-              throw  new ComponentExecutionException(
-            		  "LargeItemTableGenerator: Only SpareTable is valid for this module.");
-          }
-          Table itable = tab;
-          if (_mvCheck) {
-              if (itable.hasMissingValues()) {
-                  throw  new ComponentExecutionException(
-                		  "Please replace or filter out missing values in your data.");
-              }
-          }
-          if (itable.getNumRows() < 1) {
-              throw  new ComponentExecutionException(
-            		  "Input table has no rows.");
-          }
-          if (itable instanceof ExampleTable) {
-        	  System.out.println("It is an example table.");
-              _ifeatures = ((ExampleTable)itable).getInputFeatures();
-          }
-          else {
-              _ifeatures = new int[itable.getNumColumns()];
-              for (int i = 0, n = itable.getNumColumns(); i < n; i++) {
-                  _ifeatures[i] = i;
-              }
-          }
-          ArrayList remove = new ArrayList();
-          int[] reminds = null;
-          if (_remSatFeats) {
-            if (this.DEBUG){
-              System.out.println("Removing saturated features.");
-            }
-              /**
-               * Remove features that saturate the data set.
-               */
-              remove = new ArrayList();
-              int rowcnt = itable.getNumRows();
-              for (int i = 0, n = _ifeatures.length; i < n; i++) {
-                  int cnt = ((Sparse)itable).getColumnNumEntries(_ifeatures[i]);
-                  if (cnt == rowcnt) {
-                      remove.add(new Integer(_ifeatures[i]));
-                  }
-              }
-              reminds = new int[remove.size()];
-              for (int i = 0, n = remove.size(); i < n; i++) {
-                  reminds[i] = ((Integer)remove.get(i)).intValue();
-                  System.out.println(">>> Column " + reminds[i] + " removed because it covers all rows.");
-              }
-
-              Arrays.sort(reminds);
-              for (int i = 0, n = reminds.length; i < n; i++){
-                ((MutableTable)itable).removeColumn(reminds[i] - i);
-              }
-
-              if (remove.size() != 0) {
-                  /**
-                   * Re-select the input features since we removed columns.
-                   */
-                  if (itable instanceof ExampleTable) {
-                      _ifeatures = ((ExampleTable)itable).getInputFeatures();
-                  }
-                  else {
-                      _ifeatures = new int[itable.getNumColumns()];
-                      for (int i = 0, n = itable.getNumColumns(); i < n; i++) {
-                          _ifeatures[i] = i;
-                      }
-                  }
-              }
-              remove.clear();
-          }
-          TreeSet feats = new TreeSet(new Feature_Comparator());
-          int[] colcnts = new int[itable.getNumColumns()];
-
-          /**
-           * Scan the features and get their num entries values.  If num entries is higher
-           * than or equal to support add that feature to the TreeSet for sorting, else
-           * add it to the remove list for removal.
-           */
-          if (this.DEBUG){
-            System.out.println("Scan features for support.");
-          }
-          remove = new ArrayList();
-          for (int i = 0, n = _ifeatures.length; i < n; i++) {
-              //System.out.println(i + " " + _ifeatures[i]);
-              int cnt = ((Sparse)itable).getColumnIndices(_ifeatures[i]).length;
-              colcnts[_ifeatures[i]] = cnt;
-              if (cnt >= _support) {
-                  Datum obarr = new Datum();
-                  obarr.index = _ifeatures[i];
-                  obarr.count = cnt;
-                  feats.add(obarr);
-              }
-              else {
-                  //add to remove list
-                  remove.add(new Integer(_ifeatures[i]));
-              }
-          }
-
-          System.out.println("size of feats: "+feats.size());
-          /*Iterator iter = feats.iterator();
-          while(iter.hasNext()) {
-            Object[] arr = (Object[])iter.next();
-            Integer index = (Integer)arr[0];
-            Integer cnt = (Integer)arr[1];
-            System.out.println("feature: "+itable.getColumnLabel(index.intValue())+
-                               " cnt: "+cnt.intValue());
-          }*/
-
-          int[] rowcnt = new int[itable.getNumRows()];
-          int[] suparr = new int[itable.getNumRows()];
-          if (m_verbose) {
-              /**
-               * Scan rows for the max support of their features.  Build and print list
-               * of support/coverage values.  We do this here before we trim the features
-               * that fall under the support.
-               */
-              for (int i = 0, n = itable.getNumRows(); i < n; i++) {
-                  int[] rowind = ((Sparse)itable).getRowIndices(i);
-                  int max = 1;
-                  for (int j = 0, m = rowind.length; j < m; j++) {
-                      int cnt = colcnts[rowind[j]];
-                      if (max < cnt) {
-                          max = cnt;
-                      }
-                  }
-                  rowcnt[i] = max;
-                  suparr[max - 1]++;
-              }
-              int scnt = 0;
-              int numrows = itable.getNumRows();
-              for (int i = 0, n = suparr.length; i < n; i++) {
-                  System.out.println("SUPPORT: " + (i + 1) + " / " + "TRANS REMOVED: "
-                          + scnt + " / " + "COVERAGE: %" + (((double)numrows
-                          - scnt)/(numrows)*100));
-                  scnt += suparr[i];
-              }
-          }
-
-          /**
-           * Build new table with integer columns.
-           */
-          if (DEBUG) {
-              System.out.println("Building new table (adding columns).");
-          }
-
-          int ccnt = _ifeatures.length;
-          FPSparse otab = new FPSparse(ccnt);
-          int rcnt = itable.getNumRows();
-          FPPattern.clearElementMapping();
-          for (int i = 0, n = ccnt; i < n; i++) {
-              FPPattern.addElementMapping(i, itable.getColumnLabel(_ifeatures[i]));
-              otab.addColumn(i);
-          }
-
-          if (DEBUG) {
-              System.out.println("Copying rows to new table.");
-          }
-          for (int i = 0, n = rcnt; i < n; i++) {
-              int[] rowind = ((Sparse)itable).getRowIndices(i);
-              for (int j = 0, m = rowind.length; j < m; j++) {
-                  if (!(rowind[j] >= otab.getNumColumns())) {
-                      otab.setInt(1, i, rowind[j]);
-                  }
-              }
-          }
-          /**
-           * Gen. feats array. (Don't need this now)
-           */
-          int[] flist = new int[0];
-          FPProb prob = new FPProb(otab, flist, this._support);
-
-          cc.pushDataComponentToOutput(DATA_OUTPUT, prob);
-      } catch (Exception ex) {
-          ex.printStackTrace();
-          System.out.println(ex.getMessage());
-          System.out.println("ERROR: LargeItemTableGenerator.doit()");
-          throw new ComponentExecutionException(ex);
-      }
-  }
-
-  //=================
-  // Private Methods
-  //=================
-  //=============
-  // Inner Class
-  //=============
-  private class Feature_Comparator
-          implements java.util.Comparator {
-
-      /** The small deviation allowed in double comparisons */
-      /**
-       * put your documentation comment here
-       */
-      public Feature_Comparator () {
-      }
-
-      //======================
-      //Interface: Comparator
-      //======================
-      public int compare (Object o1, Object o2) {
-          /*Object[] objarr1 = (Object[])o1;
-          Object[] objarr2 = (Object[])o2;
-          if (((Integer)objarr1[1]).intValue() == ((Integer)objarr2[1]).intValue()) {
-              if (((Integer)objarr1[0]).intValue() > ((Integer)objarr2[0]).intValue()) {
-                  return  -1;
-              }
-              else if (((Integer)objarr1[0]).intValue() < ((Integer)objarr2[0]).intValue()) {
-                  return  1;
-              }
-              else {
-                  return  0;
-              }
-          }
-          else if (((Integer)objarr1[1]).intValue() > ((Integer)objarr2[1]).intValue()) {
-              return  -1;
-          }
-          else {
-              return  1;
-          }*/
-    //Object[] objarr1 = (Object[])o1;
-    //Object[] objarr2 = (Object[])o2;
-    Datum objarr1 = (Datum)o1;
-    Datum objarr2 = (Datum)o2;
-    if (objarr1.count == objarr2.count) {
-        if (objarr1.index > objarr2.index) {
-            return  -1;
-        }
-        else if (objarr1.index < objarr2.index) {
-            return  1;
+        if (in_table instanceof ExampleTable) {
+            console.fine("Input is an example table.");
+            _ifeatures = ((ExampleTable)in_table).getInputFeatures();
         }
         else {
-            return  0;
+            _ifeatures = new int[in_table.getNumColumns()];
+            for (int i = 0, n = in_table.getNumColumns(); i < n; i++)
+                _ifeatures[i] = i;
         }
-    }
-    else if (objarr1.count > objarr2.count) {
-        return  -1;
-    }
-    else {
-        return  1;
+
+        if (_removeSatFeats) {
+            console.fine("Removing saturated features.");
+
+            /**
+             * Remove features that saturate the data set.
+             */
+            ArrayList<Integer> featuresToRemove = new ArrayList<Integer>();
+            int rowcnt = in_table.getNumRows();
+
+            for (int i = 0, n = _ifeatures.length; i < n; i++) {
+                int col = _ifeatures[i];
+                int cnt = ((Sparse)in_table).getColumnNumEntries(col);
+                if (cnt == rowcnt) {
+                    featuresToRemove.add(col);
+
+                    String featureName = in_table.getColumnLabel(col);
+                    console.fine(String.format("Removing feature '%s' (column %d)", featureName, col));
+                }
+            }
+
+            Collections.sort(featuresToRemove);
+
+            for (int i = 0, n = featuresToRemove.size(); i < n; i++)
+                ((MutableTable)in_table).removeColumn(featuresToRemove.get(i) - i);
+
+            if (featuresToRemove.size() > 0) {
+                /**
+                 * Re-select the input features since we removed columns.
+                 */
+                if (in_table instanceof ExampleTable)
+                    _ifeatures = ((ExampleTable)in_table).getInputFeatures();
+                else {
+                    _ifeatures = new int[in_table.getNumColumns()];
+                    for (int i = 0, n = in_table.getNumColumns(); i < n; i++)
+                        _ifeatures[i] = i;
+                }
+            }
+        }
+
+        /**
+         * Build new table with integer columns.
+         */
+
+        console.fine("Building new table (adding columns).");
+
+        int rcnt = in_table.getNumRows();
+        int ccnt = _ifeatures.length;
+
+        FPSparse otab = new FPSparse(ccnt);
+        FPPattern.clearElementMapping();
+
+        for (int i = 0, n = ccnt; i < n; i++) {
+            FPPattern.addElementMapping(i, in_table.getColumnLabel(_ifeatures[i]));
+            otab.addColumn(i);
+        }
+
+        console.fine("Copying rows to new table.");
+
+        for (int i = 0, n = rcnt; i < n; i++) {
+            int[] rowind = ((Sparse)in_table).getRowIndices(i);
+            for (int j = 0, m = rowind.length; j < m; j++) {
+                if (!(rowind[j] >= otab.getNumColumns())) {
+                    otab.setInt(1, i, rowind[j]);
+                }
+            }
+        }
+
+        /**
+         * Gen. feats array. (Don't need this now)
+         */
+        int[] flist = new int[0];
+        FPProb prob = new FPProb(otab, flist, this._support);
+
+        cc.pushDataComponentToOutput(OUT_FPPROB, prob);
     }
 
-      }
-
-      /**
-       * put your documentation comment here
-       * @param o
-       * @return
-       */
-      @Override
-    public boolean equals (Object o) {
-          return  this.equals(o);
-      }
-  }
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
+	    _ifeatures = null;
+	}
 }
 
 
