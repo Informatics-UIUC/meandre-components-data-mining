@@ -64,6 +64,10 @@ import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 import org.seasr.datatypes.table.Table;
 import org.seasr.meandre.support.generic.io.ClasspathUtils;
+import org.seasr.meandre.support.generic.io.JARInstaller;
+import org.seasr.meandre.support.generic.io.JARInstaller.InstallStatus;
+
+import de.schlichtherle.io.FileInputStream;
 
 @Component(creator="Lily Dong",
            description="This component provides a table viewer for a data set. " +
@@ -113,6 +117,9 @@ implements WebUIFragmentCallback {
     @ComponentOutput(description="This output is the original 'tent' that is unchanged.",
                      name="Content")
     public final static String DATA_OUTPUT = "Content";
+
+
+    protected static final String JQUERY_API_PATH = "jquery-api";
 
     /**
      * Store the number of rows per page.
@@ -500,12 +507,20 @@ implements WebUIFragmentCallback {
         if (!jqueryJar.exists())
             throw new ComponentContextException("Could not find jquery.jar");
 
-        String sJqueryJar = jqueryJar.getAbsolutePath();
-        String sPublishedResDir = new File(ccp.getPublicResourcesDirectory()).getAbsolutePath();
-        jQueryScriptLocation = "/public/resources/" + sJqueryJar.substring(sPublishedResDir.length());
+        console.fine("Installing jQuery API from: " + jqueryJar.toString());
 
-        console.finest("jQueryJar: " + sJqueryJar);
-        console.finest("Published Resources dir: " + sPublishedResDir);
+        String jqueryApiDir = ccp.getPublicResourcesDirectory() + File.separator + JQUERY_API_PATH;
+        InstallStatus status = JARInstaller.installFromStream(new FileInputStream(jqueryJar), jqueryApiDir, false);
+        switch (status) {
+            case SKIPPED:
+                console.fine("Installation skipped - jQuery API is already installed");
+                break;
+
+            case FAILED:
+                throw new ComponentContextException("Failed to install the jQuery API at " + new File(jqueryApiDir).getAbsolutePath());
+        }
+
+        jQueryScriptLocation = "/public/resources/" + JQUERY_API_PATH;
         console.fine("jQueryScriptLocation: " + jQueryScriptLocation);
     }
 
