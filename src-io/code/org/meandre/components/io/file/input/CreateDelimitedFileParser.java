@@ -91,7 +91,6 @@ import org.seasr.meandre.support.components.io.file.input.DelimitedFileParserFro
         "The module does not destroy or modify the input data.",
         name = "Create Delimited File Parser",
         tags = "file parser",
-        dependency = { "foundry-datatypes.jar", "foundry-support.jar", "meandre-webdav-1.4.7.jar" },
         baseURL="meandre://seasr.org/components/")
 
 public class CreateDelimitedFileParser implements ExecutableComponent {
