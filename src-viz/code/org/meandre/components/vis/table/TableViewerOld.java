@@ -42,6 +42,8 @@
 
 package org.meandre.components.vis.table;
 
+import java.io.File;
+import java.net.URL;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
 
@@ -61,6 +63,7 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 import org.seasr.datatypes.table.Table;
+import org.seasr.meandre.support.generic.io.ClasspathUtils;
 
 @Component(creator="Lily Dong",
            description="This component provides a table viewer for a data set. " +
@@ -72,6 +75,7 @@ import org.seasr.datatypes.table.Table;
            name="Table Viewer Old",
            tags="table viewer",
            mode=Mode.webui,
+           dependency = { "jquery.jar" },
            baseURL="meandre://seasr.org/components/")
 
 public class TableViewerOld extends AbstractExecutableComponent
@@ -177,6 +181,8 @@ implements WebUIFragmentCallback {
     /** Store whether type exists in input content */
     private boolean isType;
 
+    private String jQueryScriptLocation;
+
     /** This method gets call when a request with no parameters is made to a
      * component webui fragment.
      *
@@ -205,7 +211,7 @@ implements WebUIFragmentCallback {
             sb.append("\"http://www.w3.org/TR/html4/loose.dtd\">\n");
             sb.append("<html>\n");
             sb.append("<head>\n");
-            sb.append("<script src=\"http://code.jquery.com/jquery-latest.js\"></script>\n");
+            sb.append("<script src='" + jQueryScriptLocation + "'></script>\n");
             sb.append("<script>\n");
             sb.append("$(document).ready(function(){\n");
             sb.append("$(\"#myTable\").tablesorter({widgets:['zebra']});\n");
@@ -486,6 +492,21 @@ implements WebUIFragmentCallback {
     @Override
     public void initializeCallBack(ComponentContextProperties ccp)
     throws Exception {
+        File jqueryJar = null;
+        URL jqueryJarDepUrl = ClasspathUtils.findDependencyInClasspath("jquery.jar", getClass());
+        if (jqueryJarDepUrl != null)
+            jqueryJar = new File(jqueryJarDepUrl.toURI());
+
+        if (!jqueryJar.exists())
+            throw new ComponentContextException("Could not find jquery.jar");
+
+        String sJqueryJar = jqueryJar.getAbsolutePath();
+        String sPublishedResDir = new File(ccp.getPublicResourcesDirectory()).getAbsolutePath();
+        jQueryScriptLocation = "/public/resources/" + sJqueryJar.substring(sPublishedResDir.length());
+
+        console.finest("jQueryJar: " + sJqueryJar);
+        console.finest("Published Resources dir: " + sPublishedResDir);
+        console.fine("jQueryScriptLocation: " + jQueryScriptLocation);
     }
 
     /**
