@@ -80,7 +80,7 @@ import org.meandre.webui.WebUIFragmentCallback;
         name="Query Database",
         tags="database",
         mode=Mode.webui,
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 /** This component allows a user to enter and run an SQL query that produces a result set. The query can be entered as a property string or typed by the user at runtime.
  *

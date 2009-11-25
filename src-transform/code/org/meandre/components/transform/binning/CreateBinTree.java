@@ -87,7 +87,7 @@ import org.seasr.meandre.support.components.transform.binning.TextualBinDescript
            "in an OutOfMemory error. Use feature selection to reduce the number of features.",
            name = "CreateBinTree",
            tags = "binning, bin tree",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 
 public class CreateBinTree implements ExecutableComponent {

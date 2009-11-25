@@ -143,7 +143,7 @@ import org.seasr.meandre.support.components.discovery.cluster.TableCluster;
             tags = "visualization, dendrogram, cluster",
             mode = Mode.webui,
             dependency = { "DendrogramViz_001.jar" },
-            baseURL="meandre://seasr.org/components/")
+            baseURL="meandre://seasr.org/components/data-mining/")
 
 public class DendrogramViz implements ExecutableComponent,
 		WebUIFragmentCallback {

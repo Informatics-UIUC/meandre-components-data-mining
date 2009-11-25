@@ -68,7 +68,7 @@ import org.meandre.core.ExecutableComponent;
         "If createTable is false, it will append the d2k table to an existing database table.",
         name="Write D2kTable to Database",
         tags="database, io, table",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 /** This component allows a user to enter and run an SQL query that produces a result set. The query can be entered as a property string or typed by the user at runtime.
  *

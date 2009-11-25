@@ -82,7 +82,7 @@ import org.seasr.meandre.support.components.io.graph.PGraphML;
 			+ "functionality from the JUNG project. See "
 			+ "http://jung.sourceforge.net.</p>",
 		name = "XML To Graph From URL", tags = "io, file, transform, jung, xml, graphml, graph",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class XMLToGraphFromURL implements ExecutableComponent {
 

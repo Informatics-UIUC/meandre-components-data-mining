@@ -80,7 +80,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
         		"<u>Note:</u> The end-of-section processing is indicated by pushing out the string: 'EOF'",
         name = "XML To Triples",
         tags = "rdf, xml, triples, tei, converter",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class XmlToTriples implements ExecutableComponent, IRdfStatementProcessor {
     @ComponentInput(description = "Location of XML data", name = "data_url")

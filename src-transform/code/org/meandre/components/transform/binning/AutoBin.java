@@ -83,7 +83,7 @@ import org.seasr.meandre.support.components.transform.binning.BinDescriptor;
            "each of the scalar input columns.",
            name = "AutoBin",
            tags = "binning, transform", dependency={"trove-2.0.3.jar"},
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class AutoBin extends AutoBinOPT implements ExecutableComponent {
     @ComponentInput(description = "Read a table of examples. It is type of " +

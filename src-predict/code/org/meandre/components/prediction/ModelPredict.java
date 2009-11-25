@@ -86,7 +86,7 @@ import org.seasr.meandre.support.components.prediction.PredictionModelModule;
            "model based on the values of the input attributes.",
            name="ModelPredict",
            tags="prediction",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class ModelPredict implements ExecutableComponent {
     @ComponentInput(description="Read the table containing the examples that the model will be applied to. " +

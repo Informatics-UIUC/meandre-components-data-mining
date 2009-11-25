@@ -33,7 +33,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.F
     	"This module modifies the support boundary values in the <i>FPProb</i> object.",
         name="SupportBoundaryFinder",
         tags="support boundary finder",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 public class SupportBoundaryFinder implements ExecutableComponent {
 	@ComponentProperty(description = "Verbose output.",
 			   		   defaultValue = "false",

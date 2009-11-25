@@ -94,7 +94,7 @@ import org.meandre.annotations.*;
 		+ "</p>",
 
 	name = "Jung To Prefuse", tags = "io, transform, file graph, prefuse, jung",
-    baseURL="meandre://seasr.org/components/")
+    baseURL="meandre://seasr.org/components/data-mining/")
     
 public class JungToPrefuse implements ExecutableComponent {
 

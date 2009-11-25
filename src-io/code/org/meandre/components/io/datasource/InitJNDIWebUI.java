@@ -77,7 +77,7 @@ import org.seasr.meandre.support.components.io.datasource.JarXMLLoader;
         name="Initialize JNDI with WebUI",
         tags="JNDI, datsources, database, connect, WebUI, UI, html",
         mode=Mode.webui,
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 /** This component will load information from two xml files and construct a JNDI context with datasource objects.
  * To do this, it

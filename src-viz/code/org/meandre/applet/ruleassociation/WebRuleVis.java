@@ -137,7 +137,7 @@ import org.meandre.webui.WebUIFragmentCallback;
            tags="rule association, frequent pattern mining, visualization",
            mode=Mode.webui,
            dependency={ "icons.jar", "foundry-datatypes.jar", "foundry-support.jar" },
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",

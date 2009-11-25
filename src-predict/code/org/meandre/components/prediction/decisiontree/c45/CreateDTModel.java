@@ -80,7 +80,7 @@ import org.seasr.meandre.support.components.prediction.decisiontree.c45.Decision
            "memory to hold these predictions.",
            name="CreateDTModel",
            tags="decision tree, c4.5, prediction",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class CreateDTModel implements ExecutableComponent {
     @ComponentInput(description = "Read the root of the decision tree. " +

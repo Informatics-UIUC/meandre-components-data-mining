@@ -75,7 +75,7 @@ import javax.servlet.http.*;
         name="List Database ResultSet",
         tags="database, table",
         mode=Mode.webui,
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 /** This components lists the contents of a resultset
  *

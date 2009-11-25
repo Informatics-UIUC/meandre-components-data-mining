@@ -104,7 +104,7 @@ import org.seasr.meandre.support.components.prediction.decisiontree.c45.Decision
            "enough memory to hold those predictions.",
            name="C45TreePruner",
            tags="decision tree, C4.5, pruner",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 
 public class C45TreePruner implements ExecutableComponent {

@@ -23,7 +23,7 @@ import org.seasr.components.text.datatype.corpora.Document;
     	   description="Writes the Chunk table of FeatureLens to a database.",
     	   name="FeatureLensChunk",
     	   tags="FeatureLens",
-    	   baseURL="meandre://seasr.org/components/")
+    	   baseURL="meandre://seasr.org/components/data-mining/")
 
 public class FeatureLensChunk implements ExecutableComponent {
 	@ComponentProperty(description = "Verbose output.",

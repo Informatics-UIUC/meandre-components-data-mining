@@ -18,7 +18,7 @@ import org.meandre.core.ExecutableComponent;
         "Pattern database table of FeatureLens.",
         name="FeatureLensWord",
         tags="FeatureLens",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class FeatureLensWord implements ExecutableComponent {
 	@ComponentProperty(description = "Verbose output.",

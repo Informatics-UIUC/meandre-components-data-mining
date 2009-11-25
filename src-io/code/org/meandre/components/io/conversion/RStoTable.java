@@ -86,7 +86,7 @@ import java.sql.Connection;
     	   +" Each row of the table correspons to a row from the resultset.",
        name = "Database Resultset to Table",
        tags = "io, table, resultset, conversion",
-       baseURL="meandre://seasr.org/components/")
+       baseURL="meandre://seasr.org/components/data-mining/")
 
 public class RStoTable implements ExecutableComponent {
 

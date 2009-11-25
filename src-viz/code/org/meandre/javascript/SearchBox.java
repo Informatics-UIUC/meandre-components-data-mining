@@ -91,7 +91,7 @@ import org.seasr.datatypes.table.Table;
            name="SearchBox",
            tags="search, visualization",
            mode=Mode.webui,
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class SearchBox implements ExecutableComponent, WebUIFragmentCallback {
     @ComponentOutput(description="Output the query passed from the serach box.",

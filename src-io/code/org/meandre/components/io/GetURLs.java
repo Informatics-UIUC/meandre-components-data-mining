@@ -68,7 +68,7 @@ import org.meandre.tools.webdav.IResourceInfo;
 		+ "This module reads URLs residing underneath the URL that is pointed to "
 		+ "by the input WebDAV client.</p>"
 		, name = "Get URLs", tags = "io, url",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
         
 public class GetURLs implements ExecutableComponent {
 	// ==============

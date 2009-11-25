@@ -140,7 +140,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 	+ "The module allocated memory for the resulting Rule Table. </p>",
 
 	name = "Compute Confidence", tags = "rule association,confidence,discovery",
-    baseURL="meandre://seasr.org/components/")
+    baseURL="meandre://seasr.org/components/data-mining/")
 
 	public class ComputeConfidence implements ExecutableComponent,
 	java.io.Serializable {

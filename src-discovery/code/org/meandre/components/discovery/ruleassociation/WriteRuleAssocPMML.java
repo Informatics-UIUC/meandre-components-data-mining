@@ -67,7 +67,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
            description="Write a RuleAssociationModel out in PMML(Predictive Model Markup Language) format complying with the PMML 2.0 DTD.",
            name="Write Rule Assoc PMML",
            tags="frequent pattern mining, rule association",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class WriteRuleAssocPMML  implements ExecutableComponent, RulePMMLTags {
     @ComponentInput(description="Read a representaiton of association rules." +

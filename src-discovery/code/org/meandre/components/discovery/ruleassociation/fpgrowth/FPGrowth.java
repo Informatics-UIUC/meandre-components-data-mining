@@ -189,7 +189,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.F
 
         name = "FP Growth",
         tags = "frequent pattern mining, rule association, discovery",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class FPGrowth implements ExecutableComponent {
 

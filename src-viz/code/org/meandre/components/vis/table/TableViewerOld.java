@@ -80,7 +80,7 @@ import de.schlichtherle.io.FileInputStream;
            tags="table viewer",
            mode=Mode.webui,
            dependency = { "jquery.jar" },
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class TableViewerOld extends AbstractExecutableComponent
 implements WebUIFragmentCallback {

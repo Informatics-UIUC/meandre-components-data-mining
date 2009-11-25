@@ -83,7 +83,7 @@ import org.meandre.annotations.*;
     + "<i>DataObjectProxy</i>.</p>",
 
 	name = "GraphML To Prefuse From URL", tags = "transform, io, file, graphml, prefuse, graph",
-    baseURL="meandre://seasr.org/components/")
+    baseURL="meandre://seasr.org/components/data-mining/")
     
 public class GraphMLToPrefuseFromURL implements ExecutableComponent {
 

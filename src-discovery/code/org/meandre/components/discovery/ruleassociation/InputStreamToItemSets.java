@@ -29,7 +29,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSetToo
 @Component(creator="mikeh", description="Creates Item sets from .is formatted files",
 		name="InputStreamToItemSets",
 		tags="io, input, itemsets",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class InputStreamToItemSets implements ExecutableComponent {
 

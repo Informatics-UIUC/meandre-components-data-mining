@@ -100,7 +100,7 @@ import org.meandre.tools.webdav.WebdavClient;
         name = "Input URL Or Path",
         tags = "io, input",
         dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar", "meandre-webdav-1.4.7.jar" },
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class InputFileUrl implements ExecutableComponent {
 

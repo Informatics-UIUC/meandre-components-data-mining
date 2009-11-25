@@ -20,7 +20,7 @@ import org.meandre.core.ExecutableComponent;
            "subdirectory with a link to the 1st row as parent.",
            name="FeatureLensCollection",
            tags="FeatureLens",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 public class FeatureLensCollection implements ExecutableComponent {
 	@ComponentProperty(description = "Verbose output.",
 			   		   defaultValue = "false",

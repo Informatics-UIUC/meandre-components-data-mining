@@ -70,7 +70,7 @@ import org.meandre.core.ExecutableComponent;
              "ncsa.d2k.modules.core.datatype.table.basic package. This is " +
              "a standard Table suitable for most applications.</p>",
              name = "Basic Table Factory Injector", tags = "table factory",
-             baseURL="meandre://seasr.org/components/")
+             baseURL="meandre://seasr.org/components/data-mining/")
              
 public class BasicTableFactoryInjector implements ExecutableComponent {
 

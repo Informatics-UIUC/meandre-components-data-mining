@@ -77,7 +77,7 @@ import org.meandre.core.ExecutableComponent;
         +" It will open a connection to the database specified by the JNDI object at JNDIName.</p>",
         name="Connect to Database",
         tags="database, connect, JNDI, datasource",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 /** A component to close the DB connection passed to it.
  *

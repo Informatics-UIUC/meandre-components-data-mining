@@ -63,7 +63,7 @@ import org.meandre.core.ExecutableComponent;
            description="Consume web service written in MS .NET.",
            name="SOAPClient",
            tags="web service",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class SOAPClient implements ExecutableComponent {
     /** When ready for execution.

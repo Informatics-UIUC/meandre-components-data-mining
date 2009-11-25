@@ -58,7 +58,7 @@ import org.meandre.core.ExecutableComponent;
             description="Consume web service written in Java.",
             name="AxisClient",
             tags="web service",
-            baseURL="meandre://seasr.org/components/")
+            baseURL="meandre://seasr.org/components/data-mining/")
 
 public class AxisClient implements ExecutableComponent{
     /** When ready for execution.

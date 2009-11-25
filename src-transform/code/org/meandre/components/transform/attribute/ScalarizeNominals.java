@@ -83,7 +83,7 @@ import org.meandre.annotations.Component.Mode;
                     "default ones.",
         name="ScalarizeNominals",
         tags="table, conversion",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 
 public class ScalarizeNominals implements ExecutableComponent {

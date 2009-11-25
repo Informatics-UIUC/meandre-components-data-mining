@@ -78,7 +78,7 @@ import org.meandre.tools.webdav.WebdavClient;
         name = "Triples To File",
         tags = "rdf, triples",
         firingPolicy = Component.FiringPolicy.any,
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class TriplesToFile implements ExecutableComponent {
     @ComponentInput(description = "Source base URL", name = "src_base_url")

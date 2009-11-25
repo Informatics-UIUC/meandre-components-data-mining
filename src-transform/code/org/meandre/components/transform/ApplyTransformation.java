@@ -81,7 +81,7 @@ import org.meandre.annotations.ComponentOutput;
 		+ "the transformed table as a MutableTable. "
 		+ "</p><p>Data Handling: This module modifies the input Table</p>",
 		name = "Apply Transformation", tags = "transform, mutabletable",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class ApplyTransformation implements ExecutableComponent {
 

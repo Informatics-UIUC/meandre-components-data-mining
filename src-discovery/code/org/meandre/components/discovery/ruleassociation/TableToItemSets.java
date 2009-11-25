@@ -117,7 +117,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSets;
 
         name = "Table To Item Sets",
         tags = "rule association, converter, itemsets, table, discovery",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class TableToItemSets implements ExecutableComponent {
 

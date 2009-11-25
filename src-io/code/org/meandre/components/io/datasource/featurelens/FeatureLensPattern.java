@@ -19,7 +19,7 @@ import java.util.List;
         	description="Writes the Pattern table of FeatureLens to a database.",
         	name="FeatureLensPattern",
         	tags="FeatureLens",
-        	baseURL="meandre://seasr.org/components/")
+        	baseURL="meandre://seasr.org/components/data-mining/")
 
 public class FeatureLensPattern implements ExecutableComponent {
 	@ComponentProperty(description = "Verbose output.",

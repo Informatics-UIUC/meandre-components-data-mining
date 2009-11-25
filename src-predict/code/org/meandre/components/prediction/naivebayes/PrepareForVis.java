@@ -77,7 +77,7 @@ import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesMode
                 "where N is the number of inputs and M is the number of training examples.",
            name="PrepareForVis",
            tags="naive bayes, visualization",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class PrepareForVis implements ExecutableComponent {
     @ComponentInput(description="Read org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel as input.",

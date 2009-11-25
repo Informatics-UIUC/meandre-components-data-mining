@@ -80,7 +80,7 @@ import org.seasr.meandre.support.components.prediction.decisiontree.c45.Decision
            "the minimum number of records per leaf, the parent will be turned into a leaf itself.",
            name="C45TreeBuilder",
            tags="decision tree, c4.5, prediction",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class C45TreeBuilder extends C45TreeBuilderOPT implements ExecutableComponent {
 

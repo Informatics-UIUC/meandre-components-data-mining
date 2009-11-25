@@ -64,7 +64,7 @@ import java.sql.SQLException;
         +" have been executed, the connection should be closed.</p>",
         name="Close Database Connection",
         tags="database, close",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 /** A component to close the DB connection passed to it.
  *

@@ -80,7 +80,7 @@ import javax.servlet.http.*;
         name="List Database Tables",
         tags="database, table",
         mode=Mode.webui,
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 /** A component to discover and display the tables in a Database to the user via a WebUI. It accepts a connection input and passes it to the output.
  *

@@ -66,7 +66,7 @@ description = "<p>Overview: Outputs a <i>TableFactory</i> suitable "
 		+ "for creating D2K Tables from the "
 		+ "org.seasr.datatypes.table.sparse package.</p>",
 name = "Sparse Table Factory Injector", tags = "sparsetable, table, factory",
-baseURL="meandre://seasr.org/components/")
+baseURL="meandre://seasr.org/components/data-mining/")
 
 public class SparseTableFactoryInjector implements ExecutableComponent {
 

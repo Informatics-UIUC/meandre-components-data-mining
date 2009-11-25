@@ -91,7 +91,7 @@ import org.seasr.meandre.support.components.io.file.input.DelimitedFileParserFro
         "The module does not destroy or modify the input data.",
         name = "Create Delimited File Parser",
         tags = "file parser",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class CreateDelimitedFileParser implements ExecutableComponent {
 

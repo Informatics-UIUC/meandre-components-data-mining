@@ -98,7 +98,7 @@ import org.meandre.annotations.Component.Mode;
         name = "Choose Attributes",
         tags = "transform",
         mode = Mode.webui,
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
         
 public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallback {
 

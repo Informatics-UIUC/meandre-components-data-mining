@@ -65,7 +65,7 @@ import org.meandre.core.ComponentContextProperties;
  */
 @Component(creator="Amit Kumar", description="Serializes an object to a string using xstream", 
 		tags="serialize output io", name="ObjectSerializer",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
         
 public class ObjectSerializer implements ExecutableComponent {
 

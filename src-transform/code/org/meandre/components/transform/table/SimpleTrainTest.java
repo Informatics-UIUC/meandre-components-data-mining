@@ -91,7 +91,7 @@ import org.meandre.core.ExecutableComponent;
            "be able to allocate arrays of integers to hold the indices of the test and train examples.",
            name="SimpleTrainTest",
            tags="train, test",
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 public class SimpleTrainTest implements ExecutableComponent {
     @ComponentInput(description="Read org.seasr.datatypes.table.Table " +

@@ -104,7 +104,7 @@ import org.seasr.meandre.support.components.transform.binning.BinTree;
              "as such does not perform any significant computations.",
              name="CreateNBModel",
              tags="naive bayes, prediction",
-             baseURL="meandre://seasr.org/components/")
+             baseURL="meandre://seasr.org/components/data-mining/")
 
 public class CreateNBModel implements ExecutableComponent {
     @ComponentInput(description="Read org.seasr.meandre.support.components.transform.binning.BinTree " +

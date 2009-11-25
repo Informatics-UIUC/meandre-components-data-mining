@@ -43,7 +43,7 @@ import org.meandre.core.ExecutableComponent;
         "</p>",
         name="FeatureFilterLite",
         tags="feature filter",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class FeatureFilterLite implements ExecutableComponent {
 

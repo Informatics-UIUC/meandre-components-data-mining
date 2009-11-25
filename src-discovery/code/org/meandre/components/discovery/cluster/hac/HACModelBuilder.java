@@ -84,7 +84,7 @@ import org.seasr.meandre.support.components.discovery.cluster.hac.HACWork;
         description ="Takes a d2k table object and builds a full bottom up cluster tree.",
         name = "HAC Model Builder",
         tags = "cluster, unsupervised, model builder",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class HACModelBuilder implements ExecutableComponent {
 

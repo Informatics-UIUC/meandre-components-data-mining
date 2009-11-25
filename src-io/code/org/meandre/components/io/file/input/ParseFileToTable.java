@@ -77,7 +77,7 @@ import org.seasr.meandre.support.components.io.file.input.ParsedLine;
 
         name = "Parse File To Table",
         tags = "io, table",
-        baseURL="meandre://seasr.org/components/")
+        baseURL="meandre://seasr.org/components/data-mining/")
 
 public class ParseFileToTable implements ExecutableComponent {
 

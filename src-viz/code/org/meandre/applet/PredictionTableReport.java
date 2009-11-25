@@ -104,7 +104,7 @@ import org.seasr.datatypes.table.PredictionTable;
            name="PredictionTableReport",
            tags="prediction, visualization",
            mode=Mode.webui,
-           baseURL="meandre://seasr.org/components/")
+           baseURL="meandre://seasr.org/components/data-mining/")
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
