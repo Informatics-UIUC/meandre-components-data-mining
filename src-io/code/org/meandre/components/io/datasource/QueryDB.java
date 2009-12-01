@@ -357,7 +357,7 @@ public class QueryDB implements ExecutableComponent, WebUIFragmentCallback  {
 		cc.stopWebUIFragment(this);
      }
 
-     /** This method is called when the Menadre Flow execution is completed.
+     /** This method is called when the Meandre Flow execution is completed.
       *
       * @param ccp The component context properties
       */

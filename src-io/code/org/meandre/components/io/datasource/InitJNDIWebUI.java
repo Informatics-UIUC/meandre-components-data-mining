@@ -75,7 +75,7 @@ import org.seasr.meandre.support.components.io.datasource.JarXMLLoader;
         +"The connect DB component. The web UI allows the user"
         +"to add and configure datasource objects.",
         name="Initialize JNDI with WebUI",
-        tags="JNDI, datsources, database, connect, WebUI, UI, html",
+        tags="JNDI, datasource, database, connect, ui, html, db",
         mode=Mode.webui,
         baseURL="meandre://seasr.org/components/data-mining/")
 
@@ -143,7 +143,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
      */
     private String getViz() {
 
-    	//Acess JNDI root context to look for existing datasources
+    	//Access JNDI root context to look for existing datasources
     	existingDS=databaseNamespace.listObjects("");
     	//look in Datasource Factory for known vendors
     	knownVendors=DataSourceFactory.getKnownVendors();
@@ -244,7 +244,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         sb.append("</tr>\n");*/
 
         if (configuringDataSource){
-        	//Second coloumn for creation of new datasources
+        	//Second column for creation of new datasources
         	//present user with known vendors
         	//sb.append("<td width=\"40%\" valign=\"top\">\n");
         	sb.append("<tr>\n");
@@ -464,7 +464,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     				newProps.setProperty(driverProperties[i].name, value);
     			}
     		}
-    		//use reconnect method with exisitng connection, the new properties, and the datasource from the JNDI namespace
+    		//use reconnect method with existing connection, the new properties, and the datasource from the JNDI namespace
     		if (DataSourceFactory.isPooled(selectedExistingDS))
     		{
     			databaseConnection=DataSourceFactory.reConnect(databaseConnection, newProps, (ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS));
@@ -558,7 +558,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     		}
     	}*/
     	;
-    	//USer has input properties for a new datasource connection and has given a location to bind it to
+    	//User has input properties for a new datasource connection and has given a location to bind it to
     	if (sJNDILoc != "" && sJNDILoc != null && !sJNDILoc.equalsIgnoreCase("jdbc") && !sJNDILoc.equalsIgnoreCase("jdbc/"))
         {
         	Enumeration<?> propNames = selectedProperties.keys();

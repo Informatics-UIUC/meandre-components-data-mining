@@ -117,7 +117,7 @@ public class InputStreamToItemSets implements ExecutableComponent {
 
 	}
 
-	/** This method is called when the Menadre Flow execution is completed.
+	/** This method is called when the Meandre Flow execution is completed.
 	 *
 	 * @throws ComponentExecutionException If a fatal condition arises during
 	 *         the execution of a component, a ComponentExecutionException

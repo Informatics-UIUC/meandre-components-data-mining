@@ -65,7 +65,7 @@ import org.seasr.meandre.support.components.io.datasource.JarXMLLoader;
         +"These datasource objects can then be used to connect to a database using"
         +"The connect DB component.",
         name="Initialize JNDI Datsources",
-        tags="JNDI, datsources, database, connect",
+        tags="JNDI, datasource, database, connect, db",
         baseURL="meandre://seasr.org/components/data-mining/")
 
 /** This component will load information from two xml files and construct a JNDI context with datasource objects.
@@ -163,7 +163,7 @@ public class InitJNDI implements ExecutableComponent {
 
      }
 
-     /** This method is called when the Menadre Flow execution is completed.
+     /** This method is called when the Meandre Flow execution is completed.
       *
       * @param ccp The component context properties
       */

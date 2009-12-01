@@ -76,7 +76,7 @@ import org.meandre.core.ExecutableComponent;
         +" This component assumes that a JNDI context with datasources is already configured."
         +" It will open a connection to the database specified by the JNDI object at JNDIName.</p>",
         name="Connect to Database",
-        tags="database, connect, JNDI, datasource",
+        tags="database, connect, JNDI, datasource, db",
         baseURL="meandre://seasr.org/components/data-mining/")
 
 /** A component to close the DB connection passed to it.
@@ -166,7 +166,7 @@ public final static String DATA_PROPERTY = "JNDI_Name";
        	ccp.pushDataComponentToOutput(DATA_OUTPUT, dbConn);
      }
 
-     /** This method is called when the Menadre Flow execution is completed.
+     /** This method is called when the Meandre Flow execution is completed.
       *
       * @param ccp The component context properties
       */

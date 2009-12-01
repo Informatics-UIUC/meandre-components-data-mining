@@ -275,7 +275,7 @@ final static String DATA_PROPERTY2 = "Create_Table";
 		cc.pushDataComponentToOutput(DATA_OUTPUT, conn);
      }
 
-     /** This method is called when the Menadre Flow execution is completed.
+     /** This method is called when the Meandre Flow execution is completed.
       *
       * @param ccp The component context properties
       */
