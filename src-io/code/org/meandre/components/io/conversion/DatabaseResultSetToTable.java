@@ -88,7 +88,7 @@ import java.sql.Connection;
        tags = "io, table, resultset, conversion",
        baseURL="meandre://seasr.org/components/data-mining/")
 
-public class RStoTable implements ExecutableComponent {
+public class DatabaseResultSetToTable implements ExecutableComponent {
 
    @ComponentInput(description = "A query resultset to create a table from", name = "ResultSet")
    final static String DATA_INPUT_PARSER = "ResultSet";
