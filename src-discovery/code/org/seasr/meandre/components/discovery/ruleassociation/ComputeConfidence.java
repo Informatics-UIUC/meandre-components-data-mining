@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.discovery.ruleassociation;
+package org.seasr.meandre.components.discovery.ruleassociation;
 
 import gnu.trove.TIntArrayList;
 

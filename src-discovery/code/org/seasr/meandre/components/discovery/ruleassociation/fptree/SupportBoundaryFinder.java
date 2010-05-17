@@ -1,4 +1,4 @@
-package org.meandre.components.discovery.ruleassociation.fptree;
+package org.seasr.meandre.components.discovery.ruleassociation.fptree;
 
 import java.util.ArrayList;
 import java.util.Iterator;

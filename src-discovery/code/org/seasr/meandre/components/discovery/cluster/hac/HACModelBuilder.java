@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.discovery.cluster.hac;
+package org.seasr.meandre.components.discovery.cluster.hac;
 
 //==============
 // Java Imports

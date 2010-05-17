@@ -1,4 +1,4 @@
-package org.meandre.components.discovery.cluster;
+package org.seasr.meandre.components.discovery.cluster;
 
 /* University of Illinois/NCSA
 * Open Source License

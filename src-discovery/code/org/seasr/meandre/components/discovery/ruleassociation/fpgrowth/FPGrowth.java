@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.discovery.ruleassociation.fpgrowth;
+package org.seasr.meandre.components.discovery.ruleassociation.fpgrowth;
 
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;

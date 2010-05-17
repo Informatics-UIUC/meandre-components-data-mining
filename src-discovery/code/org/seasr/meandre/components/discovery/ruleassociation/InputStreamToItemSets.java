@@ -1,4 +1,4 @@
-package org.meandre.components.discovery.ruleassociation;
+package org.seasr.meandre.components.discovery.ruleassociation;
 
 import java.io.IOException;
 import java.io.InputStream;
