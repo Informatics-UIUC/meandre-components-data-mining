@@ -1,4 +1,4 @@
-package org.meandre.components.transform.table;
+package org.seasr.meandre.components.transform.table;
 
 
 

@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.transform;
+package org.seasr.meandre.components.transform;
 
 import java.util.logging.Logger;
 

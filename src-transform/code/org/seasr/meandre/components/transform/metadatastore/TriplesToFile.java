@@ -38,7 +38,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE SOFTWARE.
  */
 
-package org.meandre.components.transform.metadatastore;
+package org.seasr.meandre.components.transform.metadatastore;
 
 import java.io.BufferedWriter;
 import java.io.File;

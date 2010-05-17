@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */ 
 
-package org.meandre.components.transform.attribute;
+package org.seasr.meandre.components.transform.attribute;
 
 import org.seasr.datatypes.datamining.table.Column;
 import org.seasr.datatypes.datamining.table.ExampleTable;

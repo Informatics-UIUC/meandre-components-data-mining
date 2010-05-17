@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.transform.binning;
+package org.seasr.meandre.components.transform.binning;
 
 import java.text.NumberFormat;
 

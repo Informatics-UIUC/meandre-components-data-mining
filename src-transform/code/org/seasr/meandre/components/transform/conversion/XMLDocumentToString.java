@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.transform.conversion;
+package org.seasr.meandre.components.transform.conversion;
 
 import java.io.FileWriter;
 
