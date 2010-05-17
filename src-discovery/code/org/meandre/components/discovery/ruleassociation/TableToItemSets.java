@@ -50,7 +50,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.seasr.datatypes.table.Table;
+import org.seasr.datatypes.datamining.table.Table;
 import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSets;
 
 /**

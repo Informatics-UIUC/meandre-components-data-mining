@@ -49,11 +49,11 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 
-import org.seasr.datatypes.table.Table;
-import org.seasr.datatypes.table.Column;
-import org.seasr.datatypes.table.basic.DoubleColumn;
-import org.seasr.datatypes.table.basic.MutableTableImpl;
-import org.seasr.datatypes.table.basic.ObjectColumn;
+import org.seasr.datatypes.datamining.table.Table;
+import org.seasr.datatypes.datamining.table.Column;
+import org.seasr.datatypes.datamining.table.basic.DoubleColumn;
+import org.seasr.datatypes.datamining.table.basic.MutableTableImpl;
+import org.seasr.datatypes.datamining.table.basic.ObjectColumn;
 
 /**
    A simple pie chart.  The data must be in a VerticalTable.  The x value

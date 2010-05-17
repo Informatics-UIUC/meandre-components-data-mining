@@ -59,11 +59,11 @@ import org.meandre.applet.widgets.DataSet;
 import org.meandre.applet.widgets.PieChart;
 import org.meandre.applet.widgets.ConfusionMatrix;
 
-import org.seasr.datatypes.table.Column;
-import org.seasr.datatypes.table.basic.DoubleColumn;
-import org.seasr.datatypes.table.basic.StringColumn;
-import org.seasr.datatypes.table.basic.MutableTableImpl;
-import org.seasr.datatypes.table.PredictionTable;
+import org.seasr.datatypes.datamining.table.Column;
+import org.seasr.datatypes.datamining.table.basic.DoubleColumn;
+import org.seasr.datatypes.datamining.table.basic.StringColumn;
+import org.seasr.datatypes.datamining.table.basic.MutableTableImpl;
+import org.seasr.datatypes.datamining.table.PredictionTable;
 
 
 /**

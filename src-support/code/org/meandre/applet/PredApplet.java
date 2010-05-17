@@ -54,7 +54,7 @@ package org.meandre.applet;
 * @author Lily Dong
 */
 
-import org.seasr.datatypes.table.PredictionTable;
+import org.seasr.datatypes.datamining.table.PredictionTable;
 
 import javax.swing.JApplet;
 import java.net.URL;

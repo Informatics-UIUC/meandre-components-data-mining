@@ -53,8 +53,8 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.seasr.datatypes.table.ExampleTable;
-import org.seasr.datatypes.table.transformations.BinTransform;
+import org.seasr.datatypes.datamining.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.transformations.BinTransform;
 import org.seasr.meandre.support.components.transform.binning.AutoBinOPT;
 import org.seasr.meandre.support.components.transform.binning.BinDescriptor;
 
@@ -87,7 +87,7 @@ import org.seasr.meandre.support.components.transform.binning.BinDescriptor;
 
 public class AutoBin extends AutoBinOPT implements ExecutableComponent {
     @ComponentInput(description = "Read a table of examples. It is type of " +
-                    "org.seasr.datatypes.table.ExampleTable",
+                    "org.seasr.datatypes.datamining.table.ExampleTable",
                     name = "exampleTable")
     final static String DATA_INPUT = "exampleTable";
 

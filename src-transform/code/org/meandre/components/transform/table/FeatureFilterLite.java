@@ -14,9 +14,9 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-import org.seasr.datatypes.table.ExampleTable;
-import org.seasr.datatypes.table.Sparse;
-import org.seasr.datatypes.table.Table;
+import org.seasr.datatypes.datamining.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.Sparse;
+import org.seasr.datatypes.datamining.table.Table;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
@@ -71,11 +71,11 @@ public class FeatureFilterLite implements ExecutableComponent {
 	public final static String DATA_PROPERTY_UPPERBOUNDSUPPORT = "upperBoundSupport";
 
 	@ComponentInput(description = "The input data table for transformation."
-			+ "<br>TYPE: org.seasr.datatypes.table.sparse.SparseTable", name = "sparseTable")
+			+ "<br>TYPE: org.seasr.datatypes.datamining.table.sparse.SparseTable", name = "sparseTable")
 	public final static String DATA_INPUT = "sparseTable";
 
 	@ComponentOutput(description = "The resulting modified table."
-			+ "<br>TYPE: org.seasr.datatypes.table.sparse.SparseTable", name = "sparseTable")
+			+ "<br>TYPE: org.seasr.datatypes.datamining.table.sparse.SparseTable", name = "sparseTable")
 	public final static String DATA_OUTPUT = "sparseTable";
 
 

@@ -42,25 +42,64 @@
 
 package org.meandre.applet.ruleassociation;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.print.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.MediaTracker;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.LinkedList;
 
-import java.util.*;
-import java.io.*;
+import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
+import javax.swing.JToggleButton;
+import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import org.meandre.applet.Constrain;
 import org.meandre.applet.widgets.ExpressionGUI;
-import org.meandre.applet.ruleassociation.LabelCellRenderer;
-
+import org.seasr.datatypes.datamining.Expression;
+import org.seasr.datatypes.datamining.ExpressionException;
+import org.seasr.datatypes.datamining.ExpressionListener;
 import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
-
-import org.seasr.datatypes.Expression;
-import org.seasr.datatypes.ExpressionException;
-import org.seasr.datatypes.ExpressionListener;
 
 /**
  * <p>Title: RuleVisView</p>
@@ -276,6 +315,7 @@ class RuleVisView extends JPanel implements ActionListener {
             super(tm);
         }
 
+        @Override
         public String getToolTipText(MouseEvent e) {
             Point p = e.getPoint();
             int row = this.rowAtPoint(p);
@@ -964,6 +1004,7 @@ class RuleVisView extends JPanel implements ActionListener {
             return returnval;
         }
 
+        @Override
         public String getColumnName(int columnIndex) {
             return Integer.toString(columnIndex);
         }
@@ -1205,6 +1246,7 @@ class RuleVisView extends JPanel implements ActionListener {
             return numRows;
         }
 
+        @Override
         public String getColumnName(int columnIndex) {
             return "";
         }
@@ -1234,11 +1276,11 @@ class RuleVisView extends JPanel implements ActionListener {
             ExpressionListener {
         private ExpressionGUI gui;
         private RuleFilterExpression expression;
-        private RuleVisView view;
+        private final RuleVisView view;
         private RuleTable table;
         private java.util.List names;
-        private LinkedList attributes = new LinkedList();
-        private LinkedList values = new LinkedList();
+        private final LinkedList attributes = new LinkedList();
+        private final LinkedList values = new LinkedList();
         private JButton addColumnButton, addValueButton, addOperationButton,
         addBooleanButton, abortButton, doneButton, helpButton,
         addAnteConsButton;
@@ -1602,13 +1644,13 @@ class RuleVisView extends JPanel implements ActionListener {
      */
     public class RuleFilterExpression implements Expression {
 
-        private HashMap attributeToIndex;
-        private HashMap valueToIndex;
+        private final HashMap attributeToIndex;
+        private final HashMap valueToIndex;
         private Node root;
-        private RuleTable table;
-        private java.util.List attributes;
-        private java.util.List values;
-        private RuleVisView view;
+        private final RuleTable table;
+        private final java.util.List attributes;
+        private final java.util.List values;
+        private final RuleVisView view;
 
         public RuleFilterExpression(RuleTable table,
                                     java.util.List attributes,
@@ -1661,7 +1703,7 @@ class RuleVisView extends JPanel implements ActionListener {
             rvdm.condenseRules(rulesToShow, numTrue);
             table.rulesToDisplay(rulesToShow, order); //make the filter changes in RuleTable
             view.updateView(); //make the filter changes in the Vis
-            return (Object) rulesToShow;
+            return rulesToShow;
         }
 
 
@@ -1675,6 +1717,7 @@ class RuleVisView extends JPanel implements ActionListener {
             root = parse(expression);
         }
 
+        @Override
         public String toString() {
             return root.toString();
         }
@@ -1697,13 +1740,14 @@ class RuleVisView extends JPanel implements ActionListener {
             abstract boolean evaluate(int rowNumber) throws
                     ExpressionException;
 
+            @Override
             public abstract String toString();
         }
 
 
         private class Subexpression extends Node {
-            private int opcode;
-            private Node left, right;
+            private final int opcode;
+            private final Node left, right;
 
             Subexpression(int opcode, Node left, Node right) {
                 this.opcode = opcode;
@@ -1714,6 +1758,7 @@ class RuleVisView extends JPanel implements ActionListener {
             /*
              * Evaluates expressions in the form terminal op terminal
              */
+            @Override
             boolean evaluate(int rowNumber) throws ExpressionException {
 
                 if (left == null || right == null)
@@ -1733,6 +1778,7 @@ class RuleVisView extends JPanel implements ActionListener {
                 }
             }
 
+            @Override
             public String toString() {
 
                 StringBuffer buffer = new StringBuffer();
@@ -1760,8 +1806,8 @@ class RuleVisView extends JPanel implements ActionListener {
 
 
         private class Terminal extends Node {
-            private int opcode;
-            private Element left, right;
+            private final int opcode;
+            private final Element left, right;
 
             Terminal(int opcode, Element left, Element right) {
                 this.opcode = opcode;
@@ -1772,6 +1818,7 @@ class RuleVisView extends JPanel implements ActionListener {
             /*
              * Evaluates expression in the form element eq element
              */
+            @Override
             boolean evaluate(int rowNumber) throws ExpressionException {
 
                 if (left instanceof AttributeElement) {
@@ -1868,6 +1915,7 @@ class RuleVisView extends JPanel implements ActionListener {
 
             //end Terminal.evaluate
 
+            @Override
             public String toString() {
                 StringBuffer buffer = new StringBuffer();
                 buffer.append('(');
@@ -1899,14 +1947,15 @@ class RuleVisView extends JPanel implements ActionListener {
         /******************************************************************************/
 
         private abstract class Element {
+            @Override
             public abstract String toString();
         }
 
 
         private class AttributeElement extends Element {
             private int attributeNumber;
-            private String attributeLabel;
-            private int condition;
+            private final String attributeLabel;
+            private final int condition;
 
             AttributeElement(String attributeLabel, int condition) throws
                     ExpressionException {
@@ -1945,6 +1994,7 @@ class RuleVisView extends JPanel implements ActionListener {
                 return both;
             }
 
+            @Override
             public String toString() {
                 return attributeLabel;
             }
@@ -1953,7 +2003,7 @@ class RuleVisView extends JPanel implements ActionListener {
 
         //NominalElements are the values
         private class NominalElement extends Element {
-            private String value;
+            private final String value;
 
             NominalElement(String value) throws ExpressionException {
                 Integer I = (Integer) valueToIndex.get(value);
@@ -1968,6 +2018,7 @@ class RuleVisView extends JPanel implements ActionListener {
                 return value;
             }
 
+            @Override
             public String toString() {
                 StringBuffer buffer = new StringBuffer();
                 buffer.append('\'');

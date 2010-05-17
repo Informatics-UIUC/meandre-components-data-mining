@@ -61,7 +61,7 @@ import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
-import org.seasr.datatypes.table.Table;
+import org.seasr.datatypes.datamining.table.Table;
 import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.generic.io.ClasspathUtils;
 import org.seasr.meandre.support.generic.io.JARInstaller;
@@ -110,7 +110,7 @@ implements WebUIFragmentCallback {
     @ComponentInput(description="This input contains the file content stored as a vector with "+
     		"each attribute (column) stored as an object array, or stored as a table." +
     		"<br>TYPE: java.util.Vector<java.lang.Object[]>" +
-    		"<br>      or org.seasr.datatypes.table.Table",
+    		"<br>      or org.seasr.datatypes.datamining.table.Table",
                     name= "Content")
     public final static String DATA_INPUT = "Content";
 

@@ -1,6 +1,6 @@
 package org.meandre.components.io.datasource.featurelens;
 
-import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.ExampleTable;
 
 import java.sql.Connection;
 
@@ -27,7 +27,7 @@ public class FeatureLensWord implements ExecutableComponent {
     public final static String DATA_PROPERTY = "debug";
 
 	@ComponentInput(description="Sparse Table." +
-			"<br>TYPE: org.seasr.datatypes.table.Table",
+			"<br>TYPE: org.seasr.datatypes.datamining.table.Table",
              		name= "table")
     public final static String DATA_INPUT_TABLE = "table";
 	@ComponentInput(description="JDBC database connection." +

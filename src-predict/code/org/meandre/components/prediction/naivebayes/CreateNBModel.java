@@ -50,7 +50,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel;
 import org.seasr.meandre.support.components.transform.binning.BinTree;
 
@@ -111,7 +111,7 @@ public class CreateNBModel implements ExecutableComponent {
                     "which contains counts.",
                     name= "binTree")
     public final static String DATA_INPUT_1 = "binTree";
-    @ComponentInput(description="Read org.seasr.datatypes.table.ExampleTable " +
+    @ComponentInput(description="Read org.seasr.datatypes.datamining.table.ExampleTable " +
                     "with the data in it.",
                     name= "exampleTable")
     public final static String DATA_INPUT_2 = "exampleTable";

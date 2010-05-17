@@ -51,7 +51,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.C45TreeBuilderOPT;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode;
 
@@ -86,7 +86,7 @@ public class C45TreeBuilder extends C45TreeBuilderOPT implements ExecutableCompo
 
     //~ Methods *****************************************************************
 
-    @ComponentInput(description = "Read org.seasr.datatypes.table.ExampleTable to build a decision tree.",
+    @ComponentInput(description = "Read org.seasr.datatypes.datamining.table.ExampleTable to build a decision tree.",
                     name = "exampleTable")
     final static String DATA_INPUT = "exampleTable";
 

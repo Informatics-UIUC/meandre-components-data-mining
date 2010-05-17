@@ -63,7 +63,7 @@ import org.meandre.annotations.Component.Mode;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 
-import org.seasr.datatypes.table.Table;
+import org.seasr.datatypes.datamining.table.Table;
 
 /**
 * <p>

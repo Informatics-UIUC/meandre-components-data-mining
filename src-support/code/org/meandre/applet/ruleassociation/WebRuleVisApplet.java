@@ -59,11 +59,11 @@ import org.dom4j.Attribute;
 
 import gnu.trove.TIntArrayList;
 
-import org.seasr.datatypes.table.basic.DoubleColumn;
-import org.seasr.datatypes.table.basic.MutableTableImpl;
-import org.seasr.datatypes.table.Column;
-import org.seasr.datatypes.table.basic.IntColumn;
-import org.seasr.datatypes.table.basic.TableImpl;
+import org.seasr.datatypes.datamining.table.basic.DoubleColumn;
+import org.seasr.datatypes.datamining.table.basic.MutableTableImpl;
+import org.seasr.datatypes.datamining.table.Column;
+import org.seasr.datatypes.datamining.table.basic.IntColumn;
+import org.seasr.datatypes.datamining.table.basic.TableImpl;
 
 import org.seasr.meandre.support.components.discovery.ruleassociation.FreqItemSet;
 import org.seasr.meandre.support.components.discovery.ruleassociation.RulePMMLTags;

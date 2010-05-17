@@ -53,15 +53,15 @@ import org.meandre.annotations.Component.Licenses;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.seasr.datatypes.table.ExampleTable;
-import org.seasr.datatypes.table.MutableTable;
-import org.seasr.datatypes.table.Sparse;
-import org.seasr.datatypes.table.Table;
+import org.seasr.datatypes.core.exceptions.UnsupportedDataTypeException;
+import org.seasr.datatypes.datamining.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.MutableTable;
+import org.seasr.datatypes.datamining.table.Sparse;
+import org.seasr.datatypes.datamining.table.Table;
 import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPSparse;
-import org.seasr.meandre.support.components.exceptions.UnsupportedDataTypeException;
 
 /**
  * @author Lily Dong

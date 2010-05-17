@@ -46,12 +46,12 @@ package org.meandre.components.io.conversion;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.seasr.datatypes.table.Column;
-import org.seasr.datatypes.table.ColumnTypes;
-import org.seasr.datatypes.table.MutableTable;
-import org.seasr.datatypes.table.Table;
-import org.seasr.datatypes.table.TableFactory;
-import org.seasr.datatypes.table.basic.BasicTableFactory;
+import org.seasr.datatypes.datamining.table.Column;
+import org.seasr.datatypes.datamining.table.ColumnTypes;
+import org.seasr.datatypes.datamining.table.MutableTable;
+import org.seasr.datatypes.datamining.table.Table;
+import org.seasr.datatypes.datamining.table.TableFactory;
+import org.seasr.datatypes.datamining.table.basic.BasicTableFactory;
 
 
 import org.meandre.core.ComponentContext;

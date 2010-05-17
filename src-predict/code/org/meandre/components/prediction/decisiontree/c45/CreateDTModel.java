@@ -51,7 +51,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.seasr.datatypes.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeModel;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode;
 
@@ -88,7 +88,7 @@ public class CreateDTModel implements ExecutableComponent {
                     name = "decisionTree")
     final static String DATA_INPUT_1 = "decisionTree";
     @ComponentInput(description = "Read the table used to build the tree. " +
-                    "The table is of type org.seasr.datatypes.table.ExampleTable.",
+                    "The table is of type org.seasr.datatypes.datamining.table.ExampleTable.",
                     name = "exampleTable")
     final static String DATA_INPUT_2 = "exampleTable";
 

@@ -61,7 +61,7 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
-import org.seasr.datatypes.table.PredictionTable;
+import org.seasr.datatypes.datamining.table.PredictionTable;
 
 /**
  * Displays statistics about any PredictionTable.  The number of correct
@@ -112,7 +112,7 @@ import org.seasr.datatypes.table.PredictionTable;
 )})
 
 public class PredictionTableReport  implements ExecutableComponent, WebUIFragmentCallback {
-    @ComponentInput(description="Read org.seasr.datatypes.table.PredictionTable " +
+    @ComponentInput(description="Read org.seasr.datatypes.datamining.table.PredictionTable " +
                     "with both the actual values and predictions as input.",
                     name= "predictionTable")
     public final static String DATA_INPUT = "predictionTable";

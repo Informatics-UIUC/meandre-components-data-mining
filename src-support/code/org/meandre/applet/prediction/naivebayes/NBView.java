@@ -97,7 +97,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.meandre.applet.Constrain;
-import org.seasr.datatypes.table.Column.SortMode;
+import org.seasr.datatypes.datamining.table.Column.SortMode;
 import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel;
 import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesPieChartData;
 

@@ -54,11 +54,11 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.seasr.datatypes.table.Column;
-import org.seasr.datatypes.table.ColumnTypes;
-import org.seasr.datatypes.table.MutableTable;
-import org.seasr.datatypes.table.Table;
-import org.seasr.datatypes.table.TableFactory;
+import org.seasr.datatypes.datamining.table.Column;
+import org.seasr.datatypes.datamining.table.ColumnTypes;
+import org.seasr.datatypes.datamining.table.MutableTable;
+import org.seasr.datatypes.datamining.table.Table;
+import org.seasr.datatypes.datamining.table.TableFactory;
 import org.seasr.meandre.support.components.io.file.input.FlatFileParser;
 import org.seasr.meandre.support.components.io.file.input.ParsedLine;
 

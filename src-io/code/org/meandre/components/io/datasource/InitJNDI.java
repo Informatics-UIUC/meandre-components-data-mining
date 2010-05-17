@@ -142,7 +142,7 @@ public class InitJNDI implements ExecutableComponent {
   	File dsfile = new File(dsPath).getAbsoluteFile();
   	//Use JNDINamespaceBuilder to load xml and populate namespace
   	logger.log(Level.INFO,"Preparing to load xml file at "+xmlLoc);
-  	nB = new JNDINamespaceBuilder (dsfile.toString());
+  	nB = new JNDINamespaceBuilder (dsfile.toString(), "", "", "");
   	logger.log(Level.INFO,"Building Namespace");
   	nB.buildNamespace();
      logger.log(Level.INFO, "...JNDI Datasources Initialized");

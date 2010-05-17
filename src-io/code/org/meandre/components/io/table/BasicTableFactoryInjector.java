@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
-import org.seasr.datatypes.table.basic.BasicTableFactory;
+import org.seasr.datatypes.datamining.table.basic.BasicTableFactory;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
@@ -56,7 +56,7 @@ import org.meandre.core.ExecutableComponent;
 
 /**
  * Instantiates and pushes out a {@link
- * org.seasr.datatypes.table.basic.BasicTableFactory}.
+ * org.seasr.datatypes.datamining.table.basic.BasicTableFactory}.
  *
  * @author  clutter
  * @author  gpape

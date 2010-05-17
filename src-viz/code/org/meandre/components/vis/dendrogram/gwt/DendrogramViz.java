@@ -79,7 +79,7 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
-import org.seasr.datatypes.table.sparse.SparseTable;
+import org.seasr.datatypes.datamining.table.sparse.SparseTable;
 import org.seasr.meandre.support.components.discovery.cluster.ClusterModel;
 import org.seasr.meandre.support.components.discovery.cluster.TableCluster;
 
@@ -594,7 +594,7 @@ public class DendrogramViz implements ExecutableComponent,
 		return s2;
 	}
 
-	private String getTabViz(org.seasr.datatypes.table.Table tab,
+	private String getTabViz(org.seasr.datatypes.datamining.table.Table tab,
 			int[] mems) {
 		int nr_instances = tab.getNumRows();
 		_logger.fine("\nthe number of rows  = " + nr_instances);
