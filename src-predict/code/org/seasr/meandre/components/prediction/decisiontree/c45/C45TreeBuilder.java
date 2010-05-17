@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.prediction.decisiontree.c45;
+package org.seasr.meandre.components.prediction.decisiontree.c45;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;

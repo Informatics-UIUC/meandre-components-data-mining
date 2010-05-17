@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.prediction;
+package org.seasr.meandre.components.prediction;
 
 
 import org.meandre.annotations.Component;

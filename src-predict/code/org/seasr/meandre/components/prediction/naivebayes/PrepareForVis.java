@@ -40,7 +40,7 @@
  * WITH THE SOFTWARE.
  */
 
-package org.meandre.components.prediction.naivebayes;
+package org.seasr.meandre.components.prediction.naivebayes;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
