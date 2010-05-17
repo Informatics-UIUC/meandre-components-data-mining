@@ -71,7 +71,6 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.annotations.Component.Mode;
-import org.meandre.components.util.Unzipper;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
@@ -80,6 +79,7 @@ import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 import org.seasr.datatypes.datamining.table.sparse.SparseTable;
+import org.seasr.meandre.components.util.Unzipper;
 import org.seasr.meandre.support.components.discovery.cluster.ClusterModel;
 import org.seasr.meandre.support.components.discovery.cluster.TableCluster;
 
