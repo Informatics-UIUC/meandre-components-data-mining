@@ -85,7 +85,7 @@ import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesMode
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.prediction.naivebayes.NBApplet.class
+        extClass=org.seasr.meandre.applet.prediction.naivebayes.NBApplet.class
 )})
 
 /**

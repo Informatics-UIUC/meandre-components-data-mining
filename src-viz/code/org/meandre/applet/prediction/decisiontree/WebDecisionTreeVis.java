@@ -103,7 +103,7 @@ import org.seasr.meandre.support.components.prediction.decisiontree.c45.Decision
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.prediction.decisiontree.WebDecisionTreeVisApplet.class
+        extClass=org.seasr.meandre.applet.prediction.decisiontree.WebDecisionTreeVisApplet.class
 )})
 
 

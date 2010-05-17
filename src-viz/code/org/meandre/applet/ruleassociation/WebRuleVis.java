@@ -141,7 +141,7 @@ import org.meandre.webui.WebUIFragmentCallback;
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.ruleassociation.WebRuleVisApplet.class
+        extClass=org.seasr.meandre.applet.ruleassociation.WebRuleVisApplet.class
 )})
 
 public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {

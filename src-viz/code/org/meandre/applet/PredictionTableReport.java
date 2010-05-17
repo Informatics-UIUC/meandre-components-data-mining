@@ -108,7 +108,7 @@ import org.seasr.datatypes.datamining.table.PredictionTable;
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
-        extClass=org.meandre.applet.PredApplet.class
+        extClass=org.seasr.meandre.applet.PredApplet.class
 )})
 
 public class PredictionTableReport  implements ExecutableComponent, WebUIFragmentCallback {
