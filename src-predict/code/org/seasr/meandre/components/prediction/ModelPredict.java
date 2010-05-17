@@ -51,9 +51,10 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
+import org.seasr.datatypes.datamining.model.PredictionModelModule;
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.datatypes.datamining.table.PredictionTable;
-import org.seasr.meandre.support.components.prediction.PredictionModelModule;
+
 
 
 /**

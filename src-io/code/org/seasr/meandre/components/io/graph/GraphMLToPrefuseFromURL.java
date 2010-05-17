@@ -49,17 +49,18 @@ package org.seasr.meandre.components.io.graph;
 import java.io.File;
 import java.util.logging.Logger;
 
-//===============
-// Other Imports
-//===============
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.support.components.io.dataproxy.DataObjectProxy;
 
 import prefuse.data.Graph;
 import prefuse.data.io.GraphMLReader;
-
-import org.seasr.meandre.support.components.io.DataObjectProxy;
-
-import org.meandre.core.*;
-import org.meandre.annotations.*;
 
 /**
  * Read a graph from a local or remote file using GraphML from prefuse.
@@ -84,7 +85,7 @@ import org.meandre.annotations.*;
 
 	name = "GraphML To Prefuse From URL", tags = "transform, io, file, graphml, prefuse, graph",
     baseURL="meandre://seasr.org/components/data-mining/")
-    
+
 public class GraphMLToPrefuseFromURL implements ExecutableComponent {
 
 	private static Logger _logger = Logger.getLogger("GraphMLToPrefuseFromURL");

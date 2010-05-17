@@ -56,11 +56,13 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.datatypes.datamining.table.transformations.BinTransform;
+import org.seasr.datatypes.datamining.table.transformations.binning.BinDescriptor;
+import org.seasr.datatypes.datamining.table.transformations.binning.NumericBinDescriptor;
+import org.seasr.datatypes.datamining.table.transformations.binning.TextualBinDescriptor;
 import org.seasr.datatypes.datamining.table.util.TableUtilities;
-import org.seasr.meandre.support.components.transform.binning.BinDescriptor;
 import org.seasr.meandre.support.components.transform.binning.BinTree;
-import org.seasr.meandre.support.components.transform.binning.NumericBinDescriptor;
-import org.seasr.meandre.support.components.transform.binning.TextualBinDescriptor;
+
+
 /**
  * <p>Overview:
  * Creates an empty BinTree.

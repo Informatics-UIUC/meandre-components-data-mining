@@ -57,7 +57,7 @@ import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.seasr.meandre.support.components.io.DataObjectProxy;
+import org.seasr.meandre.support.components.io.dataproxy.DataObjectProxy;
 import org.seasr.meandre.support.components.io.graph.PGraphML;
 
 

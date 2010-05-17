@@ -55,8 +55,8 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.datatypes.datamining.table.transformations.BinTransform;
+import org.seasr.datatypes.datamining.table.transformations.binning.BinDescriptor;
 import org.seasr.meandre.support.components.transform.binning.AutoBinOPT;
-import org.seasr.meandre.support.components.transform.binning.BinDescriptor;
 
 /**
  * Automatically discretize scalar data for the Naive Bayesian classification

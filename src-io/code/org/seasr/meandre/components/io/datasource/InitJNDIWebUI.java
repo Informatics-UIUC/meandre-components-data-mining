@@ -63,10 +63,6 @@ import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
-import org.seasr.meandre.support.components.io.datasource.DataSourceFactory;
-import org.seasr.meandre.support.components.io.datasource.JNDILookup;
-import org.seasr.meandre.support.components.io.datasource.JNDINamespaceWriter;
-import org.seasr.meandre.support.components.io.datasource.JarXMLLoader;
 
 @Component(creator="Erik Johnson",
         description="<p>Overview:<br>"
@@ -281,7 +277,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
 					sb.append("<br />\n");
 					sb.append("<p>Connection Pooling : </p><input type=\"text\" name=\"DBConnection Pooling\" value=\""+DataSourceFactory.isPooled(selectedVendor)+"\" size=\"20\">\n");
 					sb.append("<br />\n");
-        			Vector <?> commonProps= (Vector<?>)( DataSourceFactory.getCommonProps(selectedVendor));
+        			Vector <?> commonProps= ( DataSourceFactory.getCommonProps(selectedVendor));
         			for (int i=0; i<commonProps.size(); i+=4)
         			{
         				sb.append("<p>"+commonProps.get(i+1).toString()+" ("+commonProps.get(i+2).toString()+"): </p><input type=\"text\" name=\"DB"+commonProps.get(i).toString()+"\" value=\"\" size=\"20\"> "+commonProps.get(i+3).toString()+"</p>\n");
@@ -338,7 +334,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         }
 
         if (configuringVendor){
-        	logger.log(Level.INFO,"Configuring Vendor");
+        	console.log(Level.INFO,"Configuring Vendor");
         	//Final column, select new vendor and driver info to load from external jar file
         	Vector<String>commonNames = DataSourceFactory.getCommonVendors();
 
@@ -483,7 +479,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     		{
     			viewProps=true;
     			//get connection and properties using bound datasource
-    			logger.log(Level.INFO, "Attempting to connect to db");
+    			console.log(Level.INFO, "Attempting to connect to db");
     			try{
     				if (DataSourceFactory.isPooled(selectedExistingDS))
     	    		{
@@ -496,11 +492,11 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
         			}
         			catch (Exception e)
         			{
-        				logger.log(Level.SEVERE,"Problem connecting to datasource "+databaseConnection.toString()+" :"+e +":"+ e.getMessage());
+        				console.log(Level.SEVERE,"Problem connecting to datasource "+databaseConnection.toString()+" :"+e +":"+ e.getMessage());
 
         			}
-    			logger.log(Level.INFO, "Connected to DB");
-    			logger.log(Level.INFO, "Reading Properties");
+    			console.log(Level.INFO, "Connected to DB");
+    			console.log(Level.INFO, "Reading Properties");
     			if (DataSourceFactory.isPooled(selectedExistingDS))
 	    		{
     				driverProperties= DataSourceFactory.getConnectionProperties(databaseConnection, (ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS));
@@ -509,44 +505,44 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
 	    			driverProperties= DataSourceFactory.getConnectionProperties(databaseConnection, (DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
 	    		}
 
-    			logger.log(Level.INFO, "Properties Read");
+    			console.log(Level.INFO, "Properties Read");
     		}
     		//User wants to connect to existing datasource without modifying properties
     		if (sDSconnection.equalsIgnoreCase("connect"))
     		{
-    			logger.log(Level.INFO, "Attempting to connect to db");
+    			console.log(Level.INFO, "Attempting to connect to db");
     			try{
     				if (DataSourceFactory.isPooled(selectedExistingDS))
     	    		{
-    					logger.log(Level.INFO, "Connection is Pooled for "+selectedExistingDS);
+    					console.log(Level.INFO, "Connection is Pooled for "+selectedExistingDS);
 
     	    			ConnectionPoolDataSource cpds = (ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS);
-    	    			logger.log(Level.INFO, "Got DataSource");
+    	    			console.log(Level.INFO, "Got DataSource");
 
     	    			Connection conn;
     	    			conn = cpds.getPooledConnection().getConnection();
-    	    			logger.log(Level.INFO,"Connected   ");
-    	    			logger.log(Level.INFO,conn.getMetaData().getURL());
+    	    			console.log(Level.INFO,"Connected   ");
+    	    			console.log(Level.INFO,conn.getMetaData().getURL());
     	    			databaseConnection = conn;
     	    			//databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
     					//databaseConnection=DataSourceFactory.getExistingConnection((ConnectionPoolDataSource) databaseNamespace.getExistingObject(selectedExistingDS));
     	    		}
     	    		else{
-    	    			logger.log(Level.INFO, "Connection is not Pooled "+selectedExistingDS);
+    	    			console.log(Level.INFO, "Connection is not Pooled "+selectedExistingDS);
     	    			DataSource nopoolds = (DataSource) databaseNamespace.getExistingObject(selectedExistingDS);
-    	    			logger.log(Level.INFO, "Got DataSource");
+    	    			console.log(Level.INFO, "Got DataSource");
     	    			Connection conn= null;
     	    			conn = nopoolds.getConnection();
-    	    			logger.log(Level.INFO,"Connected   ");
-    	    			logger.log(Level.INFO,conn.getMetaData().getURL());
+    	    			console.log(Level.INFO,"Connected   ");
+    	    			console.log(Level.INFO,conn.getMetaData().getURL());
     	    			databaseConnection = conn;
     	    			//databaseConnection=DataSourceFactory.getExistingConnection((DataSource) databaseNamespace.getExistingObject(selectedExistingDS));
     	    		}
-    				logger.log(Level.INFO, "Connected to DB");
+    				console.log(Level.INFO, "Connected to DB");
     			}
     			catch (Exception e)
     			{
-    				logger.log(Level.SEVERE,"Problem connecting to datasource "+databaseConnection.toString()+" :"+e +":"+ e.getMessage());
+    				console.log(Level.SEVERE,"Problem connecting to datasource "+databaseConnection.toString()+" :"+e +":"+ e.getMessage());
 
     			}
     			sDone="Done";
@@ -568,28 +564,28 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
             	value= request.getParameter("DB"+key);
             	if (value == null)
             		value ="";
-            	logger.log(Level.INFO, key+value+"\n");
+            	console.log(Level.INFO, key+value+"\n");
             	selectedProperties.setProperty(key, value);
             }
             //bind new datasource to JNDI namespace
             if (DataSourceFactory.isPooled(dbVendorName))
             {
-            	databaseNamespace.bindObject(sJNDILoc, (Object)DataSourceFactory.createPooledDS(selectedProperties));
+            	databaseNamespace.bindObject(sJNDILoc, DataSourceFactory.createPooledDS(selectedProperties));
            }
             else{
-            	databaseNamespace.bindObject(sJNDILoc, (Object)DataSourceFactory.createDS(selectedProperties));
+            	databaseNamespace.bindObject(sJNDILoc, DataSourceFactory.createDS(selectedProperties));
            }
            configuringDataSource=false;
         }
     	//user wants to load new vendor and specify an external jar file with classes
     	//if (snewDriver != null && snewDatasource !=null && snewName !=null)
-    	logger.log(Level.INFO,"2: "+snewName);
+    	console.log(Level.INFO,"2: "+snewName);
     	if (snewName!=null)
     	{
-    		logger.log(Level.INFO,"SNEWNAMENOTNULL");
+    		console.log(Level.INFO,"SNEWNAMENOTNULL");
     		if (DataSourceFactory.isCommonVendor(snewName))
     		{
-    			logger.log(Level.INFO, snewName);
+    			console.log(Level.INFO, snewName);
     			snewDriver=DataSourceFactory.getCommonDriver(snewName);
     			snewDatasource = DataSourceFactory.getCommonDatasource(snewName);
     			try{
@@ -597,15 +593,15 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     			}
     			catch (Exception e)
     			{pooledConnection="false";}
-    			logger.log(Level.INFO, snewDriver);
-    			logger.log(Level.INFO, snewDatasource);
-    			logger.log(Level.INFO, pooledConnection);
+    			console.log(Level.INFO, snewDriver);
+    			console.log(Level.INFO, snewDatasource);
+    			console.log(Level.INFO, pooledConnection);
     		}
     		else
     		{snewName=snewOtherName;}
     		if (snewJarLoc != "" && snewJarLoc != null && snewDriver != null && snewDatasource !=null)
     		{
-    			logger.log(Level.INFO,"AddingJar");
+    			console.log(Level.INFO,"AddingJar");
     			//jdbcLoader.loadJarClass(snewDriver, snewJarLoc);
     			try{
     				jarLoader.addJar(pooledConnection, snewName, snewDatasource, snewDriver, snewJarLoc, JarXMLLoader.getPublicResourcesDirectory(), snewJarName);
@@ -615,7 +611,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     			}
     			catch (Exception e)
     			{
-    				logger.log(Level.SEVERE,"There has been an error loading driver or Datasource"+e);
+    				console.log(Level.SEVERE,"There has been an error loading driver or Datasource"+e);
     			}
     		}
     		//DataSourceFactory.addNewDatabaseVendor(snewName, snewDriver, snewDatasource);
@@ -633,7 +629,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
     		}
     		catch (Exception e)
     		{
-    			logger.log(Level.INFO, "Failed to write jar xml file");
+    			console.log(Level.INFO, "Failed to write jar xml file");
     		}
     	}
     	/** //User has selected an existing datasource from the JNDI namespace to use
@@ -676,17 +672,17 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
 
     	//start the web UI
      	//
-     	logger.log(Level.INFO,"Firing the web ui component");
+     	console.log(Level.INFO,"Firing the web ui component");
  		sInstanceID = cc.getExecutionInstanceID();
  		try {
  			sem = new Semaphore(1, true);
  			sem.acquire();
- 			logger.log(Level.INFO,">>>Rendering...");
+ 			console.log(Level.INFO,">>>Rendering...");
  			cc.startWebUIFragment(this);
- 			logger.log(Level.INFO,">>>STARTED");
+ 			console.log(Level.INFO,">>>STARTED");
  			sem.acquire();
  			sem.release();
- 			logger.log(Level.INFO,">>>Done");
+ 			console.log(Level.INFO,">>>Done");
 
  		}
  		catch ( Exception e ) {
@@ -700,7 +696,7 @@ public class InitJNDIWebUI extends InitJNDI implements WebUIFragmentCallback {
  		//now that execution is complete, write datasources to persistent file
 
      	//
- 		String xmlLoc = ccp.getProperty(DATA_PROPERTY);
+ 		String xmlLoc = ccp.getProperty(PROP_XML_LOCATION);
  		JNDINamespaceWriter xmlWriter = new JNDINamespaceWriter();
 
 // 		String fname = JarXMLLoader.getPublicResourcesURL();

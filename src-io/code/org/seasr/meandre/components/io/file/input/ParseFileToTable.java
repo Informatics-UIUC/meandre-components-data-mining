@@ -59,8 +59,8 @@ import org.seasr.datatypes.datamining.table.ColumnTypes;
 import org.seasr.datatypes.datamining.table.MutableTable;
 import org.seasr.datatypes.datamining.table.Table;
 import org.seasr.datatypes.datamining.table.TableFactory;
-import org.seasr.meandre.support.components.io.file.input.FlatFileParser;
-import org.seasr.meandre.support.components.io.file.input.ParsedLine;
+import org.seasr.datatypes.datamining.table.util.FlatFileParser;
+import org.seasr.datatypes.datamining.table.util.ParsedLine;
 
 /**
  * Given a FlatFileReader, create a TableImpl initialized with its contents.
