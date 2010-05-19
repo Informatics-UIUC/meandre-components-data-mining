@@ -43,6 +43,8 @@
 package org.seasr.meandre.components.vis.table;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
@@ -63,11 +65,8 @@ import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 import org.seasr.datatypes.datamining.table.Table;
 import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
-import org.seasr.meandre.support.generic.io.ClasspathUtils;
 import org.seasr.meandre.support.generic.io.JARInstaller;
 import org.seasr.meandre.support.generic.io.JARInstaller.InstallStatus;
-
-import de.schlichtherle.io.FileInputStream;
 
 @Component(creator="Lily Dong",
            description="This component provides a table viewer for a data set. " +
@@ -499,18 +498,27 @@ implements WebUIFragmentCallback {
     @Override
     public void initializeCallBack(ComponentContextProperties ccp)
     throws Exception {
-        File jqueryJar = null;
-        URL jqueryJarDepUrl = ClasspathUtils.findDependencyInClasspath("jquery.jar", getClass());
-        if (jqueryJarDepUrl != null)
-            jqueryJar = new File(jqueryJarDepUrl.toURI());
+        InputStream is = null;
+        URL jqueryJarDepUrl = getClass().getClassLoader().getResource("jquery.js");
+        if (jqueryJarDepUrl != null) {
+            console.fine(String.format("Found JQuery API in %s", jqueryJarDepUrl));
 
-        if (!jqueryJar.exists())
-            throw new ComponentContextException("Could not find jquery.jar");
+            if (jqueryJarDepUrl.getProtocol().equals("jar")) {
+                String sFile = jqueryJarDepUrl.toString().split("!")[0] + "!/";
+                jqueryJarDepUrl = new URL(sFile);
+                JarURLConnection jarConnection = (JarURLConnection)jqueryJarDepUrl.openConnection();
+                is = jarConnection.getJarFileURL().openStream();
+            } else
+                is = jqueryJarDepUrl.openStream();
+        }
 
-        console.fine("Installing jQuery API from: " + jqueryJar.toString());
+        if (is == null)
+            throw new ComponentContextException("Could not find 'jquery.js' in the class path!");
+
+        console.fine("Installing jQuery API from: " + jqueryJarDepUrl);
 
         String jqueryApiDir = ccp.getPublicResourcesDirectory() + File.separator + JQUERY_API_PATH;
-        InstallStatus status = JARInstaller.installFromStream(new FileInputStream(jqueryJar), jqueryApiDir, false);
+        InstallStatus status = JARInstaller.installFromStream(is, jqueryApiDir, false);
         switch (status) {
             case SKIPPED:
                 console.fine("Installation skipped - jQuery API is already installed");
