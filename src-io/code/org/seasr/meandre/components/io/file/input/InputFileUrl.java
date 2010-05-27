@@ -77,7 +77,7 @@ import org.meandre.tools.webdav.WebdavClient;
  */
 
 @Component(
-        creator = "Boris Capitanu and Lily Dong",
+        creator = "Boris Capitanu",
         description = "This module is used to enter the url to a local or remote resource. " +
         "Detailed Description: " +
         "Collect a URL or local path, and create a WebdavClient to access it. " +
@@ -99,7 +99,7 @@ import org.meandre.tools.webdav.WebdavClient;
         "in the file name string.",
         name = "Input URL Or Path",
         tags = "io, input",
-        dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar", "meandre-webdav-1.4.7.jar" },
+        dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar", "meandre-webdav-1.4.8.jar" },
         baseURL="meandre://seasr.org/components/data-mining/")
 
 public class InputFileUrl implements ExecutableComponent {
