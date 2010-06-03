@@ -80,7 +80,7 @@ import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesMode
            name="WebNaiveBayesVis",
            tags="naive bayes, visualization",
            mode=Mode.webui,
-           dependency={ "icons.jar" },
+           dependency={"icons.jar","foundry-datatype-datamining.jar","foundry-datatype-core.jar","trove-2.0.3.jar"},
            baseURL="meandre://seasr.org/components/data-mining/")
 
 @ComponentNatures( natures={
@@ -132,10 +132,10 @@ public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmen
         sb.append("<body>\n");
         sb.append("<p ALIGN='center' >\n");
         sb.append("<APPLET ");
-        sb.append("ARCHIVE='org.meandre.applet.prediction.naivebayes.nbapplet.jar, icons.jar, foundry-datatype-core.jar' WIDTH='800' HEIGHT='600' ");
+        sb.append("ARCHIVE='org.seasr.meandre.applet.prediction.naivebayes.nbapplet.jar, icons.jar, foundry-datatype-core.jar, foundry-datatype-datamining.jar, trove-2.0.3.jar' WIDTH='800' HEIGHT='600' ");
 
         sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
-        sb.append("CODE='org.meandre.applet.prediction.naivebayes.NBApplet.class'> ");
+        sb.append("CODE='org.seasr.meandre.applet.prediction.naivebayes.NBApplet.class'> ");
         sb.append("<PARAM name='servletURL' value='" + webUIUrl).append(sInstanceID).append("'> ");
         sb.append("</APPLET>\n");
         sb.append("</p>\n");

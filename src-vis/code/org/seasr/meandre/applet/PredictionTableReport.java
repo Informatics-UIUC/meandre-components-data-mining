@@ -72,7 +72,7 @@ import org.seasr.datatypes.datamining.table.PredictionTable;
 
 @Component(creator="Lily Dong",
            description="Provides a visualization " +
-           " to evaluate the performance of a predictive model." +
+           "to evaluate the performance of a predictive model." +
            "Detailed Description: Given a PredictionTable with both " +
            "the predictions and the actual values, this module will " +
            "provide a simple visualization to evaluate the performance of " +
@@ -104,6 +104,7 @@ import org.seasr.datatypes.datamining.table.PredictionTable;
            name="PredictionTableReport",
            tags="prediction, visualization",
            mode=Mode.webui,
+           dependency={"foundry-datatype-datamining.jar","foundry-datatype-core.jar", "trove-2.0.3.jar"},
            baseURL="meandre://seasr.org/components/data-mining/")
 
 @ComponentNatures( natures={
@@ -151,10 +152,10 @@ public class PredictionTableReport  implements ExecutableComponent, WebUIFragmen
         sb.append("<p ALIGN=center >\n");
         sb.append("<APPLET\n");
         sb.append(
-                "ARCHIVE=\"org.meandre.applet.predapplet.jar\" WIDTH=\"800\"HEIGHT=\"600\"\n");
+                "ARCHIVE=\"org.seasr.meandre.applet.predapplet.jar, foundry-datatype-datamining.jar, foundry-datatype-core.jar, trove-2.0.3.jar\" WIDTH=\"800\"HEIGHT=\"600\"\n");
         sb.append("CODEBASE=\"public/resources/contexts/java\"\n");
         sb.append(
-                "CODE=\"org.meandre.applet.PredApplet.class\">\n");
+                "CODE=\"org.seasr.meandre.applet.PredApplet.class\">\n");
         sb.append("<PARAM name=\"servletURL\" value=\"").append(sInstanceID).
                 append("\">\n");
         sb.append("</APPLET>\n");
@@ -199,8 +200,8 @@ public class PredictionTableReport  implements ExecutableComponent, WebUIFragmen
     /** When ready for execution.
      *
      * @param cc The component context
-     * @throws ComponentExecutionException An exeception occurred during execution
-     * @throws ComponentContextException Illigal access to context
+     * @throws ComponentExecutionException An exception occurred during execution
+     * @throws ComponentContextException Illegal access to context
      */
     public void execute(ComponentContext cc) throws ComponentExecutionException,
             ComponentContextException {
