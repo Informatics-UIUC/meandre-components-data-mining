@@ -58,7 +58,7 @@
     <property name="build.dir" value="${basedir}/build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
     <property name="dist.dir" value="${basedir}/dist"/>
-    <property name="descriptors.dir" value="${build.dir}/descriptors"/>
+    <property name="descriptors.dir" value="${basedir}/descriptors"/>
     <property name="scripts.gen.dir" value="${build.dir}/scripts"/>
     <property name="javadoc.dir" value="${build.dir}/javadoc"/>
 
@@ -111,22 +111,20 @@
     <!-- Compilation classpath -->
     <path id="classpath.build">
         <fileset dir="${lib.dir}" includes="*.jar"/>
-        <fileset dir="${lib.devkit.dir}" includes="*.jar"/>
     </path>
 
     <!-- Runtime class path -->
     <path id="classpath.runtime">
         <path refid="classpath.build"/>
-        <pathelement path="${java.class.path}"/>
         <fileset dir="${dist.dir}" includes="*.jar"/>
     </path>   
      
     <!-- Runtime class path for component installer (alpha)-->
     <path id="classpath.devkit">
         <path refid="classpath.build"/>
-        <path location="${classes.dir}"/>
+        <pathelement location="${classes.dir}"/>
         <pathelement path="${java.class.path}"/>
-        <fileset dir="${dist.dir}" includes="*.jar"/>
+        <fileset dir="${lib.devkit.dir}" includes="*.jar"/>
     </path>   
 
     <!--
@@ -346,6 +344,22 @@
             <arg value="${username}"/>
             <arg value="-p"/>
             <arg value="${password}"/>
+        </java>
+    </target>
+    
+    <!--
+		Creates the component descriptors and saves them to a particular folder
+	-->
+    <target name="create-descriptors"
+            depends="compile"
+            description="-> creates descriptors for all components. Example: >ant create-descriptors [-Ddescriptors.dir=...]">
+        <java classname="org.meandre.tools.components.CreateDescriptors"
+              fork="yes"
+              maxmemory="1024m">
+            <classpath refid="classpath.devkit"/>
+            <arg value="${classes.dir}"/>
+            <arg value="${lib.dir}"/>
+            <arg value="${descriptors.dir}"/>
         </java>
     </target>
 
