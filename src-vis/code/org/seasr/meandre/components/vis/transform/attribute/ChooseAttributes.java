@@ -53,10 +53,11 @@ import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.seasr.datatypes.datamining.table.ExampleTable;
-import org.seasr.datatypes.datamining.table.Table;
-
-
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
@@ -64,11 +65,8 @@ import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
-import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentInput;
-import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.ComponentProperty;
-import org.meandre.annotations.Component.Mode;
+import org.seasr.datatypes.datamining.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.Table;
 
 
 /**
@@ -84,6 +82,7 @@ import org.meandre.annotations.Component.Mode;
  * Imported from d2k (ncsa.d2k.modules.core.transform.attribute.ChooseAttributes)
  *
  * @author Boris Capitanu
+ * @author Lily Dong
  */
 
 @Component(
@@ -99,7 +98,7 @@ import org.meandre.annotations.Component.Mode;
         tags = "transform",
         mode = Mode.webui,
         baseURL="meandre://seasr.org/components/data-mining/")
-        
+
 public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallback {
 
     @ComponentInput(description = "The Table to choose inputs and outputs from", name = "table")
@@ -118,7 +117,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
     //~ Instance fields *********************************************************
 
     /** The WebUI fragment semaphore */
-    private Semaphore semaphore = new Semaphore(1, true);
+    private final Semaphore semaphore = new Semaphore(1, true);
 
     private String[] attributeLabels;
     private ArrayList<String> selectedInputs;
@@ -156,7 +155,7 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
         for (int i = 0; i < attributeLabels.length; i++) {
             String columnLabel = table.getColumnLabel(i);
 
-            if (columnLabel.equals(""))
+           if (columnLabel.equals(""))
                 columnLabel = new String("Column " + Integer.toString(i));
 
             attributeLabels[i] = columnLabel;
@@ -190,23 +189,37 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
             throw new ComponentExecutionException(e);
         }
 
-        if (selectedInputs.size() == 0 || selectedOutputs.size() == 0)
+        //if (selectedInputs.size() == 0 || selectedOutputs.size() == 0)
+        if (selectedInputs.size() == 0 && selectedOutputs.size() == 0)
             throw new ComponentExecutionException(executionInstanceId +
                     ": No inputs or outputs were selected - cannot continue.");
 
         ExampleTable exampleTable = table.toExampleTable();
 
         // Set the input features
+        int nr = 0;
         int[] inputFeatures = new int[selectedInputs.size()];
-        for (int i = 0; i < selectedInputs.size(); i++)
-            inputFeatures[i] = indexMap.get(selectedInputs.get(i));
-        exampleTable.setInputFeatures(inputFeatures);
+        for (int i = 0; i < selectedInputs.size(); i++) {
+        	if(!indexMap.containsKey(selectedInputs.get(i)))
+        		continue;
+            inputFeatures[nr++] = indexMap.get(selectedInputs.get(i));
+        }
+        int[] result = new int[nr];
+        System.arraycopy(inputFeatures, 0, result, 0, nr);
+        exampleTable.setInputFeatures(result);//inputFeatures);
 
         // Set the output features
-        int[] outputFeatures = new int[selectedOutputs.size()];
-        for (int i = 0; i < selectedOutputs.size(); i++)
-            outputFeatures[i] = indexMap.get(selectedOutputs.get(i));
-        exampleTable.setOutputFeatures(outputFeatures);
+        if(requireOutputSelection) {
+        	nr = 0;
+        	int[] outputFeatures = new int[selectedOutputs.size()];
+        	for (int i = 0; i < selectedOutputs.size(); i++) {
+        		if(!indexMap.containsKey(selectedOutputs.get(i)))
+        			continue;
+        		outputFeatures[nr++] = indexMap.get(selectedOutputs.get(i));
+        	}
+        	System.arraycopy(outputFeatures, 0, result, 0, nr);
+        	exampleTable.setOutputFeatures(result);//outputFeatures);
+        }
 
         // Send the result
         context.pushDataComponentToOutput(DATA_OUTPUT_EXAMPLE_TABLE, exampleTable);
