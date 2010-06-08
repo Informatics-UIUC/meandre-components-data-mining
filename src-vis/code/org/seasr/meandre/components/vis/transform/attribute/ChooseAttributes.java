@@ -47,8 +47,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,16 +55,16 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
+import org.meandre.annotations.Component.Licenses;
 import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.datatypes.datamining.table.Table;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
 
 /**
@@ -88,36 +86,48 @@ import org.seasr.datatypes.datamining.table.Table;
 @Component(
         creator = "Boris Capitanu",
         description = "<p>This module allows the user to choose which columns of a table are inputs and outputs." +
-        "</p><p>Detailed Description: " +
-        "This module outputs an <i>Example Table</i> with the input and output features assigned. " +
-        "Inputs and outputs do not have to be selected, nor do they have to be mutually exclusive. " +
-        "</p><p>Data Handling: " +
-        "This module does not modify the data in the table. It only sets the input and output features.",
-
+                      "</p><p>Detailed Description: " +
+                      "This module outputs an <i>Example Table</i> with the input and output features assigned. " +
+                      "Inputs and outputs do not have to be selected, nor do they have to be mutually exclusive. " +
+                      "</p><p>Data Handling: " +
+                      "This module does not modify the data in the table. It only sets the input and output features.",
         name = "Choose Attributes",
         tags = "transform",
+        rights = Licenses.UofINCSA,
         mode = Mode.webui,
-        baseURL="meandre://seasr.org/components/data-mining/")
+        baseURL = "meandre://seasr.org/components/data-mining/"
+)
+public class ChooseAttributes extends AbstractExecutableComponent implements WebUIFragmentCallback {
 
-public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallback {
+    //------------------------------ INPUTS -----------------------------------------------------
 
-    @ComponentInput(description = "The Table to choose inputs and outputs from", name = "table")
-    final static String DATA_INPUT_TABLE = "table";
+    @ComponentInput(
+            description = "The Table to choose inputs and outputs from" +
+            		      "<br>TYPE: org.seasr.datatypes.datamining.table.Table",
+            name = "table"
+    )
+    protected final static String DATA_INPUT_TABLE = "table";
 
-    @ComponentOutput(description = "The Example Table with input and output features assigned", name = "example_table")
-    final static String DATA_OUTPUT_EXAMPLE_TABLE = "example_table";
+    //------------------------------ OUTPUTS -----------------------------------------------------
 
-    @ComponentProperty(description = "Set to 'true' if selection of an output attribute is required",
-                       name = "require_output_selection",
-                       defaultValue = "true")
-    final static String DATA_PROPERTY_REQUIRE_OUTPUT = "require_output_selection";
+    @ComponentOutput(
+            description = "The Example Table with input and output features assigned" +
+            		      "<br>TYPE: org.seasr.datatypes.datamining.table.ExampleTable",
+            name = "example_table"
+    )
+    protected final static String DATA_OUTPUT_EXAMPLE_TABLE = "example_table";
 
+    //------------------------------ PROPERTIES --------------------------------------------------
 
+    @ComponentProperty(
+            description = "Set to 'true' if selection of an output attribute is required",
+            name = "require_output_selection",
+            defaultValue = "true"
+    )
+    protected final static String DATA_PROPERTY_REQUIRE_OUTPUT = "require_output_selection";
 
-    //~ Instance fields *********************************************************
+    //--------------------------------------------------------------------------------------------
 
-    /** The WebUI fragment semaphore */
-    private final Semaphore semaphore = new Semaphore(1, true);
 
     private String[] attributeLabels;
     private ArrayList<String> selectedInputs;
@@ -125,38 +135,35 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
     private boolean requireOutputSelection;
 
     private String executionInstanceId;
+    private boolean _done;
 
-    //url of the webui, to redirect to when done
-    private String webUIUrl;
 
-    public void initialize(ComponentContextProperties context) {
-        try {
-            requireOutputSelection = Boolean.parseBoolean(context.getProperty(DATA_PROPERTY_REQUIRE_OUTPUT));
-        }
-        catch (Exception e) {
-            context.getLogger().log(Level.SEVERE, "Initialize error: ", e);
-            throw new RuntimeException(e);
-        }
+    //--------------------------------------------------------------------------------------------
+
+    @Override
+    public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+        requireOutputSelection = Boolean.parseBoolean(getPropertyOrDieTrying(DATA_PROPERTY_REQUIRE_OUTPUT, true, true, ccp));
     }
 
-    public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
-        executionInstanceId = context.getExecutionInstanceID();
-        webUIUrl = context.getWebUIUrl(true).toString();
+    @Override
+    public void executeCallBack(ComponentContext cc) throws Exception {
+        executionInstanceId = cc.getExecutionInstanceID();
 
         selectedInputs = new ArrayList<String>();
         selectedOutputs = new ArrayList<String>();
 
         // get the input Table (or ExampleTable)
-        Table table = (Table) context.getDataComponentFromInput(DATA_INPUT_TABLE);
+        Table table = (Table) cc.getDataComponentFromInput(DATA_INPUT_TABLE);
+        console.fine("Input table is of type: " + table.getClass().getName());
 
         attributeLabels = new String[table.getNumColumns()];
         HashMap<String, Integer> indexMap = new HashMap<String, Integer>(attributeLabels.length);
 
-        for (int i = 0; i < attributeLabels.length; i++) {
+        for (int i = 0, iMax = attributeLabels.length; i < iMax; i++) {
             String columnLabel = table.getColumnLabel(i);
 
-           if (columnLabel.equals(""))
-                columnLabel = new String("Column " + Integer.toString(i));
+            if (columnLabel.equals(""))
+                columnLabel = String.format("Column %d", i);
 
             attributeLabels[i] = columnLabel;
             indexMap.put(columnLabel, i);
@@ -167,119 +174,126 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
             int[] inputFeatures = et.getInputFeatures();
             int[] outputFeatures = et.getOutputFeatures();
 
-            if (inputFeatures != null) {
-                for (int i = 0; i < inputFeatures.length; i++)
+            if (inputFeatures != null)
+                for (int i = 0, iMax = inputFeatures.length; i < iMax; i++)
                     selectedInputs.add(et.getColumnLabel(inputFeatures[i]));
-            }
 
-            if (outputFeatures != null) {
-                for (int i = 0; i < outputFeatures.length; i++)
+            if (outputFeatures != null)
+                for (int i = 0, iMax = outputFeatures.length; i < iMax; i++)
                     selectedOutputs.add(et.getColumnLabel(outputFeatures[i]));
+        }
+
+        _done = false;
+
+        cc.startWebUIFragment(this);
+
+        while (!cc.isFlowAborting() && !_done)
+            Thread.sleep(1000);
+
+        if (cc.isFlowAborting())
+            console.info("Flow abort requested - terminating component execution...");
+        else {
+            if (selectedInputs.size() == 0 && selectedOutputs.size() == 0)
+                throw new ComponentExecutionException(executionInstanceId +
+                        ": No inputs or outputs were selected - cannot continue.");
+
+            ExampleTable exampleTable = table.toExampleTable();
+
+            // Set the input features
+            int[] inputFeatures = new int[selectedInputs.size()];
+            for (int i = 0, iMax = selectedInputs.size(); i < iMax; i++)
+                inputFeatures[i] = indexMap.get(selectedInputs.get(i));
+            exampleTable.setInputFeatures(inputFeatures);
+
+            // Set the output features
+            if (selectedOutputs.size() > 0) {
+                int[] outputFeatures = new int[selectedOutputs.size()];
+                for (int i = 0, iMax = selectedOutputs.size(); i < iMax; i++)
+                    outputFeatures[i] = indexMap.get(selectedOutputs.get(i));
+                exampleTable.setOutputFeatures(outputFeatures);
             }
+
+            // Send the result
+            cc.pushDataComponentToOutput(DATA_OUTPUT_EXAMPLE_TABLE, exampleTable);
         }
 
-        try {
-            semaphore.acquire();
-            context.startWebUIFragment(this);
-            semaphore.acquire();
-            semaphore.release();
-
-            context.stopWebUIFragment(this);
-        } catch (InterruptedException e) {
-            throw new ComponentExecutionException(e);
-        }
-
-        //if (selectedInputs.size() == 0 || selectedOutputs.size() == 0)
-        if (selectedInputs.size() == 0 && selectedOutputs.size() == 0)
-            throw new ComponentExecutionException(executionInstanceId +
-                    ": No inputs or outputs were selected - cannot continue.");
-
-        ExampleTable exampleTable = table.toExampleTable();
-
-        // Set the input features
-        int nr = 0;
-        int[] inputFeatures = new int[selectedInputs.size()];
-        for (int i = 0; i < selectedInputs.size(); i++) {
-        	if(!indexMap.containsKey(selectedInputs.get(i)))
-        		continue;
-            inputFeatures[nr++] = indexMap.get(selectedInputs.get(i));
-        }
-        int[] result = new int[nr];
-        System.arraycopy(inputFeatures, 0, result, 0, nr);
-        exampleTable.setInputFeatures(result);//inputFeatures);
-
-        // Set the output features
-        if(requireOutputSelection) {
-        	nr = 0;
-        	int[] outputFeatures = new int[selectedOutputs.size()];
-        	for (int i = 0; i < selectedOutputs.size(); i++) {
-        		if(!indexMap.containsKey(selectedOutputs.get(i)))
-        			continue;
-        		outputFeatures[nr++] = indexMap.get(selectedOutputs.get(i));
-        	}
-        	System.arraycopy(outputFeatures, 0, result, 0, nr);
-        	exampleTable.setOutputFeatures(result);//outputFeatures);
-        }
-
-        // Send the result
-        context.pushDataComponentToOutput(DATA_OUTPUT_EXAMPLE_TABLE, exampleTable);
+        cc.stopWebUIFragment(this);
     }
 
-    public void dispose(ComponentContextProperties context) { }
+    @Override
+    public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
+    }
+
+    //--------------------------------------------------------------------------------------------
 
     public void emptyRequest(HttpServletResponse response) throws WebUIException {
+        console.entering(getClass().getName(), "emptyRequest", response);
+
         try {
             response.getWriter().println(getViz());
-        } catch (IOException e) {
+        }
+        catch (Exception e) {
             throw new WebUIException(e);
         }
+
+        console.exiting(getClass().getName(), "emptyRequest");
     }
 
+    public void handle(HttpServletRequest request, HttpServletResponse response) throws WebUIException {
+        console.entering(getClass().getName(), "handle", response);
 
-    public void handle(HttpServletRequest request, HttpServletResponse response)
-    throws WebUIException {
+        if (request.getParameterMap().isEmpty() && request.getMethod().equals("GET"))
+            emptyRequest(response);
 
-        String[] inputs = request.getParameterValues("inputs");
-        String[] outputs = request.getParameterValues("outputs");
+        else
 
-        boolean missingOutputs = requireOutputSelection && (outputs == null || outputs.length == 0);
-        if (inputs == null || inputs.length == 0 || missingOutputs) {
-            // return error message
-            try {
-                PrintWriter writer = response.getWriter();
-                writer.println("<html><head><title>Choose Attributes</title></head><body>");
-                writer.print("<h3 style='color: red;'>You need to select at least one input");
-                if (requireOutputSelection)
-                    writer.print(" and one output");
-                writer.println(" attribute.</h3><p/>");
+        if (request.getMethod().equals("POST")) {
+            String[] inputs = request.getParameterValues("inputs");
+            String[] outputs = request.getParameterValues("outputs");
 
-                writer.println("<form><input type='button' value='Go back' onClick='history.back()'/></form>");
-                writer.println("</body></html>");
-            } catch (IOException e) {
-                e.printStackTrace();
+            boolean missingOutputs = requireOutputSelection && (outputs == null || outputs.length == 0);
+            if (inputs == null || inputs.length == 0 || missingOutputs) {
+                // return error message
+                try {
+                    PrintWriter writer = response.getWriter();
+                    writer.println("<html><head><title>Choose Attributes</title></head><body>");
+                    writer.print("<h3 style='color: red;'>You need to select at least one input");
+                    if (requireOutputSelection)
+                        writer.print(" and one output");
+                    writer.println(" attribute.</h3><p/>");
+
+                    writer.println("<form><input type='button' value='Go back' onClick='history.back()'/></form>");
+                    writer.println("</body></html>");
+                }
+                catch (IOException e) {
+                    throw new WebUIException(e);
+                }
+            } else { //assuming 'Submit' has been pressed
+
+                selectedInputs.clear();
+                selectedOutputs.clear();
+
+                selectedInputs.addAll(Arrays.asList(inputs));
+                if (outputs != null && outputs.length > 0)
+                    selectedOutputs.addAll(Arrays.asList(outputs));
+
+                _done = true;
+
+                //redirect the browser back to the webui's main url so any
+                //subsequent visualizations will appear automatically
+                try {
+                    response.getWriter().println("<html><head><meta http-equiv='REFRESH' content='1;url=/'></head><body></body></html>");
+                }
+                catch (IOException e) {
+                    throw new WebUIException(e);
+                }
             }
-        } else { //assuming 'done' has been pressed, releasing webui
-
-            selectedInputs.clear();
-            selectedOutputs.clear();
-
-            selectedInputs.addAll(Arrays.asList(inputs));
-            if (outputs != null)
-                selectedOutputs.addAll(Arrays.asList(outputs));
-
-             //redirect the browser back to the webui's main url so any
-            //subsequent visualizations will appear automatically
-            try{
-                PrintWriter writer = response.getWriter();
-                writer.println("<html><head><title>Choose Attributes</title>");
-                writer.println("<meta http-equiv='REFRESH' content='0;url=/'></HEAD>");
-                writer.println("<body>Choose Attributes Releasing Display</body></html>");
-            }catch (IOException e) {
-                e.printStackTrace();
-            }
-            semaphore.release();
         }
+
+        console.exiting(getClass().getName(), "handle");
     }
+
+    //--------------------------------------------------------------------------------------------
 
     private String getViz() {
         int maxEntriesToDisplay = Math.min(attributeLabels.length, 20);
@@ -344,5 +358,4 @@ public class ChooseAttributes implements ExecutableComponent, WebUIFragmentCallb
 
         return sb.toString();
     }
-
 } // end class ChooseAttributes
