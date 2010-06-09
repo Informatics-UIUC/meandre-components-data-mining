@@ -351,11 +351,14 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
         sb.append("</select></fieldset></td>");
         sb.append("</tr></table>");
         sb.append("<input type='HIDDEN' name='done' value='true'/>");
-        sb.append("<p><input type='SUBMIT' id='submitButton' value='Submit' disabled/></p>");
+        sb.append("<p><input type='SUBMIT' id='submitButton' value='Submit'/></p>");
         sb.append("</form>");
+        sb.append("<script language='JavaScript' type='text/javascript'>");
+        sb.append("checkSelection();");
+        sb.append("</script>");
         sb.append("</body>");
         sb.append("</html>");
 
         return sb.toString();
     }
-} // end class ChooseAttributes
+}
