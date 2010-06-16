@@ -45,8 +45,6 @@ package org.seasr.meandre.components.vis.transform.attribute;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -130,8 +128,8 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
 
 
     private String[] attributeLabels;
-    private ArrayList<String> selectedInputs;
-    private ArrayList<String> selectedOutputs;
+    private ArrayList<Integer> selectedInputs;
+    private ArrayList<Integer> selectedOutputs;
     private boolean requireOutputSelection;
 
     private String executionInstanceId;
@@ -149,24 +147,22 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
     public void executeCallBack(ComponentContext cc) throws Exception {
         executionInstanceId = cc.getExecutionInstanceID();
 
-        selectedInputs = new ArrayList<String>();
-        selectedOutputs = new ArrayList<String>();
+        selectedInputs = new ArrayList<Integer>();
+        selectedOutputs = new ArrayList<Integer>();
 
         // get the input Table (or ExampleTable)
         Table table = (Table) cc.getDataComponentFromInput(DATA_INPUT_TABLE);
         console.fine("Input table is of type: " + table.getClass().getName());
 
         attributeLabels = new String[table.getNumColumns()];
-        HashMap<String, Integer> indexMap = new HashMap<String, Integer>(attributeLabels.length);
 
-        for (int i = 0, iMax = attributeLabels.length; i < iMax; i++) {
+        for (int i = 0, iMax = table.getNumColumns(); i < iMax; i++) {
             String columnLabel = table.getColumnLabel(i);
 
             if (columnLabel.equals(""))
                 columnLabel = String.format("Column %d", i);
 
             attributeLabels[i] = columnLabel;
-            indexMap.put(columnLabel, i);
         }
 
         if (table instanceof ExampleTable) {
@@ -176,11 +172,11 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
 
             if (inputFeatures != null)
                 for (int i = 0, iMax = inputFeatures.length; i < iMax; i++)
-                    selectedInputs.add(et.getColumnLabel(inputFeatures[i]));
+                    selectedInputs.add(inputFeatures[i]);
 
             if (outputFeatures != null)
                 for (int i = 0, iMax = outputFeatures.length; i < iMax; i++)
-                    selectedOutputs.add(et.getColumnLabel(outputFeatures[i]));
+                    selectedOutputs.add(outputFeatures[i]);
         }
 
         _done = false;
@@ -202,14 +198,14 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
             // Set the input features
             int[] inputFeatures = new int[selectedInputs.size()];
             for (int i = 0, iMax = selectedInputs.size(); i < iMax; i++)
-                inputFeatures[i] = indexMap.get(selectedInputs.get(i));
+                inputFeatures[i] = selectedInputs.get(i);
             exampleTable.setInputFeatures(inputFeatures);
 
             // Set the output features
             if (selectedOutputs.size() > 0) {
                 int[] outputFeatures = new int[selectedOutputs.size()];
                 for (int i = 0, iMax = selectedOutputs.size(); i < iMax; i++)
-                    outputFeatures[i] = indexMap.get(selectedOutputs.get(i));
+                    outputFeatures[i] = selectedOutputs.get(i);
                 exampleTable.setOutputFeatures(outputFeatures);
             }
 
@@ -273,9 +269,12 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
                 selectedInputs.clear();
                 selectedOutputs.clear();
 
-                selectedInputs.addAll(Arrays.asList(inputs));
+                for (String in : inputs)
+                    selectedInputs.add(Integer.parseInt(in));
+
                 if (outputs != null && outputs.length > 0)
-                    selectedOutputs.addAll(Arrays.asList(outputs));
+                    for (String out : outputs)
+                        selectedOutputs.add(Integer.parseInt(out));
 
                 _done = true;
 
@@ -316,7 +315,7 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
         		"     function checkDuplicates(source, dest) {" +
         		"         for (var i = 0; i < source.options.length; i++) {" +
         		"             var srcOpt = source.options[i];" +
-        		"             var destOpt = document.getElementById(dest.name + ':' + srcOpt.value);" +
+        		"             var destOpt = dest.options[i];" +
         		"             if (destOpt != null) {" +
         		"                 if (srcOpt.selected)" +
         		"                     destOpt.selected = false;" +
@@ -332,9 +331,10 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
         		"onChange='checkDuplicates(document.frmSelectAttributes.inputs, document.frmSelectAttributes.outputs); " +
         		"checkSelection();'>");
 
-        for (String inputLabel : attributeLabels) {
-            sb.append("<option id='inputs:" + inputLabel + "' value='" + inputLabel + "'" +
-                    (selectedInputs.contains(inputLabel) ? " selected" : "") + ">" + inputLabel + "</option>");
+        for (int i = 0, iMax = attributeLabels.length; i < iMax; i++) {
+            String inputLabel = attributeLabels[i];
+            sb.append("<option value='" + i + "'" +
+                    (selectedInputs.contains(i) ? " selected" : "") + ">" + inputLabel + "</option>");
         }
 
         sb.append("</select></fieldset></td>");
@@ -343,9 +343,10 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
                 "onChange='checkDuplicates(document.frmSelectAttributes.outputs, document.frmSelectAttributes.inputs); " +
                 "checkSelection();'>");
 
-        for (String outputLabel : attributeLabels) {
-            sb.append("<option id='outputs:" + outputLabel + "' value='" + outputLabel + "'" +
-                    (selectedOutputs.contains(outputLabel) ? " selected" : "") + ">" + outputLabel + "</option>");
+        for (int i = 0, iMax = attributeLabels.length; i < iMax; i++) {
+            String outputLabel = attributeLabels[i];
+            sb.append("<option value='" + i + "'" +
+                    (selectedOutputs.contains(i) ? " selected" : "") + ">" + outputLabel + "</option>");
         }
 
         sb.append("</select></fieldset></td>");
