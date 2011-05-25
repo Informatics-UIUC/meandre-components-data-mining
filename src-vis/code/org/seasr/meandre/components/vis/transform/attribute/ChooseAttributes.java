@@ -50,11 +50,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Licenses;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.annotations.Component.Licenses;
-import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
@@ -104,7 +104,7 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
             		      "<br>TYPE: org.seasr.datatypes.datamining.table.Table",
             name = "table"
     )
-    protected final static String DATA_INPUT_TABLE = "table";
+    protected final static String IN_TABLE = "table";
 
     //------------------------------ OUTPUTS -----------------------------------------------------
 
@@ -113,7 +113,7 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
             		      "<br>TYPE: org.seasr.datatypes.datamining.table.ExampleTable",
             name = "example_table"
     )
-    protected final static String DATA_OUTPUT_EXAMPLE_TABLE = "example_table";
+    protected final static String OUT_EXAMPLE_TABLE = "example_table";
 
     //------------------------------ PROPERTIES --------------------------------------------------
 
@@ -122,7 +122,7 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
             name = "require_output_selection",
             defaultValue = "true"
     )
-    protected final static String DATA_PROPERTY_REQUIRE_OUTPUT = "require_output_selection";
+    protected final static String PROP_REQUIRE_OUTPUT = "require_output_selection";
 
     //--------------------------------------------------------------------------------------------
 
@@ -140,7 +140,7 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
 
     @Override
     public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
-        requireOutputSelection = Boolean.parseBoolean(getPropertyOrDieTrying(DATA_PROPERTY_REQUIRE_OUTPUT, true, true, ccp));
+        requireOutputSelection = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_REQUIRE_OUTPUT, ccp));
     }
 
     @Override
@@ -151,7 +151,7 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
         selectedOutputs = new ArrayList<Integer>();
 
         // get the input Table (or ExampleTable)
-        Table table = (Table) cc.getDataComponentFromInput(DATA_INPUT_TABLE);
+        Table table = (Table) cc.getDataComponentFromInput(IN_TABLE);
         console.fine("Input table is of type: " + table.getClass().getName());
 
         attributeLabels = new String[table.getNumColumns()];
@@ -210,7 +210,7 @@ public class ChooseAttributes extends AbstractExecutableComponent implements Web
             }
 
             // Send the result
-            cc.pushDataComponentToOutput(DATA_OUTPUT_EXAMPLE_TABLE, exampleTable);
+            cc.pushDataComponentToOutput(OUT_EXAMPLE_TABLE, exampleTable);
         }
 
         cc.stopWebUIFragment(this);

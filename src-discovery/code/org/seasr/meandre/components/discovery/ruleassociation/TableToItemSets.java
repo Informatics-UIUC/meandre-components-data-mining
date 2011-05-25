@@ -46,11 +46,9 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.Table;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSets;
 
 /**
@@ -117,40 +115,30 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSets;
 
         name = "Table To Item Sets",
         tags = "rule association, converter, itemsets, table, discovery",
-        baseURL="meandre://seasr.org/components/data-mining/")
-
-public class TableToItemSets implements ExecutableComponent {
+        baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class TableToItemSets extends AbstractExecutableComponent {
 
     @ComponentInput(description = "The table that items and sets will be extracted from", name = "table")
-    final static String DATA_INPUT_TABLE = "table";
+    final static String IN_TABLE = "table";
 
     @ComponentOutput(description = "The items of interest that were found in the table and " +
             "a representation of the items that occur together in the table", name = "item_sets")
-    final static String DATA_OUTPUT_ITEM_SETS = "item_sets";
+    final static String OUT_ITEM_SETS = "item_sets";
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#initialize(org.meandre.core.ComponentContextProperties)
-     */
-    public void initialize(ComponentContextProperties context) {
 
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
 	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
-     */
-	public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
-	    ItemSets iss = new ItemSets((Table) context.getDataComponentFromInput(DATA_INPUT_TABLE));
-	    context.pushDataComponentToOutput(DATA_OUTPUT_ITEM_SETS, iss);
+	@Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+	    ItemSets iss = new ItemSets((Table) cc.getDataComponentFromInput(IN_TABLE));
+	    cc.pushDataComponentToOutput(OUT_ITEM_SETS, iss);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.meandre.core.ExecutableComponent#dispose(org.meandre.core.ComponentContextProperties)
-	 */
-	public void dispose(ComponentContextProperties context) {
-
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
     }
 }
 

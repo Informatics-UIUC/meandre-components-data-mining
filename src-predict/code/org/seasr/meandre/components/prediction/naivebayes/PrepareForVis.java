@@ -49,7 +49,7 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel;
 
 /**
@@ -77,16 +77,17 @@ import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesMode
                 "where N is the number of inputs and M is the number of training examples.",
            name="PrepareForVis",
            tags="naive bayes, visualization",
-           baseURL="meandre://seasr.org/components/data-mining/")
-
-public class PrepareForVis implements ExecutableComponent {
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class PrepareForVis extends AbstractExecutableComponent {
     @ComponentInput(description="Read org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel as input.",
                     name= "nbModel")
-    public final static String DATA_INPUT = "nbModel";
+    public final static String IN_NBMODEL = "nbModel";
+
     @ComponentOutput(description="Ouptut org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel " +
                      "after calculation.",
                      name="nbModel")
-    public final static String DATA_OUTPUT = "nbModel";
+    public final static String OUT_NBMODEL = "nbModel";
 
     //~ Methods *****************************************************************
 
@@ -95,14 +96,16 @@ public class PrepareForVis implements ExecutableComponent {
     *
     * @param ccp ComponentContextProperties
     */
-    public void initialize(ComponentContextProperties ccp) {}
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {}
 
     /**
     * Called at the end of an execution flow.
     *
     * @param ccp ComponentContextProperties
     */
-    public void dispose(ComponentContextProperties ccp) {}
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 
 
     /**
@@ -112,11 +115,11 @@ public class PrepareForVis implements ExecutableComponent {
      * @throws ComponentExecutionException
      * @throws ComponentContextException
      */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-           ComponentContextException {
-        NaiveBayesModel nbm = (NaiveBayesModel) cc.getDataComponentFromInput(DATA_INPUT);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        NaiveBayesModel nbm = (NaiveBayesModel) cc.getDataComponentFromInput(IN_NBMODEL);
         nbm.setupForVis();
         nbm.setIsReadyForVisualization(true);
-        cc.pushDataComponentToOutput(DATA_OUTPUT, nbm);
+        cc.pushDataComponentToOutput(OUT_NBMODEL, nbm);
     }
 } // end class PrepareForVis

@@ -50,18 +50,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentNature;
 import org.meandre.annotations.ComponentNatures;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.prediction.decisiontree.ViewableDTModel;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeModel;
 
@@ -99,7 +99,8 @@ import org.seasr.meandre.support.components.prediction.decisiontree.c45.Decision
            tags="decision tree, visualization",
            mode=Mode.webui,
            dependency={"icons.jar","foundry-datatype-datamining.jar","foundry-datatype-core.jar", "trove-2.0.3.jar"},
-           baseURL="meandre://seasr.org/components/data-mining/")
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
@@ -107,16 +108,16 @@ import org.seasr.meandre.support.components.prediction.decisiontree.c45.Decision
 )})
 
 
-public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragmentCallback {
+public final class WebDecisionTreeVis extends AbstractExecutableComponent implements WebUIFragmentCallback {
     @ComponentInput(description="Read a decision tree model implementing " +
                     "org.seasr.meandre.support.components.prediction.decisiontree.support.ViewableDTModel interface.",
                     name= "vdtModel")
-    final static String DATA_INPUT = "vdtModel";
+    final static String IN_VDTMODEL = "vdtModel";
 
     @ComponentProperty(defaultValue="true",
                        description="Control whether debugging information is output to the console.",
                        name="verbose")
-    final static String DATA_PROPERTY= "verbose";
+    final static String PROP_VERBOSE= "verbose";
 
     /** The blocking semaphore */
     private final Semaphore sem = new Semaphore(1, true);
@@ -206,11 +207,9 @@ public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragm
      * @throws ComponentExecutionException An exeception occurred during execution
      * @throws ComponentContextException Illigal access to context
      */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-            ComponentContextException {
-        verbose = Boolean.valueOf(cc.getProperty(DATA_PROPERTY));
-
-        Object theOb = cc.getDataComponentFromInput(DATA_INPUT);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        Object theOb = cc.getDataComponentFromInput(IN_VDTMODEL);
         model = (ViewableDTModel)theOb;
 
         sInstanceID = cc.getExecutionInstanceID();
@@ -227,7 +226,6 @@ public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragm
         }
 
         cc.stopWebUIFragment(this);
-        System.out.flush();
     }
 
     /**
@@ -235,12 +233,16 @@ public final class WebDecisionTreeVis implements ExecutableComponent, WebUIFragm
      *
      * @param ccp ComponentContextProperties
      */
-    public void initialize(ComponentContextProperties ccp) {}
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+        verbose = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp));
+    }
 
     /**
     * Called at the end of an execution flow.
     *
     * @param ccp ComponentContextProperties
     */
-    public void dispose(ComponentContextProperties ccp) {}
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 }

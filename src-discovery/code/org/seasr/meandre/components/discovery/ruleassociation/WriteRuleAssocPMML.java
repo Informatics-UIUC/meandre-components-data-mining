@@ -50,10 +50,8 @@ import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.discovery.ruleassociation.FreqItemSet;
 import org.seasr.meandre.support.components.discovery.ruleassociation.RulePMMLTags;
 import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
@@ -67,26 +65,28 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
            description="Write a RuleAssociationModel out in PMML(Predictive Model Markup Language) format complying with the PMML 2.0 DTD.",
            name="Write Rule Assoc PMML",
            tags="frequent pattern mining, rule association",
-           baseURL="meandre://seasr.org/components/data-mining/")
-
-public class WriteRuleAssocPMML  implements ExecutableComponent, RulePMMLTags {
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class WriteRuleAssocPMML extends AbstractExecutableComponent implements RulePMMLTags {
     @ComponentInput(description="Read a representaiton of association rules." +
     		"<br>TYPE: org.seasr.meandre.support.components.discovery.ruleassociation.support.RuleTable",
                    name= "ruleTable")
-    final static String DATA_INPUT = "ruleTable";
+    final static String IN_TABLE = "ruleTable";
 
     @ComponentOutput(description="Output document for PMML." +
     		"<br>TYPE: org.dom4j.Document",
                      name="document")
-    public final static String DATA_OUTPUT = "document";
+    public final static String OUT_DOC = "document";
 
-    public void initialize(ComponentContextProperties ccp) {}
-    public void dispose(ComponentContextProperties ccp) {}
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {}
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 
-    public void execute(ComponentContext cc)
-            throws ComponentExecutionException, ComponentContextException {
-        RuleTable rt = (RuleTable)cc.getDataComponentFromInput(DATA_INPUT);
-        cc.pushDataComponentToOutput(DATA_OUTPUT, writePMML(rt));
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        RuleTable rt = (RuleTable)cc.getDataComponentFromInput(IN_TABLE);
+        cc.pushDataComponentToOutput(OUT_DOC, writePMML(rt));
     }
 
     public static Document writePMML(RuleTable rt) {//, String fileName) {

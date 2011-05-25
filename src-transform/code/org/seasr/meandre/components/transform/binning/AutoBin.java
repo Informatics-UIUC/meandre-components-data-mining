@@ -52,7 +52,6 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.datatypes.datamining.table.transformations.BinTransform;
 import org.seasr.datatypes.datamining.table.transformations.binning.BinDescriptor;
@@ -82,20 +81,22 @@ import org.seasr.meandre.support.components.transform.binning.AutoBinOPT;
            "Scalability: The module requires enough memory to make copies of " +
            "each of the scalar input columns.",
            name = "AutoBin",
-           tags = "binning, transform", dependency={"trove-2.0.3.jar"},
-           baseURL="meandre://seasr.org/components/data-mining/")
+           tags = "binning, transform",
+           dependency={"trove-2.0.3.jar"},
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class AutoBin extends AutoBinOPT {
 
-public class AutoBin extends AutoBinOPT implements ExecutableComponent {
     @ComponentInput(description = "Read a table of examples. It is type of " +
                     "org.seasr.datatypes.datamining.table.ExampleTable",
                     name = "exampleTable")
-    final static String DATA_INPUT = "exampleTable";
+    final static String IN_EXAMPLE_TABLE = "exampleTable";
 
     @ComponentOutput(description =
             "Output ncsa.d2k.modules.core.datatype.table.transformations.BinTransform " +
             "that contains all the information needed to discretize the Example Table",
             name = "binTransform")
-    final static String DATA_OUTPUT = "binTransform";
+    final static String OUT_BIN_TRANSFORM = "binTransform";
 
     @ComponentProperty(defaultValue = "0",
                        description =
@@ -105,7 +106,7 @@ public class AutoBin extends AutoBinOPT implements ExecutableComponent {
             "by specifying the number of bins. This will result in equally spaced bins " +
             "between the minimum and maximum for each scalar column. It must be 0 or 1.",
             name = "method")
-    final static String DATA_PROPERTY_1 = "method";
+    final static String PROP_METHOD = "method";
 
     @ComponentProperty(defaultValue = "1",
                        description =
@@ -117,7 +118,7 @@ public class AutoBin extends AutoBinOPT implements ExecutableComponent {
             "bins will contain a number that is  equal or greater to weight values." +
             "It must be a positive integer.",
             name = "weight")
-    final static String DATA_PROPERTY_2 = "weight";
+    final static String PROP_WEIGHT = "weight";
 
     @ComponentProperty(defaultValue = "2",
                        description =
@@ -125,7 +126,7 @@ public class AutoBin extends AutoBinOPT implements ExecutableComponent {
             "This will give equally spaced bins between the minimum and maximum " +
             "for each scalar column. It must be higher than 1.",
             name = "nrOfBins")
-    final static String DATA_PROPERTY_3 = "nrOfBins";
+    final static String PROP_NUMBINS = "nrOfBins";
 
 
     //~ Static fields/initializers **********************************************
@@ -169,7 +170,22 @@ public class AutoBin extends AutoBinOPT implements ExecutableComponent {
      *
      * @param ccp ComponentContextProperties
      */
-    public void initialize(ComponentContextProperties ccp) {
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+        binMethod = Integer.parseInt(getPropertyOrDieTrying(PROP_METHOD, ccp));
+        if (binMethod != 0 && binMethod != 1)
+            throw new ComponentExecutionException(
+                    "Discretization Method must be 0 or 1");
+
+        binWeight = Integer.parseInt(getPropertyOrDieTrying(PROP_WEIGHT, ccp));
+        if (binWeight < 1)
+            throw new ComponentExecutionException(
+                    "Number of items per bin must be a positive integer.");
+
+        numberOfBins = Integer.parseInt(getPropertyOrDieTrying(PROP_NUMBINS, ccp));
+        if (numberOfBins < 2)
+            throw new ComponentExecutionException(
+                    "Number of bins must be higher than 1.");
     }
 
     /**
@@ -177,7 +193,8 @@ public class AutoBin extends AutoBinOPT implements ExecutableComponent {
      *
      * @param ccp ComponentContextProperties
      */
-    public void dispose(ComponentContextProperties ccp) {
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
         // TODO Auto-generated method stub
     }
 
@@ -188,24 +205,9 @@ public class AutoBin extends AutoBinOPT implements ExecutableComponent {
      * @throws ComponentExecutionException
      * @throws ComponentContextException
      */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-            ComponentContextException {
-        binMethod = Integer.valueOf(cc.getProperty(DATA_PROPERTY_1));
-        if (binMethod != 0 && binMethod != 1)
-            throw new ComponentExecutionException(
-                    "Discretization Method must be 0 or 1");
-
-        binWeight = Integer.valueOf(cc.getProperty(DATA_PROPERTY_2));
-        if (binWeight < 1)
-            throw new ComponentExecutionException(
-                    "Number of items per bin must be a positive integer.");
-
-        numberOfBins = Integer.valueOf(cc.getProperty(DATA_PROPERTY_3));
-        if (numberOfBins < 2)
-            throw new ComponentExecutionException(
-                    "Number of bins must be higher than 1.");
-
-        tbl = (ExampleTable) cc.getDataComponentFromInput(DATA_INPUT);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        tbl = (ExampleTable) cc.getDataComponentFromInput(IN_EXAMPLE_TABLE);
 
         inputs = tbl.getInputFeatures();
         outputs = tbl.getOutputFeatures();
@@ -255,6 +257,6 @@ public class AutoBin extends AutoBinOPT implements ExecutableComponent {
 
         BinTransform bt = new BinTransform(tbl, bins, false);
 
-        cc.pushDataComponentToOutput(DATA_OUTPUT, bt);
+        cc.pushDataComponentToOutput(OUT_BIN_TRANSFORM, bt);
     }
 } // AutoBin

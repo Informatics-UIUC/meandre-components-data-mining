@@ -50,7 +50,6 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.C45TreeBuilderOPT;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode;
@@ -80,20 +79,20 @@ import org.seasr.meandre.support.components.prediction.decisiontree.c45.Decision
            "the minimum number of records per leaf, the parent will be turned into a leaf itself.",
            name="C45TreeBuilder",
            tags="decision tree, c4.5, prediction",
-           baseURL="meandre://seasr.org/components/data-mining/")
-
-public class C45TreeBuilder extends C45TreeBuilderOPT implements ExecutableComponent {
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class C45TreeBuilder extends C45TreeBuilderOPT {
 
     //~ Methods *****************************************************************
 
     @ComponentInput(description = "Read org.seasr.datatypes.datamining.table.ExampleTable to build a decision tree.",
                     name = "exampleTable")
-    final static String DATA_INPUT = "exampleTable";
+    final static String IN_EXAMPLE_TABLE = "exampleTable";
 
     @ComponentOutput(description = "Output the root of the decision tree built by this module. " +
                      "The root is of type org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode.",
                      name = "treeNode")
-    public final static String DATA_OUTPUT = "treeNode";
+    public final static String OUT_TREENODE = "treeNode";
 
     @ComponentProperty(defaultValue = "0.001",
                        description = "The minimum ratio of records in a leaf to "+
@@ -101,12 +100,12 @@ public class C45TreeBuilder extends C45TreeBuilderOPT implements ExecutableCompo
                        "The tree construction is terminated when "+
                        "this ratio is reached.",
                        name = "minimumRatioPerLeaf")
-    final static String DATA_PROPERTY_1 = "minimumRatioPerLeaf";
+    final static String PROP_MIN_RATIO_PER_LEAF = "minimumRatioPerLeaf";
 
     @ComponentProperty(defaultValue="true",
                        description="Control whether debugging information is output to the console.",
                        name="verbose")
-    final static String DATA_PROPERTY_2 = "verbose";
+    final static String PROP_VERBOSE = "verbose";
 
     private boolean verbose = true;
 
@@ -115,14 +114,24 @@ public class C45TreeBuilder extends C45TreeBuilderOPT implements ExecutableCompo
     *
     * @param ccp ComponentContextProperties
     */
-    public void initialize(ComponentContextProperties ccp) {}
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+        verbose = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp));
+
+        try {
+            super.setMinimumRatioPerLeaf(Double.parseDouble(getPropertyOrDieTrying(PROP_MIN_RATIO_PER_LEAF, ccp)));
+        } catch(java.beans.PropertyVetoException pvex) {
+            pvex.printStackTrace();
+        }
+    }
 
     /**
    * Called at the end of an execution flow.
    *
    * @param ccp ComponentContextProperties
    */
-    public void dispose(ComponentContextProperties ccp) {}
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 
     /**
     * When ready for execution.
@@ -131,17 +140,9 @@ public class C45TreeBuilder extends C45TreeBuilderOPT implements ExecutableCompo
     * @throws ComponentExecutionException
     * @throws ComponentContextException
     */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-            ComponentContextException {
-        verbose = Boolean.valueOf(cc.getProperty(DATA_PROPERTY_2));
-
-        try {
-            super.setMinimumRatioPerLeaf(Double.valueOf(cc.getProperty(DATA_PROPERTY_1)));
-        }catch(java.beans.PropertyVetoException pvex) {
-            pvex.printStackTrace();
-        }
-
-        table = (ExampleTable) cc.getDataComponentFromInput(DATA_INPUT);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        table = (ExampleTable) cc.getDataComponentFromInput(IN_EXAMPLE_TABLE);
 
         numExamples = table.getNumRows();
 
@@ -182,7 +183,7 @@ public class C45TreeBuilder extends C45TreeBuilderOPT implements ExecutableCompo
             }
 
             DecisionTreeNode rootNode = buildTree(exampleSet, atts);
-            cc.pushDataComponentToOutput(DATA_OUTPUT, rootNode);
+            cc.pushDataComponentToOutput(OUT_TREENODE, rootNode);
 
             /*if(verbose)
                 rootNode.print();*/

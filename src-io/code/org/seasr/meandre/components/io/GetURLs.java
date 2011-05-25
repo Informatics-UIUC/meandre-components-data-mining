@@ -46,18 +46,25 @@ package org.seasr.meandre.components.io;
 // Java Imports
 //==============
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 import java.util.logging.Logger;
 
-//===============
-// Other Imports
-//===============
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
+import org.meandre.core.ComponentContext;
+import org.meandre.core.ComponentContextException;
+import org.meandre.core.ComponentContextProperties;
+import org.meandre.core.ComponentExecutionException;
+import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.support.generic.io.webdav.DavResource;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClient;
 
-import org.meandre.core.*;
-import org.meandre.annotations.*;
 
-import org.meandre.tools.webdav.WebdavClient;
-import org.meandre.tools.webdav.IResourceInfo;
 
 /**
  * TODO: testing
@@ -69,7 +76,7 @@ import org.meandre.tools.webdav.IResourceInfo;
 		+ "by the input WebDAV client.</p>"
 		, name = "Get URLs", tags = "io, url",
         baseURL="meandre://seasr.org/components/data-mining/")
-        
+
 public class GetURLs implements ExecutableComponent {
 	// ==============
 	// Data Members
@@ -203,9 +210,9 @@ public class GetURLs implements ExecutableComponent {
 		        url += "/";
 		    String str1 = url.substring(0, url.length()-1); //str1 equals the url without the last /
 		    str1 = str1.substring(str1.lastIndexOf("/")+1);
-		    IResourceInfo[] info = client.listContents(url);
-			for(int i=0; i<info.length; i++) {
-			    String path = info[i].getPath();
+		    List<DavResource> info = client.listContents(url);
+			for(int i=0; i<info.size(); i++) {
+			    String path = info.get(i).getPath();
 			    if(!path.startsWith("http://")) {//ensure that the path is relative
 			        if(path.startsWith("/")) //make sure the path beginning without /
 			            path = path.substring(1);

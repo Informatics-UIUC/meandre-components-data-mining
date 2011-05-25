@@ -51,18 +51,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentNature;
 import org.meandre.annotations.ComponentNatures;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
 /**
  * <p>Title: Communication Module</p>
@@ -144,15 +144,15 @@ import org.meandre.webui.WebUIFragmentCallback;
         extClass=org.seasr.meandre.applet.ruleassociation.WebRuleVisApplet.class
 )})
 
-public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
+public class WebRuleVis extends AbstractExecutableComponent implements WebUIFragmentCallback {
     @ComponentInput(description="Read org.dom4j.Document converted from a representation of associatoion rule to be displayed.",
                     name= "document")
-    final static String DATA_INPUT = "document";
+    final static String IN_DOC = "document";
 
     @ComponentProperty(defaultValue="true",
                        description="Control whether debugging information is output to the console",
                        name="verbose")
-    final static String DATA_PROPERTY = "verbose";
+    final static String PROP_VERBOSE = "verbose";
 
     /** The blocking semaphore */
     private final Semaphore sem = new Semaphore(1, true);
@@ -172,14 +172,18 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
      *
      * @param ccp ComponentContextProperties
      */
-    public void initialize(ComponentContextProperties ccp) {}
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+        verbose = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp));
+    }
 
     /**
     * Called at the end of an execution flow.
     *
     * @param ccp ComponentContextProperties
     */
-    public void dispose(ComponentContextProperties ccp) {}
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 
     /** This method gets call when a request with no parameters is made to a
      * component WebUI fragment.
@@ -257,11 +261,9 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
      * @throws ComponentExecutionException An exeception occurred during execution
      * @throws ComponentContextException Illigal access to context
      */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-            ComponentContextException {
-        verbose = Boolean.valueOf(cc.getProperty(DATA_PROPERTY));
-
-        Object theOb = cc.getDataComponentFromInput(DATA_INPUT);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        Object theOb = cc.getDataComponentFromInput(IN_DOC);
 
         //ruleTable = (RuleTable) theOb;
         document = (Document)theOb;
@@ -280,7 +282,5 @@ public class WebRuleVis implements ExecutableComponent, WebUIFragmentCallback {
         }
 
         cc.stopWebUIFragment(this);
-        System.out.flush();
     }
-
 }

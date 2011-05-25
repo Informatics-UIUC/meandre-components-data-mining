@@ -51,22 +51,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.Column;
 import org.seasr.datatypes.datamining.table.basic.DoubleColumn;
 import org.seasr.datatypes.datamining.table.basic.IntColumn;
 import org.seasr.datatypes.datamining.table.basic.MutableTableImpl;
 import org.seasr.datatypes.datamining.table.basic.TableImpl;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.discovery.ruleassociation.FreqItemSet;
 import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSetInterface;
 import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
@@ -108,7 +106,9 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
  *
  */
 
-@Component(creator = "Boris Capitanu", description = "<p>This module works in conjunction with other modules implementing the Apriori "
+@Component(
+		creator = "Boris Capitanu",
+		description = "<p>This module works in conjunction with other modules implementing the Apriori "
 	+ "rule association algorithm to generate association rules satisfying a minimum confidence "
 	+ "threshold. "
 	+
@@ -140,35 +140,30 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 	+ "The module allocated memory for the resulting Rule Table. </p>",
 
 	name = "Compute Confidence", tags = "rule association,confidence,discovery",
-    baseURL="meandre://seasr.org/components/data-mining/")
-
-	public class ComputeConfidence implements ExecutableComponent,
-	java.io.Serializable {
+    baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class ComputeConfidence extends AbstractExecutableComponent implements java.io.Serializable {
 
 	@ComponentInput(description = "An Item Sets object containing the items of interest in the original data. "
 		+ "This object is typically produced by a <i>Table To Item Sets</i> module.", name = "item_sets")
-		final static String DATA_INPUT_ITEM_SETS = "item_sets";
+		final static String IN_ITEM_SETS = "item_sets";
 
 	@ComponentInput(description = "The frequent itemsets found by an <i>Apriori</i> module.  These are the "
 		+ "item combinations that frequently appear together in the original examples.", name = "freq_item_sets")
-		final static String DATA_INPUT_FREQ_ITEM_SETS = "freq_item_sets";
+		final static String IN_FREQ_ITEM_SETS = "freq_item_sets";
 
 	@ComponentOutput(description = "A representation of the association rules found and accepted by this module. "
 		+ "This output is typically connected to a <i>Rule Visualization</i> module.", name = "rule_table")
-		final static String DATA_OUTPUT_RULE_TABLE = "rule_table";
+		final static String OUT_RULE_TABLE = "rule_table";
 
 	@ComponentProperty(description = "The percent of the examples containing a rule antecedent "
 		+ "that must also contain the rule consequent before a potential association rule is accepted. "
 		+ "This value must be greater than 0 and less than or equal to 100. ", name = "confidence", defaultValue = "70.0")
-		final static String DATA_PROPERTY_CONFIDENCE = "confidence";
+		final static String PROP_CONFIDENCE = "confidence";
 
 	@ComponentProperty(description = "If this property is true, the module will report "
 		+ "progress information to the console.", name = "verbose", defaultValue = "False")
-		final static String DATA_PROPERTY_VERBOSE = "verbose";
-
-	@ComponentProperty(description = "If this property is true, the module will "
-		+ "write verbose status information to the console.", name = "debug", defaultValue = "False")
-		final static String DATA_PROPERTY_DEBUG = "debug";
+		final static String PROP_VERBOSE = "verbose";
 
 	//~ Static fields/initializers **********************************************
 
@@ -189,9 +184,6 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 	//~ Instance fields *********************************************************
 
-	/** debug option.* */
-	private boolean debug;
-
 	/** showProgress option.* */
 	private boolean showProgress;
 
@@ -204,8 +196,6 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 	 */
 	String targetItem = "";
 
-	private Logger _logger;
-
 	//~ Methods *****************************************************************
 
 	/**
@@ -215,15 +205,6 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 	 */
 	public double getConfidence() {
 		return confidence;
-	}
-
-	/**
-	 * Returns the value of the debug property.
-	 *
-	 * @return boolean The value of the debug property
-	 */
-	public boolean getDebug() {
-		return debug;
 	}
 
 	/**
@@ -256,15 +237,6 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 	}
 
 	/**
-	 * Sets the value of the debug property.
-	 *
-	 * @param newDebug boolean The value of the debug property
-	 */
-	public void setDebug(boolean newDebug) {
-		debug = newDebug;
-	}
-
-	/**
 	 * Sets the value of the show progress property.
 	 *
 	 * @param newShowProgress boolean the value for the show progress bar.
@@ -273,44 +245,22 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 		showProgress = newShowProgress;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.meandre.core.ExecutableComponent#initialize(org.meandre.core.ComponentContextProperties)
-	 */
-	public void initialize(ComponentContextProperties context) {
-		_logger = context.getLogger();
-
-		try {
-			debug = Boolean.parseBoolean(context
-					.getProperty(DATA_PROPERTY_DEBUG));
-			showProgress = Boolean.parseBoolean(context
-					.getProperty(DATA_PROPERTY_VERBOSE));
-			confidence = Double.parseDouble(context
-					.getProperty(DATA_PROPERTY_CONFIDENCE));
-		} catch (Exception e) {
-			_logger.log(Level.SEVERE, "Initialization error: ", e);
-			throw new RuntimeException(e);
-		}
-
-		// System.out.println("debug " + debug + " showProgress " + showProgress);
+	@Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+		showProgress = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp));
+		confidence = Double.parseDouble(getPropertyOrDieTrying(PROP_CONFIDENCE, ccp));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
-	 */
-	public void execute(ComponentContext context)
-	throws ComponentExecutionException, ComponentContextException {
-		_logger.entering(this.getClass().getName(), "execute");
-
+	@Override
+	public void executeCallBack(ComponentContext context) throws Exception {
 		long startTime = System.currentTimeMillis();
 
 		// pull the inputs.
 		// ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
 		ItemSetInterface iss =
-		   (ItemSetInterface) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
+			(ItemSetInterface) context.getDataComponentFromInput(IN_ITEM_SETS);
 
-		int[][] fis = (int[][]) context.getDataComponentFromInput(DATA_INPUT_FREQ_ITEM_SETS);
+		int[][] fis = (int[][]) context.getDataComponentFromInput(IN_FREQ_ITEM_SETS);
 
 		String[] items = iss.getItemsOrderedByFrequency();
 		HashMap unique = iss.getUnique();
@@ -358,16 +308,9 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 		Vector finalRules = new Vector();
 		//     MutableIntegerArray[] documentMap = (MutableIntegerArray[]) iss.userData;
 
-
-		if (debug) {
-			_logger.fine("ComputeConfidence-> number of items: " + numItems);
-			_logger.fine("ComputeConfidence-> number of frequent item sets: " + numFis);
-			_logger.fine("ComputeConfidence-> number of examples: " + numExamples);
-
-			System.out.println("ComputeConfidence-> number of items: " + numItems);
-         System.out.println("ComputeConfidence-> number of frequent item sets: " + numFis);
-         System.out.println("ComputeConfidence-> number of examples: " + numExamples);
-		}
+		console.fine("ComputeConfidence-> number of items: " + numItems);
+		console.fine("ComputeConfidence-> number of frequent item sets: " + numFis);
+		console.fine("ComputeConfidence-> number of examples: " + numExamples);
 
 		///////////////////////////////////////
 		//      Compute the confidence for each Rule.
@@ -377,7 +320,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 			if (showProgress) {
 				if ((i % 250) == 0) {
-					_logger.info("Processed " + i + " rules out of " + numFis + ".");
+					console.info("Processed " + i + " rules out of " + numFis + ".");
 				}
 			}
 
@@ -429,9 +372,9 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 					int rowIdx = x;
 
 					for (; y < ruleLenLessOne; y++) {
-                  int colIdx = newRule[y];
+						int colIdx = newRule[y];
 						//if (itf[newRule[y]] == false) {
-                  if (iss.getItemFlag(rowIdx,colIdx) == false) {
+						if (iss.getItemFlag(rowIdx,colIdx) == false) {
 							break;
 						}
 					}
@@ -439,9 +382,9 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 					// Did the antecedent exist in this set?
 					if (y == ruleLenLessOne) {
 						total++;
-                  int colIdx = mark;
+						int colIdx = mark;
 						// if (itf[mark] == true) {
-                  if (iss.getItemFlag(rowIdx,colIdx) == true) {
+						if (iss.getItemFlag(rowIdx,colIdx) == true) {
 							hits++;
 						}
 					}
@@ -462,21 +405,21 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 		} // end for
 
-		if (debug) {
+		if (console.getLevel().intValue() <= Level.FINE.intValue()) {
 			for (int i = 0; i < finalRules.size(); i++) {
 				int[] rule = (int[]) finalRules.elementAt(i);
-				_logger.fine("ComputeConfidence -> " + items[rule[0]]);
+				console.fine("ComputeConfidence -> " + items[rule[0]]);
 
 				for (int k = 1; k < rule.length - 2; k++) {
-					_logger.fine("," + items[rule[k]]);
+					console.fine("," + items[rule[k]]);
 				}
 
-				_logger.fine("->" + rule[rule.length - 2] + "," + rule[rule.length - 1]);
+				console.fine("->" + rule[rule.length - 2] + "," + rule[rule.length - 1]);
 			}
 		}
 
 		if (showProgress) {
-			_logger.info(context.getExecutionInstanceID() +
+			console.info(context.getExecutionInstanceID() +
 					": A total of " +
 					finalRules.size() +
 					" rules were found that met the specified Minimum Confidence of " +
@@ -521,7 +464,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 			TIntArrayList ifitem = new TIntArrayList(ifstmt) {
 				@Override
-                public int hashCode() {
+				public int hashCode() {
 					StringBuffer sb = new StringBuffer();
 					int[] ar = toNativeArray();
 					Arrays.sort(ar);
@@ -540,7 +483,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 			TIntArrayList thenitem = new TIntArrayList(thenstmt) {
 				@Override
-                public int hashCode() {
+				public int hashCode() {
 					StringBuffer sb = new StringBuffer();
 					int[] ar = toNativeArray();
 					Arrays.sort(ar);
@@ -631,7 +574,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 
 		RuleTable rt = new RuleTable(ti, 0, 0, numExamples, al, allsets);
 		rt.sortByConfidence();
-		context.pushDataComponentToOutput(DATA_OUTPUT_RULE_TABLE, rt);
+		context.pushDataComponentToOutput(OUT_RULE_TABLE, rt);
 
 		/*File outputFile = new File("F:/D2K-update/d2k/irisrules_1.serial");
 
@@ -711,10 +654,7 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
 		    }*/
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.meandre.core.ExecutableComponent#dispose(org.meandre.core.ComponentContextProperties)
-	 */
-	public void dispose(ComponentContextProperties arg0) {
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
 	}
 }

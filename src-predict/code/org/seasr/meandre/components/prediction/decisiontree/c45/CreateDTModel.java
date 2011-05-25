@@ -50,8 +50,8 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.ExampleTable;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeModel;
 import org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode;
 
@@ -80,28 +80,30 @@ import org.seasr.meandre.support.components.prediction.decisiontree.c45.Decision
            "memory to hold these predictions.",
            name="CreateDTModel",
            tags="decision tree, c4.5, prediction",
-           baseURL="meandre://seasr.org/components/data-mining/")
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class CreateDTModel extends AbstractExecutableComponent {
 
-public class CreateDTModel implements ExecutableComponent {
     @ComponentInput(description = "Read the root of the decision tree. " +
                     "The root is of type org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeNode.",
                     name = "decisionTree")
-    final static String DATA_INPUT_1 = "decisionTree";
+    final static String IN_DECISION_TREE = "decisionTree";
+
     @ComponentInput(description = "Read the table used to build the tree. " +
                     "The table is of type org.seasr.datatypes.datamining.table.ExampleTable.",
                     name = "exampleTable")
-    final static String DATA_INPUT_2 = "exampleTable";
+    final static String IN_EXAMPLE_TABLE = "exampleTable";
 
 
    @ComponentOutput(description = "Output a decision tree model created from the decision tree root node. " +
                     "The model is of type org.seasr.meandre.support.components.prediction.decisiontree.c45.DecisionTreeModel.",
                     name = "treeModel")
-   public final static String DATA_OUTPUT = "treeModel";
+   public final static String OUT_TREEMODEL = "treeModel";
 
    @ComponentProperty(defaultValue="true",
                       description="Control whether debugging information is output to the console.",
                       name="verbose")
-   final static String DATA_PROPERTY = "verbose";
+   final static String PROP_VERBOSE = "verbose";
 
    private boolean verbose = true;
 
@@ -113,14 +115,18 @@ public class CreateDTModel implements ExecutableComponent {
     *
     * @param ccp ComponentContextProperties
     */
-   public void initialize(ComponentContextProperties ccp) {}
+   @Override
+public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+       verbose = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp));
+   }
 
    /**
    * Called at the end of an execution flow.
    *
    * @param ccp ComponentContextProperties
    */
-   public void dispose(ComponentContextProperties ccp) {}
+   @Override
+public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 
    /**
     * When ready for execution.
@@ -129,12 +135,10 @@ public class CreateDTModel implements ExecutableComponent {
     * @throws ComponentExecutionException
     * @throws ComponentContextException
     */
-   public void execute(ComponentContext cc) throws ComponentExecutionException,
-           ComponentContextException {
-       verbose = Boolean.valueOf(cc.getProperty(DATA_PROPERTY));
-
-       DecisionTreeNode root = (DecisionTreeNode)cc.getDataComponentFromInput(DATA_INPUT_1);
-       ExampleTable table = (ExampleTable)cc.getDataComponentFromInput(DATA_INPUT_2);
+   @Override
+public void executeCallBack(ComponentContext cc) throws Exception {
+       DecisionTreeNode root = (DecisionTreeNode)cc.getDataComponentFromInput(IN_DECISION_TREE);
+       ExampleTable table = (ExampleTable)cc.getDataComponentFromInput(IN_EXAMPLE_TABLE);
        DecisionTreeModel mdl = new DecisionTreeModel(root, table);
 
        /*if(verbose)
@@ -142,6 +146,6 @@ public class CreateDTModel implements ExecutableComponent {
                               "numOfChildren = " + (mdl.getViewableRoot()).getNumChildren() + "\t" +
                               "total = " + (mdl.getViewableRoot()).getTotal());*/
 
-       cc.pushDataComponentToOutput(DATA_OUTPUT, mdl);
+       cc.pushDataComponentToOutput(OUT_TREEMODEL, mdl);
    }
 } // end class CreateDTModel

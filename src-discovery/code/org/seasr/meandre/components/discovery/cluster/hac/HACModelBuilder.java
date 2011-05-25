@@ -53,18 +53,14 @@ package org.seasr.meandre.components.discovery.cluster.hac;
 //import org.meandre.tools.components.*;
 //import org.meandre.tools.components.FlowBuilderAPI.WorkingFlow;
 
-import java.util.logging.Level;
-
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.Table;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.discovery.cluster.hac.HACWork;
 
 /**
@@ -86,37 +82,37 @@ import org.seasr.meandre.support.components.discovery.cluster.hac.HACWork;
         tags = "cluster, unsupervised, model builder",
         baseURL="meandre://seasr.org/components/data-mining/")
 
-public class HACModelBuilder implements ExecutableComponent {
+public class HACModelBuilder extends AbstractExecutableComponent {
 
     //==============
     // Data Members
     //==============
 
     @ComponentInput(description = "Table", name = "table")
-            public final static String DATA_INPUT_D2K_TABLE = "table";
+            public final static String IN_D2K_TABLE = "table";
 
     @ComponentOutput(description = "Cluster Model", name = "cluster_model")
-            public final static String DATA_OUTPUT_CLUSTER_MODEL = "cluster_model";
+            public final static String OUT_CLUSTER_MODEL = "cluster_model";
 
 
     @ComponentProperty(defaultValue="" + HACWork.s_WardsMethod_CLUSTER,
                        description="The clustering method to be used",
                        name="cluster_method")
-    public final static String DATA_PROPERTY_CLUSTER_METHOD = "cluster_method";
+    public final static String PROP_CLUSTER_METHOD = "cluster_method";
     /** The clustering method to be used. */
     protected int _clusterMethod = HACWork.s_WardsMethod_CLUSTER;
 
     @ComponentProperty(defaultValue="" + HACWork.s_Euclidean_DISTANCE,
                        description="The distance metric to be used",
                        name="distance_metric")
-    public final static String DATA_PROPERTY_DISTANCE_METRIC = "distance_metric";
+    public final static String PROP_DISTANCE_METRIC = "distance_metric";
     /** The distance metric to be used. */
     protected int _distanceMetric = HACWork.s_Euclidean_DISTANCE;
 
     @ComponentProperty(defaultValue="5",
                        description="The number of clusters to create.",
                        name="num_clusters")
-    public final static String DATA_PROPERTY_NUM_CLUSTERS = "num_clusters";
+    public final static String PROP_NUM_CLUSTERS = "num_clusters";
     /** The number of clusters to create. */
     protected int _numberOfClusters = 5;
 
@@ -125,7 +121,7 @@ public class HACModelBuilder implements ExecutableComponent {
                                    "to use as a cutoff value to halt cluster " +
                                    "agglomeration (0..100)",
                        name="threshold")
-    public final static String DATA_PROPERTY_THRESHOLD = "threshold";
+    public final static String PROP_THRESHOLD = "threshold";
     /**
      * The percentage of the <i>maximum distance</i> to use as a cutoff value to
      * halt cluster agglomeration.
@@ -135,7 +131,7 @@ public class HACModelBuilder implements ExecutableComponent {
     @ComponentProperty(defaultValue="Y",
                        description="Check for missing table values?",
                        name="missing_values")
-    public final static String DATA_PROPERTY_MISSING_VALUES = "missing_values";
+    public final static String PROP_MISSING_VALUES = "missing_values";
     /**
      * Check missing values flag. If set to true, this component verifies prior
      * to computation, that there are no missing values in the input table.
@@ -146,7 +142,7 @@ public class HACModelBuilder implements ExecutableComponent {
     @ComponentProperty(defaultValue="false",
                        description="Verbose output?",
                        name="verbose")
-    public final static String DATA_PROPERTY_VERBOSE = "verbose";
+    public final static String PROP_VERBOSE = "verbose";
     /**
      * Flag for verbose mode - if true then this module outputs verbose info to
      * stdout.
@@ -335,49 +331,32 @@ public class HACModelBuilder implements ExecutableComponent {
     //===========================
 
 
-    public void initialize(ComponentContextProperties context) {
-
-        try {
-            setCheckMissingValues(Boolean.parseBoolean(context.getProperty(HACModelBuilder.DATA_PROPERTY_MISSING_VALUES)));
-            setVerbose(Boolean.parseBoolean(context.getProperty(HACModelBuilder.DATA_PROPERTY_VERBOSE)));
-            setClusterMethod(Integer.parseInt(context.getProperty(HACModelBuilder.DATA_PROPERTY_CLUSTER_METHOD)));
-            setDistanceMetric(Integer.parseInt(context.getProperty(HACModelBuilder.DATA_PROPERTY_DISTANCE_METRIC)));
-            setNumberOfClusters(Integer.parseInt(context.getProperty(HACModelBuilder.DATA_PROPERTY_NUM_CLUSTERS)));
-            setDistanceThreshold(Integer.parseInt(context.getProperty(HACModelBuilder.DATA_PROPERTY_THRESHOLD)));
-        }
-        catch (Exception e) {
-            context.getLogger().log(Level.SEVERE, "Initialization error: ", e);
-            throw new RuntimeException(e);
-        }
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+    	setCheckMissingValues(Boolean.parseBoolean(getPropertyOrDieTrying(PROP_MISSING_VALUES, ccp)));
+    	setVerbose(Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp)));
+    	setClusterMethod(Integer.parseInt(getPropertyOrDieTrying(PROP_CLUSTER_METHOD, ccp)));
+    	setDistanceMetric(Integer.parseInt(getPropertyOrDieTrying(PROP_DISTANCE_METRIC, ccp)));
+    	setNumberOfClusters(Integer.parseInt(getPropertyOrDieTrying(PROP_NUM_CLUSTERS, ccp)));
+    	setDistanceThreshold(Integer.parseInt(getPropertyOrDieTrying(PROP_THRESHOLD, ccp)));
     }
 
-    public void dispose(ComponentContextProperties context) {
+    @Override
+	public void disposeCallBack(ComponentContextProperties context) throws Exception {
     }
 
-    public void execute(ComponentContext context) throws
-            ComponentExecutionException, ComponentContextException {
+    @Override
+	public void executeCallBack(ComponentContext context) throws Exception {
+    	Table tab = (Table) context.getDataComponentFromInput(IN_D2K_TABLE);
 
-        try {
+    	HACWork hac =
+    		new HACWork(this.getClusterMethod(), this.getDistanceMetric(),
+    				this.getNumberOfClusters(),
+    				this.getDistanceThreshold(),
+    				getVerbose(), this.getCheckMissingValues(),
+    				"HACModelBuilder");
 
-            Table tab = (Table) context.getDataComponentFromInput(
-                    DATA_INPUT_D2K_TABLE);
-
-            HACWork hac =
-                    new HACWork(this.getClusterMethod(), this.getDistanceMetric(),
-                            this.getNumberOfClusters(),
-                            this.getDistanceThreshold(),
-                            getVerbose(), this.getCheckMissingValues(),
-                            "HACModelBuilder");
-
-//            // Push Output
-            context.pushDataComponentToOutput(DATA_OUTPUT_CLUSTER_MODEL,
-                                              hac.buildModel(tab));
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-
+    	//            // Push Output
+    	context.pushDataComponentToOutput(OUT_CLUSTER_MODEL, hac.buildModel(tab));
     }
-
-
 }

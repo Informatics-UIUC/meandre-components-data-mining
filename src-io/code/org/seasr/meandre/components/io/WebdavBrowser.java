@@ -45,21 +45,25 @@ package org.seasr.meandre.components.io;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentOutput;
+import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.ComponentProperty;
-import org.meandre.tools.webdav.IResourceInfo;
-import org.meandre.tools.webdav.WebdavClient;
+import org.seasr.meandre.support.generic.io.webdav.DavResource;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClient;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClientFactory;
 
 /**
  * Outputs the list of files in a WebDAV tree matching the specified criteria
@@ -74,7 +78,7 @@ import org.meandre.tools.webdav.WebdavClient;
         name = "Webdav Browser",
         tags = "io, webdav, input",
         baseURL="meandre://seasr.org/components/data-mining/")
-        
+
 public class WebdavBrowser implements ExecutableComponent {
 
     @ComponentProperty(description = "The URL where to start looking for files",
@@ -134,11 +138,13 @@ public class WebdavBrowser implements ExecutableComponent {
     		_logger.fine("recurseSubdirectories=" + _bRecurseSubdirs);
     		_logger.fine("Using authentication: " + useAuthentication);
 
+        	HttpHost host = new HttpHost(_sStartUrl);
+    		Credentials creds = null;
+
         	if (useAuthentication)
-        		_webdav = new WebdavClient(_sStartUrl,
-        				new UsernamePasswordCredentials(_sUsername, _sPassword));
-        	else
-        		_webdav = new WebdavClient(_sStartUrl);
+        		creds = new UsernamePasswordCredentials(_sUsername, _sPassword);
+
+			_webdav = WebdavClientFactory.begin(host, creds);
         }
         catch (Exception e) {
     		_logger.log(Level.SEVERE, "Initialize error", e);
@@ -158,7 +164,7 @@ public class WebdavBrowser implements ExecutableComponent {
 
         try {
             // Get the list of files matching the specified criteria
-            IResourceInfo[] files = _webdav.listFiles(_sStartUrl, _bRecurseSubdirs, new FilenameFilter() {
+            List<DavResource> files = _webdav.listContents(_sStartUrl, _bRecurseSubdirs, new FilenameFilter() {
                 public boolean accept(File dir, String name) {
                 	_logger.finest("Matching: dir=" + dir.toString() + " name=" + name);
                     return Pattern.matches(_sRegexFilter, name);
@@ -170,9 +176,9 @@ public class WebdavBrowser implements ExecutableComponent {
                 context.pushDataComponentToOutput(DATA_OUTPUT_START_URL, _sStartUrl);
 
                 // Push out all the file URLs found matching the given criteria
-                for (IResourceInfo fileInfo : files) {
-                    _logger.info("Found file " + fileInfo.getURL().toString());
-                    context.pushDataComponentToOutput(DATA_OUTPUT_FILE_URL, fileInfo.getURL().toString());
+                for (DavResource fileInfo : files) {
+                    _logger.info("Found file " + fileInfo.getUrl().toString());
+                    context.pushDataComponentToOutput(DATA_OUTPUT_FILE_URL, fileInfo.getUrl().toString());
                 }
             }
             else

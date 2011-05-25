@@ -50,17 +50,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentNature;
 import org.meandre.annotations.ComponentNatures;
-import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel;
 
 @Component(creator="Lily Dong",
@@ -81,7 +81,8 @@ import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesMode
            tags="naive bayes, visualization",
            mode=Mode.webui,
            dependency={"icons.jar","foundry-datatype-datamining.jar","foundry-datatype-core.jar","trove-2.0.3.jar"},
-           baseURL="meandre://seasr.org/components/data-mining/")
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
 
 @ComponentNatures( natures={
         @ComponentNature(type="applet",
@@ -93,10 +94,10 @@ import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesMode
  *
  * @author  Lily Dong
  */
-public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmentCallback{
+public final class WebNaiveBayesVis extends AbstractExecutableComponent implements WebUIFragmentCallback{
     @ComponentInput(description="Read org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel to visualize.",
                        name= "nbModel")
-    public final static String DATA_INPUT = "nbModel";
+    public final static String IN_NBMODEL = "nbModel";
 
     /** The blocking semaphore */
     private final Semaphore sem = new Semaphore(1, true);
@@ -183,9 +184,9 @@ public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmen
      * @throws ComponentExecutionException An exeception occurred during execution
      * @throws ComponentContextException Illigal access to context
      */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-            ComponentContextException {
-        Object theOb = cc.getDataComponentFromInput(DATA_INPUT);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        Object theOb = cc.getDataComponentFromInput(IN_NBMODEL);
         model = (NaiveBayesModel) theOb;
 
         sInstanceID = cc.getExecutionInstanceID();
@@ -202,7 +203,6 @@ public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmen
         }
 
         cc.stopWebUIFragment(this);
-        System.out.flush();
     }
 
     /**
@@ -210,12 +210,14 @@ public final class WebNaiveBayesVis implements ExecutableComponent ,WebUIFragmen
     *
     * @param ccp ComponentContextProperties
     */
-    public void initialize(ComponentContextProperties ccp) {}
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {}
 
     /**
     * Called at the end of an execution flow.
     *
     * @param ccp ComponentContextProperties
     */
-    public void dispose(ComponentContextProperties ccp) {}
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 }

@@ -46,15 +46,11 @@ package org.seasr.meandre.components.io.table.sparse;
 // Java Imports
 // ==============
 
-import java.util.logging.Logger;
-
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
 /**
  * TODO: Testing
@@ -68,17 +64,14 @@ description = "<p>Overview: Outputs a <i>TableFactory</i> suitable "
 name = "Sparse Table Factory Injector", tags = "sparsetable, table, factory",
 baseURL="meandre://seasr.org/components/data-mining/")
 
-public class SparseTableFactoryInjector implements ExecutableComponent {
+public class SparseTableFactoryInjector extends AbstractExecutableComponent {
 
 	static final long serialVersionUID = 1L;
-
-	private static Logger _logger = Logger
-			.getLogger("SparseTableFactoryInjector");
 
 	// IO
 
 	@ComponentOutput(description = "Ouputs a new SparseTableFactory instance", name = "sparse_table_factory")
-	public final static String DATA_OUTPUT_SPARSE_TABLE_FACTORY = "sparse_table_factory";
+	public final static String OUT_SPARSE_TABLE_FACTORY = "sparse_table_factory";
 
 	// ================
 	// Constructor(s)
@@ -90,29 +83,17 @@ public class SparseTableFactoryInjector implements ExecutableComponent {
 	// Public Methods
 	// ================
 
-	public void initialize(ComponentContextProperties ccp) {
-		_logger.fine("initialize() called");
+	@Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
 	}
 
-	public void dispose(ComponentContextProperties ccp) {
-		_logger.fine("dispose() called");
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
 	}
 
-	public void execute(ComponentContext ctx)
-			throws ComponentExecutionException, ComponentContextException {
-		_logger.fine("execute() called");
-		try {
-
-		ctx.pushDataComponentToOutput(DATA_OUTPUT_SPARSE_TABLE_FACTORY,
+	@Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+		cc.pushDataComponentToOutput(OUT_SPARSE_TABLE_FACTORY,
 		        new org.seasr.datatypes.datamining.table.sparse.SparseTableFactory());
-
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.out.println(ex.getMessage());
-			System.out.println("ERROR: TextFileToDoc.execute()");
-			throw new ComponentExecutionException(ex);
-		}
 	}
-
 }

@@ -1,36 +1,36 @@
 /**
  * University of Illinois/NCSA
  * Open Source License
- * 
- * Copyright (c) 2008, Board of Trustees-University of Illinois.  
+ *
+ * Copyright (c) 2008, Board of Trustees-University of Illinois.
  * All rights reserved.
- * 
- * Developed by: 
- * 
+ *
+ * Developed by:
+ *
  * Automated Learning Group
  * National Center for Supercomputing Applications
  * http://www.seasr.org
- * 
- *  
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal with the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions: 
- * 
+ * furnished to do so, subject to the following conditions:
+ *
  *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimers. 
- * 
+ *    this list of conditions and the following disclaimers.
+ *
  *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimers in the 
- *    documentation and/or other materials provided with the distribution. 
- * 
+ *    this list of conditions and the following disclaimers in the
+ *    documentation and/or other materials provided with the distribution.
+ *
  *  * Neither the names of Automated Learning Group, The National Center for
  *    Supercomputing Applications, or University of Illinois, nor the names of
  *    its contributors may be used to endorse or promote products derived from
- *    this Software without specific prior written permission. 
- * 
+ *    this Software without specific prior written permission.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
@@ -38,14 +38,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * WITH THE SOFTWARE.
- */ 
+ */
 
 package org.seasr.meandre.components.transform.table;
 
 import java.util.Random;
-
-import org.seasr.datatypes.datamining.table.ExampleTable;
-import org.seasr.datatypes.datamining.table.Table;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
@@ -55,7 +52,9 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
+import org.seasr.datatypes.datamining.table.ExampleTable;
+import org.seasr.datatypes.datamining.table.Table;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
 /**
  * SimpleTrainTest.java The user to select a percentage of the table to be train
@@ -91,31 +90,34 @@ import org.meandre.core.ExecutableComponent;
            "be able to allocate arrays of integers to hold the indices of the test and train examples.",
            name="SimpleTrainTest",
            tags="train, test",
-           baseURL="meandre://seasr.org/components/data-mining/")
-
-public class SimpleTrainTest implements ExecutableComponent {
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class SimpleTrainTest extends AbstractExecutableComponent {
     @ComponentInput(description="Read org.seasr.datatypes.datamining.table.Table " +
                     "containing the data that will be split into training and testing examples as input.",
                     name= "originalTable")
-    public final static String DATA_INPUT = "originalTable";
+    public final static String IN_ORIG_TABLE = "originalTable";
 
     @ComponentOutput(description="Output org.seasr.datatypes.datamining.table.Table " +
                      "containing the training data",
                      name="trainTable")
-    public final static String DATA_OUTPUT_1 = "trainTable";
+    public final static String OUT_TRAIN_TABLE = "trainTable";
+
     @ComponentOutput(description="Output org.seasr.datatypes.datamining.table.Table " +
                      "containing the test data",
                      name="testTable")
-    public final static String DATA_OUTPUT_2 = "testTable";
+    public final static String OUT_TEST_TABLE = "testTable";
 
     @ComponentProperty(defaultValue="50",
                        description="The percentage of the data to be used for training the model.",
                        name="trainPercent")
-    final static String DATA_PROPERTY_1 = "trainPercent";
+    final static String PROP_TRAIN_PERCENT = "trainPercent";
+
     @ComponentProperty(defaultValue="50",
                        description="The percentage of the data to be used for testing the model.",
                        name="testPercent")
-    final static String DATA_PROPERTY_2 = "testPercent";
+    final static String PROP_TEST_PERCENT = "testPercent";
+
     @ComponentProperty(defaultValue="1",
                        description="The method to use when sampling the original examples.  " +
                        "The choices are: " +
@@ -124,16 +126,18 @@ public class SimpleTrainTest implements ExecutableComponent {
                        "original table and testing examples are " +
                        "taken sequentially from the end of the original table. ",
                        name="samplingMethod")
-    final static String DATA_PROPERTY_3 = "samplingMethod";
+    final static String PROP_SAMPLING_METHOD = "samplingMethod";
+
     @ComponentProperty(defaultValue="123",
                        description="Seed for random sampling." +
                        "Ignored if Random Sampling is not used.",
                        name="seed")
-    final static String DATA_PROPERTY_4 = "seed";
+    final static String PROP_SEED = "seed";
+
     @ComponentProperty(defaultValue="true",
                        description="control whether debugging information is output to the console",
                        name="verbose")
-    final static String DATA_PROPERTY_5 = "verbose";
+    final static String PROP_VERBOSE = "verbose";
 
     private boolean verbose = true;
 
@@ -148,7 +152,7 @@ public class SimpleTrainTest implements ExecutableComponent {
     //~ Instance fields *********************************************************
 
     /** true if in debug mode */
-    private boolean debug = false;
+    private final boolean debug = false;
 
     /** The type of sampling to use: random or sequential. */
     private int samplingMethod;
@@ -167,14 +171,32 @@ public class SimpleTrainTest implements ExecutableComponent {
      *
      * @param ccp ComponentContextProperties
      */
-    public void initialize(ComponentContextProperties ccp) {}
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+        trainPercent = Integer.parseInt(getPropertyOrDieTrying(PROP_TRAIN_PERCENT, ccp));
+        if (trainPercent < 0 || trainPercent > 100)
+           throw new ComponentExecutionException("Train percentage must be between 0 and 100.");
+
+        testPercent = Integer.parseInt(getPropertyOrDieTrying(PROP_TEST_PERCENT, ccp));
+        if (testPercent < 0 || testPercent > 100)
+          throw new ComponentExecutionException( "Test percentage must be between 0 and 100.");
+
+        samplingMethod = Integer.parseInt(getPropertyOrDieTrying(PROP_SAMPLING_METHOD, ccp));
+
+        seed = Integer.parseInt(getPropertyOrDieTrying(PROP_SEED, ccp));
+        if (seed < 0)
+            throw new ComponentExecutionException(" Value must be >= 0. ");
+
+        verbose = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp));
+    }
 
     /**
      * Called at the end of an execution flow.
      *
      * @param ccp ComponentContextProperties
      */
-    public void dispose(ComponentContextProperties ccp) {}
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 
 
     /**
@@ -184,25 +206,9 @@ public class SimpleTrainTest implements ExecutableComponent {
      * @throws ComponentExecutionException
      * @throws ComponentContextException
      */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-            ComponentContextException {
-        trainPercent = Integer.valueOf(cc.getProperty(DATA_PROPERTY_1));
-        if (trainPercent < 0 || trainPercent > 100)
-           throw new ComponentExecutionException("Train percentage must be between 0 and 100.");
-
-        testPercent = Integer.valueOf(cc.getProperty(DATA_PROPERTY_2));
-        if (testPercent < 0 || testPercent > 100)
-          throw new ComponentExecutionException( "Test percentage must be between 0 and 100.");
-
-        samplingMethod = Integer.valueOf(cc.getProperty(DATA_PROPERTY_3));
-
-        seed = Integer.valueOf(cc.getProperty(DATA_PROPERTY_4));
-        if (seed < 0)
-            throw new ComponentExecutionException(" Value must be >= 0. ");
-
-        verbose = Boolean.valueOf(cc.getProperty(DATA_PROPERTY_5));
-
-        Table orig = (Table)(cc.getDataComponentFromInput(DATA_INPUT));
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        Table orig = (Table)(cc.getDataComponentFromInput(IN_ORIG_TABLE));
 
         // This is the number that will be test
         int nr = orig.getNumRows();
@@ -231,7 +237,7 @@ public class SimpleTrainTest implements ExecutableComponent {
             Random r = new Random(seed);
 
             for (int i = 0; i < nr; i++) {
-                int which = (int) (r.nextDouble() * (double) nr);
+                int which = (int) (r.nextDouble() * nr);
 
                 if (i != which) {
                     int s = random[which];
@@ -257,7 +263,7 @@ public class SimpleTrainTest implements ExecutableComponent {
         et.setTestingSet(test);
         et.setTrainingSet(train);
 
-        cc.pushDataComponentToOutput(DATA_OUTPUT_1, et.getTrainTable());
-        cc.pushDataComponentToOutput(DATA_OUTPUT_2, et.getTestTable());
+        cc.pushDataComponentToOutput(OUT_TRAIN_TABLE, et.getTrainTable());
+        cc.pushDataComponentToOutput(OUT_TEST_TABLE, et.getTestTable());
     } // end method doit
 } // end class SimpleTrainTest

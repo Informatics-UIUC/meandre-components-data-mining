@@ -42,18 +42,12 @@
 
 package org.seasr.meandre.components.io.file.input;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.Column;
 import org.seasr.datatypes.datamining.table.ColumnTypes;
 import org.seasr.datatypes.datamining.table.MutableTable;
@@ -61,6 +55,7 @@ import org.seasr.datatypes.datamining.table.Table;
 import org.seasr.datatypes.datamining.table.TableFactory;
 import org.seasr.datatypes.datamining.table.util.FlatFileParser;
 import org.seasr.datatypes.datamining.table.util.ParsedLine;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
 /**
  * Given a FlatFileReader, create a TableImpl initialized with its contents.
@@ -74,30 +69,28 @@ import org.seasr.datatypes.datamining.table.util.ParsedLine;
         creator = "Boris Capitanu",
         description = "Given a FlatFileParser, this module creates a Table " +
         "initialized with the contents of a flat file from disk.",
-
         name = "Parse File To Table",
         tags = "io, table",
-        baseURL="meandre://seasr.org/components/data-mining/")
-
-public class ParseFileToTable implements ExecutableComponent {
+        baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class ParseFileToTable extends AbstractExecutableComponent {
 
     @ComponentInput(description = "A FlatFileParser to read data from", name = "parser")
-    final static String DATA_INPUT_PARSER = "parser";
+    final static String IN_PARSER = "parser";
     @ComponentInput(description = "Inputs a new TableFactory instance", name = "table_factory")
-	public final static String DATA_INPUT_TABLE_FACTORY = "table_factory";
+	public final static String IN_TABLE_FACTORY = "table_factory";
 
     @ComponentOutput(description = "A Table with the data from the file reader", name = "table")
-    final static String DATA_OUTPUT_TABLE = "table";
+    final static String OUT_TABLE = "table";
 
     @ComponentProperty(description = "When true, any blank entries in the file will be set " +
             "as missing values in the table", name = "use_blanks", defaultValue = "True")
-    final static String DATA_PROPERTY_USE_BLANKS = "use_blanks";
+    final static String PROP_USE_BLANKS = "use_blanks";
 
     protected static final char QUESTION = '?';
     protected static final char SPACE = ' ';
 
     private boolean useBlanks;
-    private Logger _logger;
 
     /**
      * Setter for useBlanks
@@ -268,39 +261,21 @@ public class ParseFileToTable implements ExecutableComponent {
         return ti;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#initialize(org.meandre.core.ComponentContextProperties)
-     */
-    public void initialize(ComponentContextProperties context) {
-	    _logger = context.getLogger();
-
-	    try {
-	    	useBlanks = Boolean.parseBoolean(context.getProperty(DATA_PROPERTY_USE_BLANKS));
-	    }
-	    catch (Exception e) {
-	    	_logger.log(Level.SEVERE, "Initialize error: ", e);
-	    }
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+    	useBlanks = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_USE_BLANKS, ccp));
 	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
-     */
-	public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
-	    FlatFileParser fle = (FlatFileParser) context.getDataComponentFromInput(DATA_INPUT_PARSER);
-	    TableFactory tf = (TableFactory) context.getDataComponentFromInput(DATA_INPUT_TABLE_FACTORY);
-	    //TableFactory tf = new BasicTableFactory();
+	@Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+	    FlatFileParser fle = (FlatFileParser) cc.getDataComponentFromInput(IN_PARSER);
+	    TableFactory tf = (TableFactory) cc.getDataComponentFromInput(IN_TABLE_FACTORY);
 	    Table table = createTable(fle, tf);
 
-	    context.pushDataComponentToOutput(DATA_OUTPUT_TABLE, table);
+	    cc.pushDataComponentToOutput(OUT_TABLE, table);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.meandre.core.ExecutableComponent#dispose(org.meandre.core.ComponentContextProperties)
-	 */
-	public void dispose(ComponentContextProperties arg0) {
-
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
     }
 }

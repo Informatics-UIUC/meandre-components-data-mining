@@ -53,16 +53,17 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.httpclient.HttpHost;
+import org.apache.http.HttpHost;
+import org.meandre.annotations.Component;
+import org.meandre.annotations.ComponentInput;
+import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-import org.meandre.annotations.Component;
-import org.meandre.annotations.ComponentInput;
-import org.meandre.annotations.ComponentProperty;
-import org.meandre.tools.webdav.WebdavClient;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClient;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClientFactory;
 
 /**
  * This component reads RDF triples from the input and writes them to a file.
@@ -205,8 +206,8 @@ public class TriplesToFile implements ExecutableComponent {
                 String sDirectory = uriOut.toString();
                 sDirectory = sDirectory.substring(0, sDirectory.lastIndexOf("/"));
 
-                WebdavClient webdav = new WebdavClient(new HttpHost(uriOut.getHost(), uriOut.getPort()));
                 try {
+                    WebdavClient webdav = WebdavClientFactory.begin(new HttpHost(uriOut.getHost(), uriOut.getPort()));
                     // Create the necessary webdav folders
                     if (webdav.mkdirs(sDirectory)) {
                         // ... and upload the file

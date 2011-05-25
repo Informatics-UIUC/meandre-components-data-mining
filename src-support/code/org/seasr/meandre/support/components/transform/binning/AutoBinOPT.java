@@ -54,6 +54,7 @@ import org.seasr.datatypes.datamining.table.transformations.binning.BinDescripto
 import org.seasr.datatypes.datamining.table.transformations.binning.BinDescriptorFactory;
 import org.seasr.datatypes.datamining.table.util.ScalarStatistics;
 import org.seasr.datatypes.datamining.table.util.TableUtilities;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
 
 /**
@@ -65,7 +66,7 @@ import org.seasr.datatypes.datamining.table.util.TableUtilities;
  * @author  $Author: Lily Dong $
  * @version $Revision: 2835 $, $Date: 2006-08-02 10:08:17 -0500 (Wed, 02 Aug 2006) $
  */
-public class AutoBinOPT {
+public abstract class AutoBinOPT extends AbstractExecutableComponent {
 
     //~ Instance fields *********************************************************
 

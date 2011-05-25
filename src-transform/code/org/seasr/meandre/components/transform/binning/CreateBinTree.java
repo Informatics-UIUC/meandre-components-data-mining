@@ -53,13 +53,13 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.datatypes.datamining.table.transformations.BinTransform;
 import org.seasr.datatypes.datamining.table.transformations.binning.BinDescriptor;
 import org.seasr.datatypes.datamining.table.transformations.binning.NumericBinDescriptor;
 import org.seasr.datatypes.datamining.table.transformations.binning.TextualBinDescriptor;
 import org.seasr.datatypes.datamining.table.util.TableUtilities;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.transform.binning.BinTree;
 
 
@@ -89,30 +89,31 @@ import org.seasr.meandre.support.components.transform.binning.BinTree;
            "in an OutOfMemory error. Use feature selection to reduce the number of features.",
            name = "CreateBinTree",
            tags = "binning, bin tree",
-           baseURL="meandre://seasr.org/components/data-mining/")
-
-
-public class CreateBinTree implements ExecutableComponent {
+           baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class CreateBinTree extends AbstractExecutableComponent {
     @ComponentInput(description = "Input binning transformation containing the bin definitions. " +
                     "It is of type ncsa.d2k.modules.core.datatype.table.transformations.BinTransform",
                     name = "binTransform")
-    final static String DATA_INPUT_1 = "binTransform";
+    final static String IN_BIN_TRANSFORM = "binTransform";
+
     @ComponentInput(description = "Input example table containing the names of the input/output features." +
                     "It is of ncsa.d2k.modules.core.datatype.table.ExampleTable.",
                     name = "exampleTable")
-    final static String DATA_INPUT_2 = "exampleTable";
+    final static String IN_EXAMPLE_TABLE = "exampleTable";
 
     @ComponentOutput(description = "Output bin tree structure holding counts. " +
                      "It is of type ncsa.d2k.modules.core.transform.binning.BinTree",
                 name = "binTree")
-    final static String DATA_OUTPUT = "binTree";
+    final static String OUT_BIN_TREE = "binTree";
 
     /**
      * Called when a flow is started.
      *
      * @param ccp ComponentContextProperties
      */
-    public void initialize(ComponentContextProperties ccp) {
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
     }
 
     /**
@@ -120,7 +121,8 @@ public class CreateBinTree implements ExecutableComponent {
      *
      * @param ccp ComponentContextProperties
      */
-    public void dispose(ComponentContextProperties ccp) {
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
         // TODO Auto-generated method stub
     }
 
@@ -131,12 +133,12 @@ public class CreateBinTree implements ExecutableComponent {
      * @throws ComponentExecutionException
      * @throws ComponentContextException
      */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-            ComponentContextException {
-        BinTransform bt = (BinTransform) cc.getDataComponentFromInput(DATA_INPUT_1);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        BinTransform bt = (BinTransform) cc.getDataComponentFromInput(IN_BIN_TRANSFORM);
         ExampleTable et;
         try {
-            et = (ExampleTable) cc.getDataComponentFromInput(DATA_INPUT_2);
+            et = (ExampleTable) cc.getDataComponentFromInput(IN_EXAMPLE_TABLE);
         } catch (ClassCastException ce) {
             throw new ComponentExecutionException(
                     ": Select input/output features using ChooseAttributes before this module");
@@ -206,7 +208,7 @@ public class CreateBinTree implements ExecutableComponent {
 
         long endTime = System.currentTimeMillis();
         //tree.printAll();
-        cc.pushDataComponentToOutput(DATA_OUTPUT, tree);
+        cc.pushDataComponentToOutput(OUT_BIN_TREE, tree);
     }
 
     /**

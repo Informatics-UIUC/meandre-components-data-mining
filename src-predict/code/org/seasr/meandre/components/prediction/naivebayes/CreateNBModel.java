@@ -49,8 +49,8 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.seasr.datatypes.datamining.table.ExampleTable;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel;
 import org.seasr.meandre.support.components.transform.binning.BinTree;
 
@@ -104,22 +104,23 @@ import org.seasr.meandre.support.components.transform.binning.BinTree;
              "as such does not perform any significant computations.",
              name="CreateNBModel",
              tags="naive bayes, prediction",
-             baseURL="meandre://seasr.org/components/data-mining/")
-
-public class CreateNBModel implements ExecutableComponent {
+             baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class CreateNBModel extends AbstractExecutableComponent {
     @ComponentInput(description="Read org.seasr.meandre.support.components.transform.binning.BinTree " +
                     "which contains counts.",
                     name= "binTree")
-    public final static String DATA_INPUT_1 = "binTree";
+    public final static String IN_BINTREE = "binTree";
+
     @ComponentInput(description="Read org.seasr.datatypes.datamining.table.ExampleTable " +
                     "with the data in it.",
                     name= "exampleTable")
-    public final static String DATA_INPUT_2 = "exampleTable";
+    public final static String IN_EXAMPLE_TABLE = "exampleTable";
 
     @ComponentOutput(description="Outuput a Naive Bayes model module. " +
                      "It is type of org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesModel",
                      name="nbModel")
-    public final static String DATA_OUTPUT = "nbModel";
+    public final static String OUT_NBMODEL = "nbModel";
 
 
     //~ Methods *****************************************************************
@@ -129,14 +130,16 @@ public class CreateNBModel implements ExecutableComponent {
      *
      * @param ccp ComponentContextProperties
      */
-    public void initialize(ComponentContextProperties ccp) {}
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {}
 
     /**
     * Called at the end of an execution flow.
     *
     * @param ccp ComponentContextProperties
     */
-    public void dispose(ComponentContextProperties ccp) {}
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {}
 
     /**
      * When ready for execution.
@@ -145,11 +148,11 @@ public class CreateNBModel implements ExecutableComponent {
      * @throws ComponentExecutionException
      * @throws ComponentContextException
      */
-    public void execute(ComponentContext cc) throws ComponentExecutionException,
-            ComponentContextException {
-        BinTree bins = (BinTree) cc.getDataComponentFromInput(DATA_INPUT_1);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+        BinTree bins = (BinTree) cc.getDataComponentFromInput(IN_BINTREE);
         ExampleTable et = (ExampleTable) cc.getDataComponentFromInput(
-                DATA_INPUT_2);
+                IN_EXAMPLE_TABLE);
 
         int[] outputs = et.getOutputFeatures();
 
@@ -174,6 +177,6 @@ public class CreateNBModel implements ExecutableComponent {
         }
 
         /*ModelModule*/ NaiveBayesModel mdl = new NaiveBayesModel(bins, et); //ModelModule is not in d2kbasic
-        cc.pushDataComponentToOutput(DATA_OUTPUT, mdl);
+        cc.pushDataComponentToOutput(OUT_NBMODEL, mdl);
     }
 } // end class CreateNBModel

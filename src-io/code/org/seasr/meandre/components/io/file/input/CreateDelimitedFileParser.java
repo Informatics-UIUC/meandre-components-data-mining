@@ -42,9 +42,6 @@
 
 package org.seasr.meandre.components.io.file.input;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
@@ -53,9 +50,9 @@ import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
-import org.meandre.tools.webdav.WebdavClient;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.io.file.input.DelimitedFileParserFromURL;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClient;
 
 
 /**
@@ -69,7 +66,7 @@ import org.seasr.meandre.support.components.io.file.input.DelimitedFileParserFro
  */
 
 @Component(
-        creator = "Boris Capitanu and Lily Dong",
+        creator = "Boris Capitanu",
         description = "This module creates a parser for the specified WevdavClient. " +
         "The file is expected to have a consistent delimiter character.</p>" +
 
@@ -93,30 +90,30 @@ import org.seasr.meandre.support.components.io.file.input.DelimitedFileParserFro
         tags = "file parser",
         baseURL="meandre://seasr.org/components/data-mining/")
 
-public class CreateDelimitedFileParser implements ExecutableComponent {
+public class CreateDelimitedFileParser extends AbstractExecutableComponent {
 
     @ComponentInput(description = "WebdavClient pointing to a resource",
                     name = "webdavClient")
-    final static String DATA_INPUT_CLIENT= "webdavClient";
+    final static String IN_CLIENT= "webdavClient";
 
     @ComponentInput(description = "URL pointing to a resource location.",
                     name = "url")
-    final static String DATA_INPUT_URL = "url";
+    final static String IN_URL = "url";
 
     @ComponentOutput(description = "A Delimited File Parser for the specified file", name = "parser")
-    final static String DATA_OUTPUT_PARSER = "parser";
+    final static String OUT_PARSER = "parser";
 
     @ComponentProperty(description = "This is the index of the labels row in the file, " +
             "or -1 if there is no labels row", name = "labelsRowIndex", defaultValue = "0")
-    final static String DATA_PROPERTY_LABELSROWINDEX = "labelsRowIndex";
+    final static String PROP_LABELSROWINDEX = "labelsRowIndex";
 
     @ComponentProperty(description = "This is the index of the types row in the file, " +
             "or -1 if there is no types row", name = "typesRowIndex", defaultValue = "1")
-    final static String DATA_PROPERTY_TYPESROWINDEX = "typesRowIndex";
+    final static String PROP_TYPESROWINDEX = "typesRowIndex";
 
     @ComponentProperty(description = "The delimiter of this file " +
             "if it is different than space, tab '|' or '='", name = "delimiter", defaultValue = "default")
-    final static String DATA_PROPERTY_DELIMITER = "delimiter";
+    final static String PROP_DELIMITER = "delimiter";
 
     //~ Instance fields *********************************************************
 
@@ -137,8 +134,6 @@ public class CreateDelimitedFileParser implements ExecutableComponent {
 
     /** Description of field typesRow. */
     private int typesRow;
-
-    private Logger _logger;
 
     //~ Methods *****************************************************************
 
@@ -226,35 +221,25 @@ public class CreateDelimitedFileParser implements ExecutableComponent {
 	 */
 	public void setTypesRow(int i) { typesRow = i; }
 
-	public void initialize(ComponentContextProperties context) {
-	    _logger = context.getLogger();
+	@Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+		labelsRow = Integer.parseInt(getPropertyOrDieTrying(PROP_LABELSROWINDEX, ccp));
+		typesRow = Integer.parseInt(getPropertyOrDieTrying(PROP_TYPESROWINDEX, ccp));
 
-	    try {
-	    	labelsRow = Integer.parseInt(context.getProperty(DATA_PROPERTY_LABELSROWINDEX));
-	    	typesRow = Integer.parseInt(context.getProperty(DATA_PROPERTY_TYPESROWINDEX));
-
-	    	String strDelim = context.getProperty(DATA_PROPERTY_DELIMITER);
-	    	if (strDelim.equals("default")) {
-	    		setHasSpecDelim(false);
-	    		setSpecDelim(null);
-	    	} else {
-	    		setSpecDelim(strDelim);
-	    		setHasSpecDelim(true);
-	    	}
-	    }
-	    catch (Exception e) {
-	    	_logger.log(Level.SEVERE, "Initialize error", e);
-	    	throw new RuntimeException(e);
-	    }
+		String strDelim = getPropertyOrDieTrying(PROP_DELIMITER, ccp);
+		if (strDelim.equals("default")) {
+			setHasSpecDelim(false);
+			setSpecDelim(null);
+		} else {
+			setSpecDelim(strDelim);
+			setHasSpecDelim(true);
+		}
 	}
 
-	public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
-		_logger.entering(this.getClass().getName(), "execute");
-
-	    //DataObjectProxy dataobj = (DataObjectProxy) context.getDataComponentFromInput(DATA_INPUT_DATAOBJECTPROXY);
-
-		String url = (String)context.getDataComponentFromInput(DATA_INPUT_URL);
-		WebdavClient client = (WebdavClient)context.getDataComponentFromInput(DATA_INPUT_CLIENT);
+	@Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+		String url = (String)cc.getDataComponentFromInput(IN_URL);
+		WebdavClient client = (WebdavClient)cc.getDataComponentFromInput(IN_CLIENT);
 	    DelimitedFileParserFromURL df = null;
 
 	    int lbl = -1;
@@ -271,7 +256,7 @@ public class CreateDelimitedFileParser implements ExecutableComponent {
 
 	    if (!getHasSpecDelim()) {
 	        try {
-	            df = new DelimitedFileParserFromURL(/*dataobj*/client, url, lbl, typ);
+	            df = new DelimitedFileParserFromURL(client, url, lbl, typ);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	            throw new ComponentExecutionException(e);
@@ -286,17 +271,16 @@ public class CreateDelimitedFileParser implements ExecutableComponent {
 	        }
 
 	        try {
-	            df = new DelimitedFileParserFromURL(/*dataobj*/client, url, lbl, typ, del[0]);
+	            df = new DelimitedFileParserFromURL(client, url, lbl, typ, del[0]);
 	        } catch (Exception e) {
 	            throw new ComponentExecutionException(e);
 	        }
 	    }
 
-	    context.pushDataComponentToOutput(DATA_OUTPUT_PARSER, df);
-
-	    //System.out.println(df.toText());
+	    cc.pushDataComponentToOutput(OUT_PARSER, df);
 	}
 
-	public void dispose(ComponentContextProperties context) {
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
 	}
 }

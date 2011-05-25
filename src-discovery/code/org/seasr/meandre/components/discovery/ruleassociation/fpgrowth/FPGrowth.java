@@ -47,18 +47,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.support.components.discovery.ruleassociation.ItemSetInterface;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
 import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPProb;
@@ -189,41 +185,36 @@ import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.F
 
         name = "FP Growth",
         tags = "frequent pattern mining, rule association, discovery",
-        baseURL="meandre://seasr.org/components/data-mining/")
-
-public class FPGrowth implements ExecutableComponent {
+        baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class FPGrowth extends AbstractExecutableComponent {
 
     @ComponentInput(description = "An object produced by a <i>Table To Item Sets</i> component " +
             "containing items that will appear in the frequent itemsets.", name = "item_sets")
-    final static String DATA_INPUT_ITEM_SETS = "item_sets";
+    final static String IN_ITEM_SETS = "item_sets";
 
     @ComponentOutput(description = "A representation of the frequent itemsets found by the component. " +
             "This representation encodes the items used in the sets " +
             "and the number of examples in which each set occurs. This output is typically " +
             "connected to a <i>Compute Confidence</i> component.", name = "freq_item_sets")
-    final static String DATA_OUTPUT_FREQ_ITEM_SETS = "freq_item_sets";
+    final static String OUT_FREQ_ITEM_SETS = "freq_item_sets";
 
     @ComponentProperty(description = "The percent of all examples that must contain a given set of items " +
             "before an association rule will be formed containing those items. " +
             "This value must be greater than 0 and less than or equal to 100.", name = "min_support",
             defaultValue = "20.0")
-    final static String DATA_PROPERTY_MIN_SUPPORT = "min_support";
+    final static String PROP_MIN_SUPPORT = "min_support";
 
     @ComponentProperty(description = "The maximum number of items to include in any rule. " +
             "Does not impact performance for this algorithm as it does for Apriori." +
             "This value cannot be less than 2.", name = "max_items",
             defaultValue = "6")
-    final static String DATA_PROPERTY_MAX_ITEMS = "max_items";
+    final static String PROP_MAX_ITEMS = "max_items";
 
     @ComponentProperty(description = "If this property is true, the component will report " +
             "progress information to the console.", name = "verbose",
             defaultValue = "True")
-    final static String DATA_PROPERTY_VERBOSE = "verbose";
-
-    @ComponentProperty(description = "If this property is true, the component will " +
-            "write verbose status information to the console.", name = "debug",
-            defaultValue = "False")
-    final static String DATA_PROPERTY_DEBUG = "debug";
+    final static String PROP_VERBOSE = "verbose";
 
     //~ Static fields/initializers **********************************************
 
@@ -240,14 +231,6 @@ public class FPGrowth implements ExecutableComponent {
      * progress information to the console.
      */
     private boolean _verbose;
-
-    /**
-     * the Debug property. Is sets to true, this component outpus debug information
-     * to stdout.
-     */
-    private boolean _debug;
-
-    private Logger _logger;
 
     /** the maximum number of attributes that will be included in any rule. */
     private int _maxSize;
@@ -407,7 +390,7 @@ public class FPGrowth implements ExecutableComponent {
         if (leafcnt == 1) {
             ArrayList path = new ArrayList();
             FPTreeNode cpathnode =
-                (FPTreeNode) ((Object[]) root.getChildren().getValues())[0];
+                (FPTreeNode) (root.getChildren().getValues())[0];
 
             while (true) {
                 path.add(cpathnode);
@@ -417,7 +400,7 @@ public class FPGrowth implements ExecutableComponent {
                 }
 
                 cpathnode =
-                    (FPTreeNode) ((Object[]) cpathnode.getChildren().getValues())[0];
+                    (FPTreeNode) (cpathnode.getChildren().getValues())[0];
             }
 
             // now we need to get the combinations.
@@ -521,13 +504,6 @@ public class FPGrowth implements ExecutableComponent {
         }
     }
 
-    //private D2KModuleLogger myLogger;
-    /**
-     * Returns the debug property value.
-     *
-     * @return boolean The debug property value.
-     */
-    public boolean getDebug() { return _debug; }
 
     /**
      * Returns the maximum number of attributes allowed in any rule.
@@ -550,13 +526,6 @@ public class FPGrowth implements ExecutableComponent {
      * @return boolean The value of the verbose property.
      */
     public boolean getVerbose() { return _verbose; }
-
-    /**
-     * Sets the debug property value.
-     *
-     * @param enable boolean The value for the debug property.
-     */
-    public void setDebug(boolean enable) { _debug = enable; }
 
     /**
      * Sets the maximum number of attributes allowed in any rule.
@@ -600,52 +569,26 @@ public class FPGrowth implements ExecutableComponent {
      */
     public void setVerbose(boolean enable) { this._verbose = enable; }
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#initialize(org.meandre.core.ComponentContextProperties)
-     */
-    public void initialize(ComponentContextProperties context) {
-        _logger = context.getLogger();
-
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
     	_patterns = null;
 
-    	try {
-    		_debug = Boolean.parseBoolean(context.getProperty(DATA_PROPERTY_DEBUG));
-    		_verbose = Boolean.parseBoolean(context.getProperty(DATA_PROPERTY_VERBOSE));
-    		_maxSize = Integer.parseInt(context.getProperty(DATA_PROPERTY_MAX_ITEMS));
-    		_support = Double.parseDouble(context.getProperty(DATA_PROPERTY_MIN_SUPPORT));
-    	}
-    	catch (Exception e) {
-    		_logger.log(Level.SEVERE, "Initialize error: ", e);
-    		throw new RuntimeException(e);
-    	}
+    	_verbose = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp));
+    	_maxSize = Integer.parseInt(getPropertyOrDieTrying(PROP_MAX_ITEMS, ccp));
+    	_support = Double.parseDouble(getPropertyOrDieTrying(PROP_MIN_SUPPORT, ccp));
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
-     */
-    public void execute(ComponentContext context) throws ComponentExecutionException, ComponentContextException {
-
-       // ItemSets iss = (ItemSets) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
-
-       ItemSetInterface iss =
-          (ItemSetInterface) context.getDataComponentFromInput(DATA_INPUT_ITEM_SETS);
+    @Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+       ItemSetInterface iss = (ItemSetInterface) cc.getDataComponentFromInput(IN_ITEM_SETS);
 
        // now run the algorithm
-       int[][] ovals = runFP(context, iss);
-       if (ovals != null){
-          context.pushDataComponentToOutput(DATA_OUTPUT_FREQ_ITEM_SETS, ovals);
-       }
-
+       int[][] ovals = runFP(cc, iss);
+       if (ovals != null)
+          cc.pushDataComponentToOutput(OUT_FREQ_ITEM_SETS, ovals);
     }
 
-
-
-    protected int[][] runFP(ComponentContext context,
-                             ItemSetInterface iss)
-        throws ComponentExecutionException,
-               ComponentContextException
+    protected int[][] runFP(ComponentContext context, ItemSetInterface iss) throws Exception
     {
 
        // HashMap sNames    = iss.getUnique();
@@ -659,119 +602,109 @@ public class FPGrowth implements ExecutableComponent {
 
         long start = System.currentTimeMillis();
 
-        try {
+        _cutoff = (int) (numExamples * (_support / 100.0));
 
-            _cutoff = (int) (numExamples * (_support / 100.0));
-
-            if ((numExamples * (_support / 100.0)) > _cutoff) {
-                _cutoff++;
-            }
-
-            // BUILD INITIAL PROBLEM
-            FPProb prob = null;
-
-            FPSparse tab = new FPSparse(nameAry.length);
-            FPPattern.clearElementMapping();
-
-            for (int i = 0, n = nameAry.length; i < n; i++) {
-                tab.addColumn(i);
-                FPPattern.addElementMapping(i, nameAry[i]);
-            }
-
-            int rows = numExamples; // was vals.length
-            for (int i = 0, n = rows; i < n; i++) {
-                int cols = nameAry.length; // was vals[i].length
-                for (int j = 0, m = cols; j < m; j++) {
-
-                    if (iss.getItemFlag(i, j) == true) {
-                        tab.setInt(1, i, j);
-                    }
-                }
-            }
-
-            int[] flist = new int[0];
-            prob = new FPProb(tab, flist, _cutoff);
-
-            _patterns = new ArrayList();
-
-            FPProcess(prob);
-
-            _logger.fine(_patterns.size() + " patterns discovered.");
-
-            long stop = System.currentTimeMillis();
-            _logger.fine((stop - start) / 1000 + " seconds");
-
-            int numpatsout = 0;
-
-            gnu.trove.TIntIntHashMap tiihm = new gnu.trove.TIntIntHashMap();
-            // HashMap<Integer, Integer> tiihm = new HashMap<Integer, Integer>();
-
-            for (int i = 0, n = _patterns.size(); i < n; i++) {
-                FPPattern pat = (FPPattern) _patterns.get(i);
-                int sz = pat.getSize();
-                int val = tiihm.get(sz);
-                val++;
-                tiihm.put(sz, val);
-            }
-
-            int[] keys = tiihm.keys();
-            //Integer[] keys = tiihm.keySet().toArray(new Integer[0]);
-
-
-            for (int i = 0, n = keys.length; i < n; i++) {
-
-                if ((keys[i] < 2) || (keys[i] > this.getMaxRuleSize())) {
-                    numpatsout += tiihm.get(keys[i]);
-
-                    continue;
-                }
-
-                _logger.info("Number of frequent " + keys[i] + "-patterns: " + tiihm.get(keys[i]));
-            }
-
-            // CONVERT TO FORMAT USED BY COMPUTE CONFIDENCE COMPONENT
-
-            int totnum = _patterns.size() - numpatsout;
-
-            int[][] ovals = new int[totnum][];
-            int ocnt = 0;
-
-            for (int i = 0, n = _patterns.size(); i < n; i++) {
-                FPPattern pat = (FPPattern) _patterns.get(i);
-
-                if (
-                        (pat.getSize() < 2) ||
-                        (pat.getSize() > this.getMaxRuleSize())) {
-                    continue;
-                }
-
-                int[] fp = new int[pat.getSize() + 1];
-                int cnter = 0;
-
-                for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext();) {
-                    fp[cnter++] = it.next();
-                }
-
-                fp[cnter] = pat.getSupport();
-                ovals[ocnt++] = fp;
-            }
-
-            if (_patterns.size() > 0) {
-                return ovals;
-            }
-            return null;
-
-        } catch (Exception ex) {
-        	_logger.log(Level.SEVERE, "Execution error: ", ex);
-            throw new ComponentExecutionException(ex);
+        if ((numExamples * (_support / 100.0)) > _cutoff) {
+        	_cutoff++;
         }
+
+        // BUILD INITIAL PROBLEM
+        FPProb prob = null;
+
+        FPSparse tab = new FPSparse(nameAry.length);
+        FPPattern.clearElementMapping();
+
+        for (int i = 0, n = nameAry.length; i < n; i++) {
+        	tab.addColumn(i);
+        	FPPattern.addElementMapping(i, nameAry[i]);
+        }
+
+        int rows = numExamples; // was vals.length
+        for (int i = 0, n = rows; i < n; i++) {
+        	int cols = nameAry.length; // was vals[i].length
+        	for (int j = 0, m = cols; j < m; j++) {
+
+        		if (iss.getItemFlag(i, j) == true) {
+        			tab.setInt(1, i, j);
+        		}
+        	}
+        }
+
+        int[] flist = new int[0];
+        prob = new FPProb(tab, flist, _cutoff);
+
+        _patterns = new ArrayList();
+
+        FPProcess(prob);
+
+        console.fine(_patterns.size() + " patterns discovered.");
+
+        long stop = System.currentTimeMillis();
+        console.fine((stop - start) / 1000 + " seconds");
+
+        int numpatsout = 0;
+
+        gnu.trove.TIntIntHashMap tiihm = new gnu.trove.TIntIntHashMap();
+        // HashMap<Integer, Integer> tiihm = new HashMap<Integer, Integer>();
+
+        for (int i = 0, n = _patterns.size(); i < n; i++) {
+        	FPPattern pat = (FPPattern) _patterns.get(i);
+        	int sz = pat.getSize();
+        	int val = tiihm.get(sz);
+        	val++;
+        	tiihm.put(sz, val);
+        }
+
+        int[] keys = tiihm.keys();
+        //Integer[] keys = tiihm.keySet().toArray(new Integer[0]);
+
+
+        for (int i = 0, n = keys.length; i < n; i++) {
+
+        	if ((keys[i] < 2) || (keys[i] > this.getMaxRuleSize())) {
+        		numpatsout += tiihm.get(keys[i]);
+
+        		continue;
+        	}
+
+        	console.info("Number of frequent " + keys[i] + "-patterns: " + tiihm.get(keys[i]));
+        }
+
+        // CONVERT TO FORMAT USED BY COMPUTE CONFIDENCE COMPONENT
+
+        int totnum = _patterns.size() - numpatsout;
+
+        int[][] ovals = new int[totnum][];
+        int ocnt = 0;
+
+        for (int i = 0, n = _patterns.size(); i < n; i++) {
+        	FPPattern pat = (FPPattern) _patterns.get(i);
+
+        	if (
+        			(pat.getSize() < 2) ||
+        			(pat.getSize() > this.getMaxRuleSize())) {
+        		continue;
+        	}
+
+        	int[] fp = new int[pat.getSize() + 1];
+        	int cnter = 0;
+
+        	for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext();) {
+        		fp[cnter++] = it.next();
+        	}
+
+        	fp[cnter] = pat.getSupport();
+        	ovals[ocnt++] = fp;
+        }
+
+        if (_patterns.size() > 0) {
+        	return ovals;
+        }
+        return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#dispose(org.meandre.core.ComponentContextProperties)
-     */
-    public void dispose(ComponentContextProperties context) {
+    @Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
         _patterns = null;
     }
 

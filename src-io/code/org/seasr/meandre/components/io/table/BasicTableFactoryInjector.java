@@ -42,16 +42,12 @@
 
 package org.seasr.meandre.components.io.table;
 
-import java.util.logging.Logger;
-
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
-import org.seasr.datatypes.datamining.table.basic.BasicTableFactory;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
+import org.seasr.datatypes.datamining.table.basic.BasicTableFactory;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
 
 /**
@@ -69,15 +65,14 @@ import org.meandre.core.ExecutableComponent;
              "creating D2K Tables from the " +
              "ncsa.d2k.modules.core.datatype.table.basic package. This is " +
              "a standard Table suitable for most applications.</p>",
-             name = "Basic Table Factory Injector", tags = "table factory",
-             baseURL="meandre://seasr.org/components/data-mining/")
-             
-public class BasicTableFactoryInjector implements ExecutableComponent {
-
-	private static Logger _logger = Logger.getLogger("BasicTableFactoryInjector");
+        name = "Basic Table Factory Injector",
+        tags = "table factory",
+        baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class BasicTableFactoryInjector extends AbstractExecutableComponent {
 
 	@ComponentOutput(description = "Table factory instance.", name = "table_factory")
-	public final static String DATA_OUTPUT_TABLE_FACTORY = "table_factory";
+	public final static String OUT_TABLE_FACTORY = "table_factory";
 
    //~ Constructors ************************************************************
 
@@ -88,24 +83,16 @@ public class BasicTableFactoryInjector implements ExecutableComponent {
 
    //~ Methods *****************************************************************
 
-	public void initialize(ComponentContextProperties ccp) {
-		_logger.fine("initialize() called");
+	@Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
 	}
 
-	public void dispose(ComponentContextProperties ccp) {
-		_logger.fine("dispose() called");
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
 	}
 
-	public void execute(ComponentContext ctx)
-			throws ComponentExecutionException, ComponentContextException {
-		_logger.fine("execute() called");
-		try {
-			ctx.pushDataComponentToOutput(DATA_OUTPUT_TABLE_FACTORY, new BasicTableFactory());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.out.println("ERROR: BasicTableFactoryInjector.execute(): " + ex.getMessage());
-			throw new ComponentExecutionException(ex);
-		}
+	@Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+		cc.pushDataComponentToOutput(OUT_TABLE_FACTORY, new BasicTableFactory());
 	}
-
-} // end class BasicTableFactoryInjector
+}

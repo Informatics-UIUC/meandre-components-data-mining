@@ -42,22 +42,19 @@
 
 package org.seasr.meandre.components.io.file.input;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
-import org.meandre.tools.webdav.WebdavClient;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClient;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClientFactory;
 
 /**
  * InputFileURL allows the user to input the url to a local or remote resource.
@@ -99,35 +96,35 @@ import org.meandre.tools.webdav.WebdavClient;
         "in the file name string.",
         name = "Input URL Or Path",
         tags = "io, input",
-        dependency = {"jackrabbit-webdav-1.4.jar", "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar", "meandre-webdav-1.4.8.jar" },
+        dependency = { "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar" },
         baseURL="meandre://seasr.org/components/data-mining/")
 
-public class InputFileUrl implements ExecutableComponent {
+public class InputFileUrl extends AbstractExecutableComponent {
 
     @ComponentOutput(description = "WebdavClient pointing to a resource.",
                      name = "webdavClient")
-    final static String DATA_OUTPUT_CLIENT = "webdavClient";
+    final static String OUT_CLIENT = "webdavClient";
 
     @ComponentOutput(description = "URL pointing to a resource location.",
                      name = "url")
-    final static String DATA_OUTPUT_URL = "url";
+    final static String OUT_URL = "url";
 
     @ComponentProperty(description = "The input file URL",
                        name = "file_url",
                        defaultValue = " ")
-    final static String DATA_PROPERTY_FILE_URL = "file_url";
+    final static String PROP_FILE_URL = "file_url";
 
     @ComponentProperty(description = "The user login name to access the object. " +
                                      "if needed, use null to indicate no authentication " +
                                      "is to be performed.",
                        name = "username",
                        defaultValue = "null")
-    final static String DATA_PROPERTY_USERNAME = "username";
+    final static String PROP_USERNAME = "username";
 
     @ComponentProperty(description = "The password to access the object, if needed",
                        name = "password",
                        defaultValue = "null")
-    final static String DATA_PROPERTY_PASSWORD = "password";
+    final static String PROP_PASSWORD = "password";
 
     //~ Instance fields *********************************************************
     private WebdavClient client;
@@ -139,8 +136,6 @@ public class InputFileUrl implements ExecutableComponent {
 
     /** The username property. */
     private String username;
-
-    private Logger _logger;
 
     //~ Methods *****************************************************************
 
@@ -172,78 +167,35 @@ public class InputFileUrl implements ExecutableComponent {
      */
     public void setUserName(String s) { username = s; }
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#initialize(org.meandre.core.ComponentContextProperties)
-     */
-    public void initialize(ComponentContextProperties context) {
-	    _logger = context.getLogger();
 
-	    username = context.getProperty(DATA_PROPERTY_USERNAME);
-	    password = context.getProperty(DATA_PROPERTY_PASSWORD);
-
-	    if (username.equalsIgnoreCase("null")) username = "";
-	    if (password.equalsIgnoreCase("null")) password = "";
+    @Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+	    username = getPropertyOrDieTrying(PROP_USERNAME, true, false, ccp);
+	    password = getPropertyOrDieTrying(PROP_PASSWORD, false, false, ccp);
 
 	    setUserName(username);
 	    setPassword(password);
 
-	    try {
-	        fileUrl = new URL(context.getProperty(DATA_PROPERTY_FILE_URL));
-	    } catch (MalformedURLException e) {
-	    	_logger.log(Level.SEVERE, "Initialize error: ", e);
-	    	throw new RuntimeException(e);
-	    }
+	    String sFileUrl = getPropertyOrDieTrying(PROP_FILE_URL, ccp);
+	    fileUrl = new URL(sFileUrl);
 
 	    client = null;
 	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.meandre.core.ExecutableComponent#execute(org.meandre.core.ComponentContext)
-     */
-	public void execute(ComponentContext context)
-	    throws ComponentExecutionException, ComponentContextException {
-
-	    /*DataObjectProxy dataobj;
-	    try {
-	        dataobj = DataObjectProxyFactory.getDataObjectProxy(fileUrl, username, password);
-	    } catch (DataObjectProxyException e) {
-	    	_logger.log(Level.SEVERE, "Execution exception: ", e);
-	        throw new ComponentExecutionException(e);
-	    }
-	    context.pushDataComponentToOutput(DATA_OUTPUT_DATAOBJECTPROXY, dataobj);*/
-
+	@Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
 	    Credentials credentials = null;
         if(username.length() != 0 && password.length() != 0)
             credentials = new UsernamePasswordCredentials(username, password);
 
-        try {
-            client = new WebdavClient(context.getProperty(DATA_PROPERTY_FILE_URL),
-                                      credentials);
-        }catch (MalformedURLException e) {
-            e.printStackTrace();
-            _logger.log(Level.SEVERE, "Execution exception: ", e);
-            throw new ComponentExecutionException(e);
-        }
+		HttpHost host = new HttpHost(fileUrl.getHost(), fileUrl.getPort(), fileUrl.getProtocol());
+		client = WebdavClientFactory.begin(host, credentials);
 
-        context.pushDataComponentToOutput(
-                DATA_OUTPUT_URL, context.getProperty(DATA_PROPERTY_FILE_URL));
-        context.pushDataComponentToOutput(DATA_OUTPUT_CLIENT, client);
-
-        /*File file = new File("/birdy_project/iris.arff");
-        try {
-            client.put("http://norma.ncsa.uiuc.edu/alg-dav/iris.arff", file, "text/plain");
-        }catch(IOException e) {
-            e.printStackTrace();
-        }*/
+        cc.pushDataComponentToOutput(OUT_URL, fileUrl.toString());
+        cc.pushDataComponentToOutput(OUT_CLIENT, client);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.meandre.core.ExecutableComponent#dispose(org.meandre.core.ComponentContextProperties)
-	 */
-	public void dispose(ComponentContextProperties context) {
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
     }
-
-} // end class InputFileURL
+}

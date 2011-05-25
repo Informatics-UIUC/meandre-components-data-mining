@@ -61,24 +61,23 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
 import org.meandre.webui.WebUIException;
 import org.meandre.webui.WebUIFragmentCallback;
 import org.seasr.datatypes.datamining.table.sparse.SparseTable;
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 import org.seasr.meandre.components.util.Unzipper;
 import org.seasr.meandre.support.components.discovery.cluster.ClusterModel;
 import org.seasr.meandre.support.components.discovery.cluster.TableCluster;
@@ -143,10 +142,9 @@ import org.seasr.meandre.support.components.discovery.cluster.TableCluster;
             tags = "visualization, dendrogram, cluster",
             mode = Mode.webui,
             dependency = { "DendrogramViz_001.jar" },
-            baseURL="meandre://seasr.org/components/data-mining/")
-
-public class DendrogramViz implements ExecutableComponent,
-		WebUIFragmentCallback {
+            baseURL="meandre://seasr.org/components/data-mining/"
+)
+public class DendrogramViz extends AbstractExecutableComponent implements WebUIFragmentCallback {
 
 	// ==============
 	// Data Members
@@ -159,15 +157,15 @@ public class DendrogramViz implements ExecutableComponent,
 	// public final static String DATA_PROPERTY_CORE_PORT = "core_port";
 
 	@ComponentProperty(defaultValue = "false", description = "Connect to local host.", name = "use_local_host")
-	public final static String DATA_PROPERTY_USE_LOCAL_HOST = "use_local_host";
+	public final static String PROP_USE_LOCAL_HOST = "use_local_host";
 
 	@ComponentProperty(defaultValue = "10", description = "Detail limit on sparse table summaries.", name = "sparse_detail_limit")
-	public final static String DATA_PROPERTY_SPARSE_DETAIL_LIMIT = "sparse_detail_limit";
+	public final static String PROP_SPARSE_DETAIL_LIMIT = "sparse_detail_limit";
 
 	// io
 
 	@ComponentInput(description = "D2K Cluster Model", name = "d2k_cluster_Model")
-	public final static String DATA_INPUT_CLUSTER_MODEL = "d2k_cluster_Model";
+	public final static String IN_CLUSTER_MODEL = "d2k_cluster_Model";
 
 	/** The collection for semaphore */
 	private static Vector<Semaphore> sems = new Vector<Semaphore>();
@@ -188,8 +186,6 @@ public class DendrogramViz implements ExecutableComponent,
 	private final String _resName = "DendrogramViz_001";
 
 	private Map<Integer, Object[]> _centroidMap = null;
-
-	private static Logger _logger = Logger.getLogger("DendrogramViz");
 
 	// ==============
 	// Constructors
@@ -273,14 +269,12 @@ public class DendrogramViz implements ExecutableComponent,
 	// Public Methods
 	// ================
 
-	public boolean getUseLocalhost(ComponentContextProperties ccp) {
-		String s = ccp.getProperty(DATA_PROPERTY_USE_LOCAL_HOST);
-		return Boolean.parseBoolean(s.toLowerCase());
+	public boolean getUseLocalhost(ComponentContextProperties ccp) throws Exception {
+		return Boolean.parseBoolean(getPropertyOrDieTrying(PROP_USE_LOCAL_HOST, ccp).toLowerCase());
 	}
 
-	public int getSparseDetailLimit(ComponentContextProperties ccp) {
-		String s = ccp.getProperty(DATA_PROPERTY_SPARSE_DETAIL_LIMIT);
-		return Integer.parseInt(s);
+	public int getSparseDetailLimit(ComponentContextProperties ccp) throws Exception {
+		return Integer.parseInt(getPropertyOrDieTrying(PROP_SPARSE_DETAIL_LIMIT, ccp));
 	}
 
 	// ===========================
@@ -290,21 +284,14 @@ public class DendrogramViz implements ExecutableComponent,
 	/**
 	 * Called when a flow is started.
 	 */
-	public void initialize(ComponentContextProperties ccp) {
-
-		_logger.fine("initialize() called");
-
+	@Override
+	public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
 		String fname = ((ComponentContext) ccp).getPublicResourcesDirectory();
-		if ((!(fname.endsWith("/"))) && (!(fname.endsWith("\\")))) {
+		if ((!(fname.endsWith("/"))) && (!(fname.endsWith("\\"))))
 			fname += "/";
-		}
 
-		try {
-			Unzipper.CheckIfZipFileExistsIfNotInstallFromJarThenUnzipIt(fname,
-					_resName, fname + _resName, (ComponentContext) ccp);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		Unzipper.CheckIfZipFileExistsIfNotInstallFromJarThenUnzipIt(fname,
+				_resName, fname + _resName, (ComponentContext) ccp);
 	}
 
 
@@ -318,56 +305,50 @@ public class DendrogramViz implements ExecutableComponent,
 	 * @throws ComponentContextException
 	 *             Illigal access to context
 	 */
-	public void execute(ComponentContext ctx)
-			throws ComponentExecutionException, ComponentContextException {
-
-		_logger.fine("execute() called");
+	@Override
+	public void executeCallBack(ComponentContext ctx) throws Exception {
 
 		_ctx = ctx;
 
 		sems.add(sem);
 
-		try {
-			_logger.fine("Firing the web ui component");
-			_cmodel = (ClusterModel) ctx
-					.getDataComponentFromInput(DendrogramViz.DATA_INPUT_CLUSTER_MODEL);
+		console.fine("Firing the web ui component");
+		_cmodel = (ClusterModel) ctx
+		.getDataComponentFromInput(DendrogramViz.IN_CLUSTER_MODEL);
 
-			if (_cmodel.getRoot().getTable() instanceof SparseTable) {
-				int[] centroidInds = _cmodel.getRoot().getSparseCentroidInd();
-				double[] centroidVals = _cmodel.getRoot()
-						.getSparseCentroidValues();
-				SparseTable tab = (SparseTable) _cmodel.getRoot().getTable();
-				_centroidMap = new HashMap<Integer, Object[]>();
-				for (int i = 0, n = centroidInds.length; i < n; i++) {
-					Object[] objarr = new Object[3];
-					Integer key = new Integer(centroidInds[i]);
-					objarr[0] = key;
-					objarr[1] = new Double(centroidVals[i]);
-					objarr[2] = tab.getColumnLabel(centroidInds[i]);
-					_centroidMap.put(key, objarr);
-				}
+		if (_cmodel.getRoot().getTable() instanceof SparseTable) {
+			int[] centroidInds = _cmodel.getRoot().getSparseCentroidInd();
+			double[] centroidVals = _cmodel.getRoot()
+			.getSparseCentroidValues();
+			SparseTable tab = (SparseTable) _cmodel.getRoot().getTable();
+			_centroidMap = new HashMap<Integer, Object[]>();
+			for (int i = 0, n = centroidInds.length; i < n; i++) {
+				Object[] objarr = new Object[3];
+				Integer key = new Integer(centroidInds[i]);
+				objarr[0] = key;
+				objarr[1] = new Double(centroidVals[i]);
+				objarr[2] = tab.getColumnLabel(centroidInds[i]);
+				_centroidMap.put(key, objarr);
 			}
-
-			sInstanceID = ctx.getExecutionInstanceID();
-			sem.acquire();
-			ctx.startWebUIFragment(this);
-			_logger.fine(">>>STARTED");
-			sem.acquire();
-			_logger.fine(">>>Done");
-			ctx.stopWebUIFragment(this);
-		} catch (Exception e) {
-			throw new ComponentExecutionException(e);
 		}
+
+		sInstanceID = ctx.getExecutionInstanceID();
+		sem.acquire();
+		ctx.startWebUIFragment(this);
+		console.fine(">>>STARTED");
+		sem.acquire();
+		console.fine(">>>Done");
+		ctx.stopWebUIFragment(this);
 	}
 
 	/**
 	 * Call at the end of an execution flow.
 	 */
-	public void dispose(ComponentContextProperties ccp) {
-		_logger.fine("dispose() called");
-		if (_centroidMap != null) {
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
+		if (_centroidMap != null)
 			_centroidMap.clear();
-		}
+
 		_centroidMap = null;
 	}
 
@@ -454,7 +435,7 @@ public class DendrogramViz implements ExecutableComponent,
 	}
 
 	private void createClusteringData(HttpServletResponse response,
-			ClusterModel cm) throws IOException {
+			ClusterModel cm) throws Exception {
 		TableCluster root = cm.getRoot();
 		TreeSet<DendrogramViz.ClusterNode> ranked = new TreeSet<DendrogramViz.ClusterNode>(
 				new cRank_Comparator());
@@ -465,12 +446,7 @@ public class DendrogramViz implements ExecutableComponent,
 			DendrogramViz.ClusterNode cn = itty.next();
 			JSONObject obj = new JSONObject(cn.getMap());
 			response.getWriter().print(obj.toString() + "|");
-			try {
-				_clustMap.put(Integer.valueOf(obj.getInt("rid")), cn);
-			} catch (Exception e) {
-				_logger.severe("ERROR: " + e);
-				throw new RuntimeException(e);
-			}
+			_clustMap.put(Integer.valueOf(obj.getInt("rid")), cn);
 		}
 		response.getWriter().println();
 	}
@@ -505,7 +481,7 @@ public class DendrogramViz implements ExecutableComponent,
 			throws WebUIException {
 		try {
 			createClusteringData(response, _cmodel);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new WebUIException(e);
 		}
 	}
@@ -543,16 +519,14 @@ public class DendrogramViz implements ExecutableComponent,
 		h3.setValue("" + fragPort);
 		h3.setId("fragport");
 
-		_logger.info("Port: " + fragPort);
-		_logger.info("Core Port: " + port);
-		_logger.info("Host: " + s1);
-		_logger.info("Instance ID: " + sInstanceID);
-		_logger.info("Use local host: " + getUseLocalhost(_ctx));
+		console.fine("Port: " + fragPort);
+		console.fine("Core Port: " + port);
+		console.fine("Host: " + s1);
+		console.fine("Instance ID: " + sInstanceID);
 
 		A linkDone = new A();
 		linkDone.setHref("/" + sInstanceID + "?done=true");
-		linkDone
-				.setContent(new Label("Done with the dendrogram visualization"));
+		linkDone.setContent(new Label("Done with the dendrogram visualization"));
 		linkDone.setTitle("Done with the dendrogram visualization");
 		linkDone.setToolTip("Done with the dendrogram visualization");
 		Div div = new Div();
@@ -597,10 +571,10 @@ public class DendrogramViz implements ExecutableComponent,
 	private String getTabViz(org.seasr.datatypes.datamining.table.Table tab,
 			int[] mems) {
 		int nr_instances = tab.getNumRows();
-		_logger.fine("\nthe number of rows  = " + nr_instances);
+		console.fine("\nthe number of rows  = " + nr_instances);
 
 		int nr_attributes = tab.getNumColumns();
-		_logger.fine("\nthe number of attributes = " + nr_attributes);
+		console.fine("\nthe number of attributes = " + nr_attributes);
 
 		Style s = new Style();
 		s.getBox().setBorderStyle("solid");
@@ -620,16 +594,14 @@ public class DendrogramViz implements ExecutableComponent,
 		while (nr < nr_attributes) {
 			String colname = tab.getColumnLabel(nr);
 			table.addNext(colname);
-			System.out.print(colname + "\t");
 			nr++;
 		}
-		System.out.println();
+
 		nr = 0;
 		while (nr < mems.length) {
 			int nr2 = 0;
 			while (nr2 < nr_attributes) {
 				String token = tab.getString(mems[nr], nr2);
-				System.out.print(token + "\t");
 				if (token.compareTo("?") != 0) { // ? means empty
 					table.addNext(token);
 				} else {
@@ -638,7 +610,6 @@ public class DendrogramViz implements ExecutableComponent,
 				nr2++;
 			}
 			nr++;
-			System.out.println();
 		}
 
 		Div div = new Div();
@@ -684,16 +655,16 @@ public class DendrogramViz implements ExecutableComponent,
 		TreeSet<Object[]> cts = compToCentroid(inds, vals, spTab);
 
 		int nr_instances = Integer.parseInt(_ctx
-				.getProperty(DATA_PROPERTY_SPARSE_DETAIL_LIMIT));
+				.getProperty(PROP_SPARSE_DETAIL_LIMIT));
 
 		// if number of indices is smaller than limit use it as limit.
 		nr_instances = (nr_instances > inds.length) ? inds.length
 				: nr_instances;
 
-		_logger.fine("\nthe number of rows  = " + nr_instances);
+		console.fine("\nthe number of rows  = " + nr_instances);
 
 		int nr_attributes = 4;
-		_logger.fine("\nthe number of attributes = " + nr_attributes);
+		console.fine("\nthe number of attributes = " + nr_attributes);
 
 		Style s = new Style();
 		s.getBox().setBorderStyle("solid");
@@ -710,14 +681,9 @@ public class DendrogramViz implements ExecutableComponent,
 
 		int nr = 0;
 		table.addNext("Attribute");
-		System.out.print("Attribute" + "\t");
 		table.addNext("Avg. Frequency");
-		System.out.print("Avg. Frequency" + "\t");
 		table.addNext("Attribute");
-		System.out.print("Attribute" + "\t");
 		table.addNext("Frequency/Norm");
-		System.out.print("Frequency/Norm" + "\t");
-		System.out.println();
 
 		nr = 0;
 		Iterator<Object[]> itty = ts.iterator();
@@ -726,21 +692,16 @@ public class DendrogramViz implements ExecutableComponent,
 			Object[] objarr = itty.next();
 			Object[] centarr = cent.next();
 			String att = spTab.getColumnLabel(((Integer) objarr[0]).intValue());
-			System.out.print(att + "\t");
 			String freq = String.format("%10.2f", ((Double) objarr[1])
 					.doubleValue());
-			System.out.print(freq + "\t");
 			table.addNext(att);
 			table.addNext(freq);
 			String catt = (String) centarr[2];
-			System.out.print(att + "\t");
 			String cfreq = String.format("%10.2f", ((Double) centarr[1])
 					.doubleValue());
-			System.out.print(freq + "\t");
 			table.addNext(catt);
 			table.addNext(cfreq);
 			nr++;
-			System.out.println();
 		}
 
 		Div div = new Div();

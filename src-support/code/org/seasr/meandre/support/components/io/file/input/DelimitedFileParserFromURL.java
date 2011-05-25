@@ -49,10 +49,10 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 
-import org.meandre.tools.webdav.WebdavClient;
 import org.seasr.datatypes.datamining.table.ColumnTypes;
 import org.seasr.datatypes.datamining.table.util.FlatFileParser;
 import org.seasr.datatypes.datamining.table.util.ParsedLine;
+import org.seasr.meandre.support.generic.io.webdav.WebdavClient;
 
 /**
  * Reads data from a delimited file. The delimiter is found automatically, or
