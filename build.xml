@@ -79,6 +79,8 @@
     <!-- Generated upload script name -->
     <property name="uploader.file" value="upload-${project.name}-components.sh"/>    
 
+	<!-- Compile target -->
+	<property name="compile.target" value="1.5"/>
     
     <!-- Code locations -->
     <path id="src.code.dirs">
@@ -170,8 +172,9 @@
         depends="init"
         description="-> compiles all components">
         <!-- compile -->
-        <javac source="1.5"
+        <javac source="1.5" target="${compile.target}"
                debug="on"
+               includeantruntime="false"
                debuglevel="lines,vars,source"
                destdir="${classes.dir}">
             <src refid="src.code.dirs"/>
@@ -224,8 +227,9 @@
             depends="dist"
             description="-> compiles the unit tests">
         <!-- compile -->
-        <javac debug="on"
+        <javac debug="on" source="1.5" target="${compile.target}"
                debuglevel="lines,vars,source"
+               includeantruntime="false"
                destdir="${test.classes.dir}">
             <src refid="src.test.root.dirs"/>
             <classpath refid="classpath.runtime"/>
