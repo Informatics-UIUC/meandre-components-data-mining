@@ -53,10 +53,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.annotations.ComponentProperty;
-import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
@@ -78,7 +78,7 @@ import org.seasr.meandre.support.generic.io.JARInstaller.InstallStatus;
            name="Table Viewer Old",
            tags="table viewer",
            mode=Mode.webui,
-           dependency = { "jquery.jar" },
+           dependency = { "jquery-1.4.4.jar" },
            baseURL="meandre://seasr.org/components/data-mining/")
 
 public class TableViewerOld extends AbstractExecutableComponent
@@ -499,7 +499,7 @@ implements WebUIFragmentCallback {
     public void initializeCallBack(ComponentContextProperties ccp)
     throws Exception {
         InputStream is = null;
-        URL jqueryJarDepUrl = getClass().getClassLoader().getResource("jquery.js");
+        URL jqueryJarDepUrl = getClass().getClassLoader().getResource("jquery.min.js");
         if (jqueryJarDepUrl != null) {
             console.fine(String.format("Found JQuery API in %s", jqueryJarDepUrl));
 
@@ -513,7 +513,7 @@ implements WebUIFragmentCallback {
         }
 
         if (is == null)
-            throw new ComponentContextException("Could not find 'jquery.js' in the class path!");
+            throw new ComponentContextException("Could not find 'jquery.min.js' in the class path!");
 
         console.fine("Installing jQuery API from: " + jqueryJarDepUrl);
 

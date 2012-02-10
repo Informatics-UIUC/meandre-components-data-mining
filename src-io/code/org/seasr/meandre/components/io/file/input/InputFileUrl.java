@@ -96,7 +96,7 @@ import org.seasr.meandre.support.generic.io.webdav.WebdavClientFactory;
         "in the file name string.",
         name = "Input URL Or Path",
         tags = "io, input",
-        dependency = { "slf4j-api-1.5.2.jar", "slf4j-jcl-1.5.2.jar" },
+        dependency = { "slf4j-api-1.6.1.jar" },
         baseURL="meandre://seasr.org/components/data-mining/")
 
 public class InputFileUrl extends AbstractExecutableComponent {
