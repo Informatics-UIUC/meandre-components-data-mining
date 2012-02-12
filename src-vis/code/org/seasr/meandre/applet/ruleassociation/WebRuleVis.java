@@ -136,7 +136,7 @@ import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
            name="WebRuleVis",
            tags="rule association, frequent pattern mining, visualization",
            mode=Mode.webui,
-           dependency={"icons.jar","foundry-datatype-datamining.jar", "foundry-datatype-core.jar", "dom4j-1.6.1.jar", "jaxen-1.1.1.jar", "trove-2.0.3.jar"},
+           dependency={"icons.jar","foundry-datatype-datamining.jar", "foundry-datatype-core.jar", "dom4j-1.6.1.jar", "jaxen-1.1.3.jar", "trove-2.0.3.jar"},
            baseURL="meandre://seasr.org/components/data-mining/")
 
 @ComponentNatures( natures={
@@ -210,7 +210,7 @@ public class WebRuleVis extends AbstractExecutableComponent implements WebUIFrag
         sb.append("<body> ");
         sb.append("<p ALIGN='center'> ");
         sb.append("<APPLET ");
-        sb.append("ARCHIVE='org.seasr.meandre.applet.ruleassociation.webrulevisapplet.jar, foundry-datatype-datamining.jar, foundry-datatype-core.jar, dom4j-1.6.1.jar, jaxen-1.1.1.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
+        sb.append("ARCHIVE='org.seasr.meandre.applet.ruleassociation.webrulevisapplet.jar, foundry-datatype-datamining.jar, foundry-datatype-core.jar, dom4j-1.6.1.jar, jaxen-1.1.3.jar, trove-2.0.3.jar, icons.jar' WIDTH='800' HEIGHT='600' ");
 
         sb.append("CODEBASE='" + webUIUrl + "public/resources/contexts/java/' ");
         sb.append("CODE='org.seasr.meandre.applet.ruleassociation.WebRuleVisApplet.class'> ");
