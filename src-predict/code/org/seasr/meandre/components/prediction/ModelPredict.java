@@ -42,20 +42,21 @@
 
 package org.seasr.meandre.components.prediction;
 
+import java.util.logging.Level;
 
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.FiringPolicy;
+import org.meandre.annotations.Component.Licenses;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
 import org.meandre.core.ComponentContext;
-import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
-import org.meandre.core.ComponentExecutionException;
-import org.meandre.core.ExecutableComponent;
+import org.seasr.datatypes.core.Names;
 import org.seasr.datatypes.datamining.model.PredictionModelModule;
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.datatypes.datamining.table.PredictionTable;
-
-
+import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
 /**
  * <p>Overview: This module applies a prediction model to a table of examples
@@ -70,11 +71,19 @@ import org.seasr.datatypes.datamining.table.PredictionTable;
  *
  * @author  $Author: clutter $
  * @author  $Author: Lily Dong $
+ * @author  $Author: Boris Capitanu $
  * @version $Revision: 2926 $, $Date: 2006-09-01 13:53:48 -0500 (Fri, 01 Sep 2006) $
  */
 
-@Component(creator="Lily Dong",
-           description="This module applies a prediction model " +
+@Component(
+        name = "Model Predict",
+        creator = "Lily Dong",
+        baseURL = "meandre://seasr.org/components/data-mining/",
+        firingPolicy = FiringPolicy.all,
+        mode = Mode.compute,
+        rights = Licenses.UofINCSA,
+        tags = "#ANALYTICS, prediction",
+        description = "This module applies a prediction model " +
            "to a table of examples and makes predictions for each " +
            "output attribute based on the values of the input attributes." +
            "Detailed Description: This module applies a previously " +
@@ -84,62 +93,57 @@ import org.seasr.datatypes.datamining.table.PredictionTable;
            "each of the values the model predicts, in addition to the " +
            "columns found in the original table. " +
            "The new columns are filled in with values predicted by the " +
-           "model based on the values of the input attributes.",
-           name="ModelPredict",
-           tags="prediction",
-           baseURL="meandre://seasr.org/components/data-mining/")
+           "model based on the values of the input attributes."
+)
+public class ModelPredict extends AbstractExecutableComponent {
 
-public class ModelPredict implements ExecutableComponent {
-    @ComponentInput(description="Read the table containing the examples that the model will be applied to. " +
-                    "The table is of the type org.meander.components.datatype.table.ExampleTable.",
-                    name= "exampleTable")
-    public final static String DATA_INPUT_1 = "exampleTable";
-    @ComponentInput(description="Read the prediction model to apply, which is type of " +
-                    "org.seasr.meandre.support.components.prediction.PredictionModelModule.",
-                    name= "predictionModel")
-    public final static String DATA_INPUT_2 = "predictionModel";
+    //------------------------------ INPUTS ------------------------------------------------------
 
-    @ComponentOutput(description="Output a table with the prediction columns filled in by the input model ." +
-                     "The table is type of ncsa.d2k.modules.core.datatype.table.PredictionTable.",
-                     name="predictionTable")
-    public final static String DATA_OUTPUT = "predictionTable";
+    @ComponentInput(
+            name = Names.PORT_TABLE,
+            description = "The table containing the examples that the model will be applied to." +
+                "<br>TYPE: org.meandre.components.datatype.table.ExampleTable"
+    )
+    protected static final String IN_TABLE = Names.PORT_TABLE;
 
+    @ComponentInput(
+            name = "model",
+            description = "The prediction model to apply." +
+                "<br>TYPE: org.seasr.meandre.support.components.prediction.PredictionModelModule"
+    )
+    protected static final String IN_MODEL = "model";
 
-   //~ Methods *****************************************************************
+    //------------------------------ OUTPUTS -----------------------------------------------------
 
-   /**
-    * When ready for execution.
-    *
-    * @param cc ComponentContext
-    * @throws ComponentExecutionException
-    * @throws ComponentContextException
-    */
-   public void execute(ComponentContext cc)
-            throws ComponentExecutionException, ComponentContextException {
-      ExampleTable tt = (ExampleTable)(cc.getDataComponentFromInput(DATA_INPUT_1));
-      PredictionModelModule pmm = (PredictionModelModule)(cc.getDataComponentFromInput(DATA_INPUT_2));
+    @ComponentOutput(
+            name = Names.PORT_TABLE,
+            description = "A table with the prediction columns filled in by the input model." +
+                "<br>TYPE: ncsa.d2k.modules.core.datatype.table.PredictionTable"
+    )
+    protected static final String OUT_TABLE = Names.PORT_TABLE;
 
-      PredictionTable pt;
-      try {
-          pt = pmm.predict(tt);
-      }catch(Exception ex) {
-          throw new ComponentContextException(ex.getMessage());
-      }
-      cc.pushDataComponentToOutput(DATA_OUTPUT, pt);
-   }
+    //--------------------------------------------------------------------------------------------
 
-   /**
-     * Called when a flow is started.
-     *
-     * @param ccp ComponentContextProperties
-     */
-   public void initialize(ComponentContextProperties ccp) {}
+    @Override
+    public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
+    }
 
-   /**
-    * Called at the end of an execution flow.
-    *
-    * @param ccp ComponentContextProperties
-    */
-   public void dispose(ComponentContextProperties ccp) {}
+    @Override
+    public void executeCallBack(ComponentContext cc) throws Exception {
+        ExampleTable exampleTable = (ExampleTable) cc.getDataComponentFromInput(IN_TABLE);
+        PredictionModelModule predictionModel = (PredictionModelModule) cc.getDataComponentFromInput(IN_MODEL);
 
-} // end class ModelPredict
+        if (console.isLoggable(Level.FINE)) {
+            console.fine(String.format("The example table has %,d row(s) and %,d column(s) with %,d input feature(s) and %,d output feature(s)",
+                    exampleTable.getNumRows(), exampleTable.getNumColumns(), exampleTable.getInputFeatures().length, exampleTable.getOutputFeatures().length));
+            console.fine(String.format("The prediction model was built with a training set of size: %,d", predictionModel.getTrainingSetSize()));
+        }
+
+        PredictionTable predictionTable = predictionModel.predict(exampleTable);
+        cc.pushDataComponentToOutput(OUT_TABLE, predictionTable);
+    }
+
+    @Override
+    public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
+    }
+}
