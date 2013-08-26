@@ -117,12 +117,20 @@ public class PredictionReportTable extends AbstractExecutableComponent {
         PredictionTable predictionTable = (PredictionTable) cc.getDataComponentFromInput(IN_PRED_TABLE);
         int numRows = predictionTable.getNumRows();
         int[] predictionSet = predictionTable.getPredictionSet();
+        int[] outputSet = predictionTable.getOutputFeatures();
 
         console.fine(String.format("The prediction table has %,d row(s), with %,d prediction column(s)", numRows, predictionSet.length));
 
         MutableTable predictionResultTable = (MutableTable) TABLE_FACTORY.createTable();
         Column colId = TABLE_FACTORY.createColumn(ColumnTypes.STRING);
         colId.setLabel(predictionTable.getColumnLabel(ID_COLUMN_IDX));  // ID stored in column 1 by convention
+
+        Column[] outputColumns = new Column[outputSet.length];
+        for (int i = 0; i < outputColumns.length; i++) {
+            Column colOutput = TABLE_FACTORY.createColumn(ColumnTypes.STRING);
+            colOutput.setLabel(predictionTable.getColumnLabel(outputSet[i]));
+            outputColumns[i] = colOutput;
+        }
 
         Column[] predictionColumns = new Column[predictionSet.length];
         for (int i = 0; i < predictionColumns.length; i++) {
@@ -132,15 +140,18 @@ public class PredictionReportTable extends AbstractExecutableComponent {
         }
 
         predictionResultTable.addColumn(colId);
+        predictionResultTable.addColumns(outputColumns);
         predictionResultTable.addColumns(predictionColumns);
         predictionResultTable.addRows(numRows);
 
-        int numCols = predictionResultTable.getNumColumns();
-
         for (int row = 0; row < numRows; row++) {
             predictionResultTable.setString(predictionTable.getString(row, ID_COLUMN_IDX), row, 0);
-            for (int col = 1; col < numCols; col++)
-                predictionResultTable.setString(predictionTable.getObject(row, predictionSet[col-1]).toString(), row, col);
+            int offset = 1;
+            for (int col = 0; col < outputColumns.length; col++)
+                predictionResultTable.setString(predictionTable.getObject(row, outputSet[col]).toString(), row, col + offset);
+            offset += outputColumns.length;
+            for (int col = 0; col < predictionColumns.length; col++)
+                predictionResultTable.setString(predictionTable.getObject(row, predictionSet[col]).toString(), row, col + offset);
         }
 
         cc.pushDataComponentToOutput(OUT_RESULT_TABLE, predictionResultTable);
