@@ -50,10 +50,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Mode;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentNature;
 import org.meandre.annotations.ComponentNatures;
-import org.meandre.annotations.Component.Mode;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
@@ -104,7 +104,7 @@ import org.seasr.datatypes.datamining.table.PredictionTable;
            name="PredictionTableReport",
            tags="prediction, visualization",
            mode=Mode.webui,
-           dependency={"foundry-datatype-datamining.jar","foundry-datatype-core.jar", "trove-2.0.3.jar"},
+           dependency={"foundry-datatype-datamining.jar","foundry-datatype-core.jar"},
            baseURL="meandre://seasr.org/components/data-mining/")
 
 @ComponentNatures( natures={

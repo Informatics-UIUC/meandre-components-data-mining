@@ -82,7 +82,6 @@ import org.seasr.meandre.support.components.transform.binning.AutoBinOPT;
            "each of the scalar input columns.",
            name = "AutoBin",
            tags = "binning, transform",
-           dependency={"trove-2.0.3.jar"},
            baseURL="meandre://seasr.org/components/data-mining/"
 )
 public class AutoBin extends AutoBinOPT {

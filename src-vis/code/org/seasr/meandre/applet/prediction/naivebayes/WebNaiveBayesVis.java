@@ -80,7 +80,7 @@ import org.seasr.meandre.support.components.prediction.naivebayes.NaiveBayesMode
            name="WebNaiveBayesVis",
            tags="naive bayes, visualization",
            mode=Mode.webui,
-           dependency={"icons.jar","foundry-datatype-datamining.jar","foundry-datatype-core.jar","trove-2.0.3.jar"},
+           dependency={"icons.jar","foundry-datatype-datamining.jar","foundry-datatype-core.jar"},
            baseURL="meandre://seasr.org/components/data-mining/"
 )
 
