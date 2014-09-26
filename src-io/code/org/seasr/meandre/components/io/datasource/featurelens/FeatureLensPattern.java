@@ -1,19 +1,19 @@
 package org.seasr.meandre.components.io.datasource.featurelens;
 
-import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
+import gnu.trove.iterator.TIntIterator;
+
+import java.sql.Connection;
+import java.util.List;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentProperty;
-
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextException;
 import org.meandre.core.ComponentContextProperties;
 import org.meandre.core.ComponentExecutionException;
 import org.meandre.core.ExecutableComponent;
-
-import java.sql.Connection;
-import java.util.List;
+import org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth.FPPattern;
 
 @Component(creator="Lily Dong",
         	description="Writes the Pattern table of FeatureLens to a database.",
@@ -76,7 +76,7 @@ public class FeatureLensPattern implements ExecutableComponent {
 	private String patternToString(FPPattern p) {
 		// Nice vertical-bar-delimited string version of a pattern's terms.
 		String s = new String();
-		for (gnu.trove.TIntIterator pi = p.getPattern(); pi.hasNext();) {
+		for (TIntIterator pi = p.getPattern(); pi.hasNext();) {
 			s += FPPattern.getElementLabel((int) pi.next()) + "|";
 		}
 		s = s.substring(0, s.length() - 1);

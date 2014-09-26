@@ -42,13 +42,13 @@
 
 package org.seasr.meandre.support.components.discovery.cluster;
 
+import gnu.trove.set.hash.TIntHashSet;
+
+import java.io.Serializable;
+
 import org.seasr.datatypes.datamining.table.ExampleTable;
 import org.seasr.datatypes.datamining.table.Sparse;
 import org.seasr.datatypes.datamining.table.Table;
-
-import gnu.trove.TIntHashSet;
-
-import java.io.Serializable;
 
 
 /**
@@ -114,7 +114,7 @@ public class TableCluster implements Serializable {
    private TableCluster _cluster2 = null;
 
    /** The ID of this cluster. unique. */
-   private int _label = assignID();
+   private final int _label = assignID();
 
    /**
     * rows indices into the columns of the <code>_table</code> that its data

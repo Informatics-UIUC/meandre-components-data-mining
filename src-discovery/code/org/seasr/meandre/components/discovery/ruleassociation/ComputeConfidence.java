@@ -42,7 +42,8 @@
 
 package org.seasr.meandre.components.discovery.ruleassociation;
 
-import gnu.trove.TIntArrayList;
+
+import gnu.trove.list.array.TIntArrayList;
 
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
@@ -466,7 +467,7 @@ public class ComputeConfidence extends AbstractExecutableComponent implements ja
 				@Override
 				public int hashCode() {
 					StringBuffer sb = new StringBuffer();
-					int[] ar = toNativeArray();
+					int[] ar = toArray();
 					Arrays.sort(ar);
 
 					for (int i = 0; i < ar.length; i++) {
@@ -485,7 +486,7 @@ public class ComputeConfidence extends AbstractExecutableComponent implements ja
 				@Override
 				public int hashCode() {
 					StringBuffer sb = new StringBuffer();
-					int[] ar = toNativeArray();
+					int[] ar = toArray();
 					Arrays.sort(ar);
 
 					for (int i = 0; i < ar.length; i++) {

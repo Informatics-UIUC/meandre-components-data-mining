@@ -42,7 +42,8 @@
 
 package org.seasr.meandre.support.components.transform.binning;
 
-import gnu.trove.TDoubleArrayList;
+
+import gnu.trove.list.array.TDoubleArrayList;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;

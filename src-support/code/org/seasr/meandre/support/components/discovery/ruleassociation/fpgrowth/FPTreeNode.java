@@ -45,9 +45,8 @@ package org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth;
 //==============
 // Java Imports
 //==============
-import java.util.*;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
-import gnu.trove.*;
 
 public class FPTreeNode {
 
@@ -57,8 +56,8 @@ public class FPTreeNode {
 
 	  private int _lbl = -1;
 	  private int _cnt = 0;
-	  private FPTreeNode _ptr = null;
-	  private TIntObjectHashMap _children = new TIntObjectHashMap();
+	  private final FPTreeNode _ptr = null;
+	  private final TIntObjectHashMap _children = new TIntObjectHashMap();
 	  private FPTreeNode _parent = null;;
 	  private int _tabpos = -1;
 	  private boolean _holdsdocs = false;

@@ -42,6 +42,9 @@
 
 package org.seasr.meandre.components.discovery.ruleassociation.fpgrowth;
 
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.hash.TIntIntHashMap;
+
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -390,7 +393,7 @@ public class FPGrowth extends AbstractExecutableComponent {
         if (leafcnt == 1) {
             ArrayList path = new ArrayList();
             FPTreeNode cpathnode =
-                (FPTreeNode) (root.getChildren().getValues())[0];
+                (FPTreeNode) (root.getChildren().values())[0];
 
             while (true) {
                 path.add(cpathnode);
@@ -400,7 +403,7 @@ public class FPGrowth extends AbstractExecutableComponent {
                 }
 
                 cpathnode =
-                    (FPTreeNode) (cpathnode.getChildren().getValues())[0];
+                    (FPTreeNode) (cpathnode.getChildren().values())[0];
             }
 
             // now we need to get the combinations.
@@ -644,7 +647,7 @@ public class FPGrowth extends AbstractExecutableComponent {
 
         int numpatsout = 0;
 
-        gnu.trove.TIntIntHashMap tiihm = new gnu.trove.TIntIntHashMap();
+        TIntIntHashMap tiihm = new TIntIntHashMap();
         // HashMap<Integer, Integer> tiihm = new HashMap<Integer, Integer>();
 
         for (int i = 0, n = _patterns.size(); i < n; i++) {
@@ -689,7 +692,7 @@ public class FPGrowth extends AbstractExecutableComponent {
         	int[] fp = new int[pat.getSize() + 1];
         	int cnter = 0;
 
-        	for (gnu.trove.TIntIterator it = pat.getPattern(); it.hasNext();) {
+        	for (TIntIterator it = pat.getPattern(); it.hasNext();) {
         		fp[cnter++] = it.next();
         	}
 

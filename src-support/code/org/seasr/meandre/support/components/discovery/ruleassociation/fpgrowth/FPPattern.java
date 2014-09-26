@@ -42,9 +42,9 @@
 
 package org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth;
 
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
-import gnu.trove.TIntObjectHashMap;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 
 /**
@@ -59,7 +59,7 @@ public class FPPattern implements java.io.Serializable {
     // Data Members
     //==============
     private int _support = 0;
-    private TIntHashSet _patternElts = new TIntHashSet();
+    private final TIntHashSet _patternElts = new TIntHashSet();
     private static TIntObjectHashMap _eltMap = new TIntObjectHashMap();
 
     /**

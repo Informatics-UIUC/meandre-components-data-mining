@@ -42,29 +42,25 @@
 
 package org.seasr.meandre.applet.ruleassociation;
 
-import javax.swing.JApplet;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import java.net.URL;
-import java.net.URLConnection;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Iterator;
 
+import javax.swing.JApplet;
+
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.Attribute;
-
-import gnu.trove.TIntArrayList;
-
-import org.seasr.datatypes.datamining.table.basic.DoubleColumn;
-import org.seasr.datatypes.datamining.table.basic.MutableTableImpl;
 import org.seasr.datatypes.datamining.table.Column;
+import org.seasr.datatypes.datamining.table.basic.DoubleColumn;
 import org.seasr.datatypes.datamining.table.basic.IntColumn;
+import org.seasr.datatypes.datamining.table.basic.MutableTableImpl;
 import org.seasr.datatypes.datamining.table.basic.TableImpl;
-
 import org.seasr.meandre.support.components.discovery.ruleassociation.FreqItemSet;
 import org.seasr.meandre.support.components.discovery.ruleassociation.RulePMMLTags;
 import org.seasr.meandre.support.components.discovery.ruleassociation.RuleTable;
@@ -93,7 +89,8 @@ public class WebRuleVisApplet extends JApplet implements RulePMMLTags {
     /**
      * Executed each time the applet is loaded or reloaded.
      */
-    public void init() {
+    @Override
+	public void init() {
         String location = getParameter("servletURL") + "?applet=true";
 
         try {
@@ -241,7 +238,7 @@ public class WebRuleVisApplet extends JApplet implements RulePMMLTags {
         rvv.initView();
 
         try {
-            rvv.setInput((Object)ruleTable, 0);
+            rvv.setInput(ruleTable, 0);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -252,15 +249,18 @@ public class WebRuleVisApplet extends JApplet implements RulePMMLTags {
     /**
      * Executed when the applet is loaded or revisited.
      */
-    public void start() {}
+    @Override
+	public void start() {}
 
     /**
     * Executed when the user leaves the applet's page.
     */
-    public void stop() {}
+    @Override
+	public void stop() {}
 
     /**
      * Clean up the applet.
      */
-    public void destroy() {}
+    @Override
+	public void destroy() {}
 }

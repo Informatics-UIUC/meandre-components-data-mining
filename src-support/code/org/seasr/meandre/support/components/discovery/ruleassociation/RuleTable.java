@@ -42,7 +42,8 @@
 
 package org.seasr.meandre.support.components.discovery.ruleassociation;
 
-import gnu.trove.TIntArrayList;
+
+import gnu.trove.list.array.TIntArrayList;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -115,7 +116,7 @@ public class RuleTable extends MutableTableImpl {
           newItems.support = I.support;
           newItems.numberOfItems = I.numberOfItems;
           int[] array = new int[I.items.size()];
-          array = I.items.toNativeArray();
+          array = I.items.toArray();
           newItems.items = new TIntArrayList(array);
           origItemSets.set(i, newItems);
           numRulesShowing = getNumRules();
@@ -439,7 +440,7 @@ public class RuleTable extends MutableTableImpl {
         int idx = getInt(getNumRows()-1-row, IF);
         FreqItemSet fis = itemSets.get(idx);
         TIntArrayList set = fis.items;
-        return set.toNativeArray();
+        return set.toArray();
     }
 
     /**
@@ -460,7 +461,7 @@ public class RuleTable extends MutableTableImpl {
         int idx = getInt(getNumRows()-1-row, THEN);
         FreqItemSet fis = itemSets.get(idx);
         TIntArrayList set = fis.items;
-        return set.toNativeArray();
+        return set.toArray();
     }
 
     /**
@@ -582,7 +583,7 @@ public class RuleTable extends MutableTableImpl {
     private String itemSetAsString(FreqItemSet f) {
       if(f.items != null) {
         StringBuffer sb = new StringBuffer();
-        int[] ar = f.items.toNativeArray();
+        int[] ar = f.items.toArray();
         for (int i = 0; i < ar.length; i++) {
           sb.append(items.get(ar[i]));
           if (i != ar.length - 1)

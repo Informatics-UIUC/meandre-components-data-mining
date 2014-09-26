@@ -157,7 +157,7 @@ public class WriteRuleAssocPMML extends AbstractExecutableComponent implements R
             set.addAttribute(ID, Integer.toString(i));
             set.addAttribute(SUPPORT, Integer.toString((int) fis.support));
 
-            int[] vals = fis.items.toNativeArray();
+            int[] vals = fis.items.toArray();
             for (int j = 0; j < vals.length; j++) {
                 Element assocItemRef = set.addElement(ITEMREF);
                 assocItemRef.addAttribute(ITEM_REF, Integer.toString(vals[j]));

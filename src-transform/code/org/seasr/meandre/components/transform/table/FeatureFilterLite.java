@@ -6,9 +6,10 @@ package org.seasr.meandre.components.transform.table;
 // Java Imports
 //==============
 
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TObjectIntHashMap;
+
+import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;

@@ -42,7 +42,8 @@
 
 package org.seasr.meandre.support.components.discovery.ruleassociation;
 
-import gnu.trove.TIntArrayList;
+
+import gnu.trove.list.array.TIntArrayList;
 
 import java.util.Arrays;
 
@@ -69,7 +70,7 @@ public class FreqItemSet implements java.io.Serializable {
     public int hashCode() {
         if (items != null) {
             StringBuffer sb = new StringBuffer();
-            int[] ar = items.toNativeArray();
+            int[] ar = items.toArray();
             Arrays.sort(ar);
             for(int i = 0; i < ar.length; i++) {
                 sb.append(Integer.toString(ar[i]));

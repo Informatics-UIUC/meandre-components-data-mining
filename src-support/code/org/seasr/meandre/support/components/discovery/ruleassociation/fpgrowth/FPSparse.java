@@ -42,9 +42,11 @@
 
 package org.seasr.meandre.support.components.discovery.ruleassociation.fpgrowth;
 
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntObjectHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.hash.TIntHashSet;
+
+
 
 public class FPSparse implements java.io.Serializable {
 

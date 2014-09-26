@@ -47,6 +47,8 @@ package org.seasr.meandre.support.components.discovery.cluster.hac;
 // Java Imports
 //==============
 
+import gnu.trove.set.hash.TIntHashSet;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeSet;
@@ -296,7 +298,7 @@ public class HACWork {
             }
 
          } else {
-            gnu.trove.TIntHashSet ihash = new gnu.trove.TIntHashSet(ifeatures);
+        	TIntHashSet ihash = new TIntHashSet(ifeatures);
 
             for (int i = 0, n = itable.getNumRows(); i < n; i++) {
                int[] cols = ((Sparse) itable).getRowIndices(i);

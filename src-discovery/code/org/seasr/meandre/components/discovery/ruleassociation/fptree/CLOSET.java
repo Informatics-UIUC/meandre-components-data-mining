@@ -44,9 +44,10 @@ package org.seasr.meandre.components.discovery.ruleassociation.fptree;
 //==============
 
 //==============
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntObjectHashMap;
+import gnu.trove.iterator.TIntIterator;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,9 +56,9 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Licenses;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.Component.Licenses;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextProperties;
 import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
@@ -191,7 +192,7 @@ public class CLOSET extends AbstractExecutableComponent {
         int elt = 0;
         int min = Integer.MAX_VALUE;
 
-        for (gnu.trove.TIntIterator it = patt.getPattern(); it.hasNext(); ) {
+        for (TIntIterator it = patt.getPattern(); it.hasNext(); ) {
             int tst = it.next();
             int icmp = _supports.get(tst);
             if (icmp < min){
@@ -200,7 +201,7 @@ public class CLOSET extends AbstractExecutableComponent {
             }
         }
 
-        TIntObjectHashMap<ArrayList<FPTreeNode>> m = _closhash.get(elt);
+        gnu.trove.map.hash.TIntObjectHashMap<ArrayList<FPTreeNode>> m = _closhash.get(elt);
         if (m == null) return false;
 
         ArrayList<FPTreeNode> l = m.get(patt.getSupport());
@@ -214,7 +215,7 @@ public class CLOSET extends AbstractExecutableComponent {
             if (node.getPosition() == patt.getSize()) {
                 if (node.getNumChildren() == 0) continue;
 
-                Object[] children = node.getChildren().getValues();
+                Object[] children = node.getChildren().values();
 
                 boolean okay = false;
                 for (int j = 0, k = children.length; j < k; j++)
@@ -246,7 +247,7 @@ public class CLOSET extends AbstractExecutableComponent {
         int patsupp = patt.getSupport();
         TreeSet<FeatureTableElement> tfeats = new TreeSet<FeatureTableElement>(new FeatureComparator());
 
-        for (gnu.trove.TIntIterator it = patt.getPattern(); it.hasNext(); ) {
+        for (TIntIterator it = patt.getPattern(); it.hasNext(); ) {
             int fte = it.next();
             tfeats.add(new FeatureTableElement(fte, _supports.get(fte), 0));
         }
@@ -399,7 +400,7 @@ public class CLOSET extends AbstractExecutableComponent {
             if (ptrs.size() == 1) {
                 FPTreeNode nd = ptrs.get(0);
                 if ((nd.getNumChildren() == 0) || (nd.getNumChildren() > 1) ||
-                        (((FPTreeNode)(nd.getChildren().getValues())[0]).getCount() < nd.getCount())){
+                        (((FPTreeNode)(nd.getChildren().values())[0]).getCount() < nd.getCount())){
                     boolean okay = true;
                     FPTreeNode nnd = nd;
                     FPPattern newpatt = new FPPattern(alpha, nd.getCount()/*0*/);

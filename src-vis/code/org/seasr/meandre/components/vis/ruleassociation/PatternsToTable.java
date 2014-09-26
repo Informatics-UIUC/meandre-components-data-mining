@@ -1,12 +1,14 @@
 package org.seasr.meandre.components.vis.ruleassociation;
 
+import gnu.trove.iterator.TIntIterator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 import org.meandre.annotations.Component;
+import org.meandre.annotations.Component.Licenses;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
-import org.meandre.annotations.Component.Licenses;
 import org.meandre.core.ComponentContext;
 import org.meandre.core.ComponentContextProperties;
 import org.seasr.datatypes.datamining.table.Column;
@@ -84,7 +86,7 @@ public class PatternsToTable extends AbstractExecutableComponent {
             FPPattern fpPattern = patterns.get(i);
 
             ArrayList<String> patternList = new ArrayList<String>();
-            for (gnu.trove.TIntIterator it = fpPattern.getPattern(); it.hasNext(); ) {
+            for (TIntIterator it = fpPattern.getPattern(); it.hasNext(); ) {
                 int fte = it.next();
                 patternList.add(FPPattern.getElementLabel(fte));
             }
