@@ -1,16 +1,10 @@
 package org.seasr.meandre.components.transform.table;
 
-
-
 //==============
 // Java Imports
 //==============
 
-
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
-
 import org.meandre.annotations.Component;
 import org.meandre.annotations.ComponentInput;
 import org.meandre.annotations.ComponentOutput;
@@ -22,28 +16,20 @@ import org.seasr.datatypes.datamining.table.Sparse;
 import org.seasr.datatypes.datamining.table.Table;
 import org.seasr.meandre.components.abstracts.AbstractExecutableComponent;
 
-@Component(creator="Loretta Auvil",
-        description="<p>Overview: " +
-        "This module scans the input <i>SparseTable</i> and any term (column) whose support "+
-        "does not fall within the range specified has its column removed from the table.  This can greatly reduce "+
-        "the total number features used for learning -- improving accuracy and performance."+
-        "</p>"+
-        "<p>Data Type Restrictions: "+
-        "The input <i>Table</i> must be an instance of a <i>SparseTable</i>."+
-        "</p>"+
-        "<p>Data Handling: "+
-        "A new <i>SparseTable</i> instance is created and only columns that will be kept "+
-        "are copied into it."+
-        "</p>"+
-        "<p>Scalability: "+
-        "Creates a second table on the same order of size as the original.  Columns "+
-        "from the first table are inserted into the second table; no copies are made.  Algorithm makes one pass over the "+
-        "table columns and one pass over the table data."+
-        "</p>",
-        name="FeatureFilterLite",
-        tags="feature filter",
-        baseURL="meandre://seasr.org/components/data-mining/")
-
+@Component(creator = "Loretta Auvil", description = "<p>Overview: "
+		+ "This module scans the input <i>SparseTable</i> and any term (column) whose support "
+		+ "does not fall within the range specified has its column removed from the table.  This can greatly reduce "
+		+ "the total number features used for learning -- improving accuracy and performance."
+		+ "</p>"
+		+ "<p>Data Type Restrictions: "
+		+ "The input <i>Table</i> must be an instance of a <i>SparseTable</i>."
+		+ "</p>"
+		+ "<p>Data Handling: "
+		+ "The input <i>SparseTable</i> instance is modified, which is a change from previous version."
+		+ "</p>"
+		+ "<p>Scalability: "
+		+ "Algorithm makes one pass over the "
+		+ "table columns and one pass over the table data." + "</p>", name = "FeatureFilterLite", tags = "feature filter", baseURL = "meandre://seasr.org/components/data-mining/")
 public class FeatureFilterLite extends AbstractExecutableComponent {
 
 	@ComponentProperty(description = "Verbose output.", defaultValue = "false", name = "verbose")
@@ -77,234 +63,156 @@ public class FeatureFilterLite extends AbstractExecutableComponent {
 			+ "<br>TYPE: org.seasr.datatypes.datamining.table.sparse.SparseTable", name = "sparseTable")
 	public final static String OUT_SPARSETABLE = "sparseTable";
 
+	// ==================
+	// Option Accessors
 
-  //==================
-  // Option Accessors
+	private boolean _removeones = false;
 
-  private boolean _removeones = false;
-  public boolean getRemoveColumnsWithOnlyOneEntry(){ return _removeones;}
-  public void setRemoveColumnsWithOnlyOneEntry(boolean b){_removeones = b;}
+	public boolean getRemoveColumnsWithOnlyOneEntry() {
+		return _removeones;
+	}
 
-  private boolean _removealls = false;
-  public boolean getRemoveColumnsWithAllEntries(){ return _removealls;}
-  public void setRemoveColumnsWithAllEntries(boolean b){_removealls = b;}
+	public void setRemoveColumnsWithOnlyOneEntry(boolean b) {
+		_removeones = b;
+	}
 
-  private double _lowerBoundSupport = 0;
-  public double getLowerBoundSupport(){return _lowerBoundSupport;}
-  public void setLowerBoundSupport(double d){_lowerBoundSupport = d;}
+	private boolean _removealls = false;
 
-  private double _upperBoundSupport = 100;
-  public double getUpperBoundSupport(){return _upperBoundSupport;}
-  public void setUpperBoundSupport(double d){_upperBoundSupport = d;}
+	public boolean getRemoveColumnsWithAllEntries() {
+		return _removealls;
+	}
 
-  private boolean _verbose = false;
-  public boolean getVerbose(){ return _verbose;}
-  public void setVerbose(boolean b){_verbose = b;}
+	public void setRemoveColumnsWithAllEntries(boolean b) {
+		_removealls = b;
+	}
 
-  /**
-   * In frequency include all occurrences of a term even if it only matches the POS tag criteria
-   * for a subset of occurrences.
-   */
-  @Override
-public void executeCallBack(ComponentContext cc) throws Exception {
-	  Object input = cc.getDataComponentFromInput(IN_SPARSETABLE);
+	private double _lowerBoundSupport = 0;
 
-	  ExampleTable table;
+	public double getLowerBoundSupport() {
+		return _lowerBoundSupport;
+	}
 
-	  if (!(input instanceof ExampleTable)) {
-		  table = ((Table)input).toExampleTable();
-		  int maxCols = table.getNumColumns();
-		  int[] iind = new int[maxCols];
-		  for (int i = 0 ; i < maxCols; i++)
-			  iind[i] = i;
-		  table.setInputFeatures(iind);
-	  }
-	  else
-		  table = (ExampleTable)input;
+	public void setLowerBoundSupport(double d) {
+		_lowerBoundSupport = d;
+	}
 
-	  //HashSet colset = new HashSet(); //indices of input features
-	  int[] iinds = table.getInputFeatures();
-	  TIntHashSet colset = new TIntHashSet(iinds.length);
-	  console.fine(iinds.length + " features input ...");
-	  if (iinds != null){
-		  for (int i = 0, n = iinds.length; i < n; i++){
-			  //colset.add(new Integer(iinds[i]));
-			  colset.add(iinds[i]);
-		  }
-	  }
+	private double _upperBoundSupport = 100;
 
-	  //HashSet ocolset = new HashSet(); //indices of output features
-	  int[] oinds = table.getOutputFeatures();
-	  TIntHashSet ocolset = new TIntHashSet(oinds.length);
-	  if (oinds != null){
-		  for (int i = 0, n = oinds.length; i < n; i++) {
-			  //ocolset.add(new Integer(oinds[i]));
-			  ocolset.add(oinds[i]);
-		  }
-	  }
+	public double getUpperBoundSupport() {
+		return _upperBoundSupport;
+	}
 
+	public void setUpperBoundSupport(double d) {
+		_upperBoundSupport = d;
+	}
 
-	  ExampleTable copy = table.createTable().toExampleTable();
-	  //add empty columns for each column.
+	private boolean _verbose = false;
 
-	  // Hash the column names of the output table to indices
-	  //HashMap colMap2 = new HashMap();
-	  TObjectIntHashMap colMap2 = new TObjectIntHashMap();
+	public boolean getVerbose() {
+		return _verbose;
+	}
 
-	  long minsupp = 0;
-	  int numrows = table.getNumRows();
-	  long maxsupp = numrows;
+	public void setVerbose(boolean b) {
+		_verbose = b;
+	}
 
-	  double lbs = this.getLowerBoundSupport();
-	  if ((lbs > 0) && (lbs <= 100)){
-		  minsupp = Math.round((lbs/100)*(numrows));
-	  } else if (this.getRemoveColumnsWithOnlyOneEntry()){
-		  minsupp = 2;
-	  }
-	  console.fine("Feature Support Filter min support set to: " + minsupp);
-	  double ubs = this.getUpperBoundSupport();
-	  if ((ubs > 0) && (ubs <= 100)){
-		  maxsupp = Math.round((ubs/100)*(numrows));
-	  } else if (this.getRemoveColumnsWithAllEntries()){
-		  maxsupp = numrows-1;
-	  }
-	  console.fine("Feature Support Filter max support set to: " + maxsupp);
+	/**
+	 * In frequency include all occurrences of a term even if it only matches
+	 * the POS tag criteria for a subset of occurrences.
+	 */
+	@Override
+	public void executeCallBack(ComponentContext cc) throws Exception {
+		Object input = cc.getDataComponentFromInput(IN_SPARSETABLE);
 
-	  //ArrayList list = new ArrayList(); //list of indices of in features in the output table
-	  //ArrayList list2 = new ArrayList();//list of indices of out features in the output table
-	  TIntArrayList list = new TIntArrayList(colset.size()); //list of indices of in features in the output table
-	  TIntArrayList list2 = new TIntArrayList(ocolset.size());//list of indices of out features in the output table
-	  int j = 0; //index of column that is currently added to the output table
-	  //for each column
-	  for (int i = 0, n = table.getNumColumns(); i < n; i++) {
-		  //AbstractSparseColumn col = (AbstractSparseColumn) table.getColumn(i);
-		  String colstr = table.getColumnLabel(i); //label
-		  int[] colindices = ((Sparse)table).getColumnIndices(i); //valid rows in column
-		  //boolean conts = colset.contains(new Integer(i)); //is this an input feature?
-		  boolean conts = colset.contains(i); //is this an input feature?
-		  //boolean conts2 = ocolset.contains(new Integer(i)); //is this an output feature
-		  boolean conts2 = ocolset.contains(i); //is this an output feature
+		ExampleTable table;
 
-		  //if supported by lower or upper bound or not an input feature
-		  if ( ((colindices.length >= minsupp) && (colindices.length <= maxsupp )) || (!conts)) {
-			  //add this column to the output table
-			  //copy.addColumn(((Sparse)copy).getTableFactory().createColumn(table.getColumnType(i)));
-			  //copy.setColumnLabel(colstr, j);
-			  copy.addColumn( table.getColumn(i) );
-			  //add to the map
-			  //colMap2.put(colstr, new Integer(j));
-			  colMap2.put(colstr, j);
-			  if (conts){
-				  //list.add(new Integer(j));
-				  list.add(j);
-			  }
-			  if (conts2){
-				  //list2.add(new Integer(j));
-				  list2.add(j);
-			  }
-			  j++;
-		  }
-		  else
-			  if (this._verbose) {
-				  if ( colindices.length < minsupp)
-					  console.fine("column indexed " + i + " is below the min support. labeled " + colstr);
-				  if ( colindices.length > maxsupp)
-					  console.fine("column indexed " + i + " is above the max support. labeled " + colstr);
-			  }
-	  }
+		if (!(input instanceof ExampleTable)) {
+			table = ((Table) input).toExampleTable();
+			int maxCols = table.getNumColumns();
+			int[] iind = new int[maxCols];
+			for (int i = 0; i < maxCols; i++)
+				iind[i] = i;
+			table.setInputFeatures(iind);
+		} else
+			table = (ExampleTable) input;
 
-	  //setting the input features into the output table
-	  if (iinds != null){
-		  int[] ifeats = new int[list.size()];
-		  for (int i = 0, n = ifeats.length; i < n; i++) {
-			  //ifeats[i] = ( (Integer) list.get(i)).intValue();
-			  ifeats[i] = list.get(i);
-		  }
-		  copy.setInputFeatures(ifeats);
-	  }
-	  //setting the output features into the output table
-	  if (oinds != null){
-		  int[] ofeats = new int[list2.size()];
-		  for (int i = 0, n = ofeats.length; i < n; i++) {
-			  //ofeats[i] = ( (Integer) list2.get(i)).intValue();
-			  ofeats[i] = list2.get(i);
-		  }
-		  copy.setOutputFeatures(ofeats);
-	  }
+		int[] iinds = table.getInputFeatures();
+		TIntHashSet colset = new TIntHashSet(iinds.length);
+		console.fine("input features: " + iinds.length);
+		if (iinds != null) {
+			for (int i = 0, n = iinds.length; i < n; i++) {
+				colset.add(iinds[i]);
+			}
+		}
 
+		long minsupp = 0;
+		int numrows = table.getNumRows();
+		long maxsupp = numrows;
 
-	  //for each column in original table
-	  /*      for (int i = 0, n = table.getNumColumns(); i < n; i++) {
-        //get its index in the output table
-        //Integer oint = (Integer) colMap2.get(table.getColumnLabel(i));
-        if(!colMap2.containsKey(table.getColumnLabel(i))) {
-          continue;
-        }
-        int oint = colMap2.get(table.getColumnLabel(i));
-        //if (oint == null) {
-        //  continue;
-        //}
-        int[] spcol = null; //valid rows in current column
-        spcol = ( (Sparse) table).getColumnIndices(i);
-        //for each entry in current column - copy the value
-        for (int jk = 0, m = spcol.length; jk < m; jk++) {
-          String newval = table.getString(spcol[jk], i);
-          //copy.setString(newval, spcol[jk], oint.intValue());
-          copy.setString(newval, spcol[jk], oint);
-        }
-      }*/
+		double lbs = this.getLowerBoundSupport();
+		if ((lbs > 0) && (lbs <= 100)) {
+			minsupp = Math.round((lbs / 100) * (numrows));
+		} else if (this.getRemoveColumnsWithOnlyOneEntry()) {
+			minsupp = 2;
+		}
+		console.fine("Min support set to: " + minsupp);
+		double ubs = this.getUpperBoundSupport();
+		if ((ubs > 0) && (ubs <= 100)) {
+			maxsupp = Math.round((ubs / 100) * (numrows));
+		} else if (this.getRemoveColumnsWithAllEntries()) {
+			maxsupp = numrows - 1;
+		}
+		console.fine("Max support set to: " + maxsupp);
 
+		// for each column
+		for (int i = table.getNumColumns() - 1; i >= 2; i--) {
+			String colstr = table.getColumnLabel(i); 
+			// valid rows in column
+			int[] colindices = ((Sparse) table).getColumnIndices(i); 
+			
+			// if supported by lower or upper bound or not an input feature
+			if (colindices.length < minsupp || colindices.length > maxsupp) {
+				if (colset.contains(i)) {
+					table.removeColumn(i); 
+					if (this._verbose) {
+						if (colindices.length < minsupp)
+							console.fine("column indexed " + i
+									+ " is below the min support. labeled "
+									+ colstr);
 
-	  console.fine("Feature Support Filter -- " + copy.getInputFeatures().length + " features remain\n\n");
+						if (colindices.length > maxsupp)
+							console.fine("column indexed " + i
+									+ " is above the max support. labeled "
+									+ colstr);
+					}
+				}
+			}
+		}
 
-	  cc.pushDataComponentToOutput(OUT_SPARSETABLE, copy);
-  }
+		console.fine("Features Remain: " + table.getInputFeatures().length);
 
+		cc.pushDataComponentToOutput(OUT_SPARSETABLE, table);
+	}
 
-  private class Terms_Comparator implements java.util.Comparator {
+	@Override
+	public void disposeCallBack(ComponentContextProperties ccp)
+			throws Exception {
+		// TODO Auto-generated method stub
+	}
 
-    public Terms_Comparator() {
-    }
-
-    //======================
-    //Interface: Comparator
-    //======================
-    public int compare(Object o1, Object o2) {
-      int i1 = ( (Integer) o1).intValue();
-      int i2 = ( (Integer) o2).intValue();
-
-      if (i1 > i2) {
-        return 1;
-      }
-      else if (i1 < i2) {
-        return -1;
-      }
-      else {
-        return 0;
-      }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      return this.equals(o);
-    }
-  }
-
-
-  @Override
-public void disposeCallBack(ComponentContextProperties ccp) throws Exception {
-	  // TODO Auto-generated method stub
-
-  }
-
-  @Override
-public void initializeCallBack(ComponentContextProperties ccp) throws Exception {
-	  // TODO Auto-generated method stub
-	  _verbose = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE, ccp));
-	  _removeones = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_ONLYONEENTRY, ccp));
-	  _removealls = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_ALLENTRIES, ccp));
-	  _lowerBoundSupport = Integer.parseInt(getPropertyOrDieTrying(PROP_LOWERBOUNDSUPPORT, ccp));
-	  _upperBoundSupport = Integer.parseInt(getPropertyOrDieTrying(PROP_UPPERBOUNDSUPPORT, ccp));
-  }
-
+	@Override
+	public void initializeCallBack(ComponentContextProperties ccp)
+			throws Exception {
+		// TODO Auto-generated method stub
+		_verbose = Boolean.parseBoolean(getPropertyOrDieTrying(PROP_VERBOSE,
+				ccp));
+		_removeones = Boolean.parseBoolean(getPropertyOrDieTrying(
+				PROP_ONLYONEENTRY, ccp));
+		_removealls = Boolean.parseBoolean(getPropertyOrDieTrying(
+				PROP_ALLENTRIES, ccp));
+		_lowerBoundSupport = Integer.parseInt(getPropertyOrDieTrying(
+				PROP_LOWERBOUNDSUPPORT, ccp));
+		_upperBoundSupport = Integer.parseInt(getPropertyOrDieTrying(
+				PROP_UPPERBOUNDSUPPORT, ccp));
+	}
 }
